@@ -24,7 +24,7 @@ savedir     = '/analysis/';
 
 %% Processing files
 
-for fId = 1:1
+for fId = 1:NumFiles
     cfilename = Files{fId};
     cnbiutil_bdisp(['[io] - Loading file ' num2str(fId) '/' num2str(NumFiles)]);
     disp(['       File: ' cfilename]);
