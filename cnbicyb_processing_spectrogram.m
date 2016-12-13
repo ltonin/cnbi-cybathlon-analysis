@@ -1,6 +1,6 @@
 clearvars; clc;
 
-subject = 'AN14VE';
+subject = 'MA25VE';
 
 pattern     = '.mi.';
 
@@ -9,8 +9,9 @@ pshift     = 0.25;                  % <-- What is it?
 wshift     = 0.0625;                % <-- What is it?
 mavglength = 1.0;
 selfreqs   = 4:2:48;
+selchans   = 1:16;                  % <-- Needed for the 2-amplifiers setup
 
-load('lapmask_16ch.mat');
+load('lapmask_16ch.mat');           % <-- To be checked if it is the correct one
 
 experiment  = 'cybathlon';
 datapath    = ['/mnt/data/Research/' experiment '/' subject '/'];
@@ -30,8 +31,19 @@ for fId = 1:NumFiles
     disp(['       File: ' cfilename]);
     
     % Importing gdf file
-    [s, h] = sload(cfilename);
-    s = s(:, 1:end-1);          % Assuming that the last channel is the trigger
+    try
+        [s, h] = sload(cfilename);
+    catch 
+        cnbiutil_bdisp(['[io] - Corrupted file, skipping: ' cfilename]);
+        continue;
+    end
+    
+    if isempty(s) 
+        cnbiutil_bdisp(['[io] - Corrupted file, skipping: ' cfilename]);
+        continue;
+    end
+    
+    s = s(:, selchans);         
     
     % Computed DC removal
     s_dc = s-repmat(mean(s),size(s,1),1);
