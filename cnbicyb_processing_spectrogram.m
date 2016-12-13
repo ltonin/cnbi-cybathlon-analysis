@@ -15,9 +15,20 @@ wshift     = 0.0625;                % <-- What is it?
 mavglength = 1.0;
 selfreqs   = 4:2:48;
 selchans   = 1:16;                  % <-- Needed for the 2-amplifiers setup
+<<<<<<< HEAD
 load('lapmask_16ch.mat');           % <-- To be checked if it is the correct one
 
 %% Get datafiles
+=======
+
+load('lapmask_16ch.mat');           % <-- To be checked if it is the correct one
+
+experiment  = 'cybathlon';
+datapath    = ['/mnt/data/Research/' experiment '/' subject '/'];
+savedir     = '/analysis/';
+
+% Get datafiles
+>>>>>>> 836fa434b6893ca57e0bd82fbe6258159f2dac55
 [Files, NumFiles] = cnbiutil_getdata(datapath, subject, pattern, '.gdf');
 
 %% Create/Check for savepath
