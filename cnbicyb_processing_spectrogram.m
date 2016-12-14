@@ -10,9 +10,8 @@ savedir     = '/analysis/';
 
 %% Processing parameters
 wlength    = 0.5;
-pshift     = 0.25;                  % <-- What is it?
-wshift     = 0.0625;                % <-- What is it?
-mavglength = 1.0;
+pshift     = 0.25;                  
+wshift     = 0.0625;                
 selfreqs   = 4:2:48;
 selchans   = 1:16;                  % <-- Needed for the 2-amplifiers setup
 load('lapmask_16ch.mat');           % <-- To be checked if it is the correct one
@@ -52,7 +51,7 @@ for fId = 1:NumFiles
     s_lap = s_dc*lapmask;
     
     % Compute spectrogram
-    [psd, freqgrid] = cnbiproc_spectrogram(s_lap, wlength, wshift, pshift, h.SampleRate, mavglength);
+    [psd, freqgrid] = cnbiproc_spectrogram(s_lap, wlength, wshift, pshift, h.SampleRate);
     
     % Selecting desired frequencies
     [freqs, idfreqs] = intersect(freqgrid, selfreqs);
