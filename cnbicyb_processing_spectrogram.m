@@ -78,5 +78,5 @@ for fId = 1:NumFiles
     [~, name] = fileparts(cfilename);
     sfilename = [savepath '/' name '.mat'];
     cnbiutil_bdisp(['[out] - Saving psd in: ' sfilename]);
-    save(sfilename, 'psd', 'freqs', 'settings'); 
+    save(sfilename, 'psd', 'freqs', 'events', 'settings'); 
 end
