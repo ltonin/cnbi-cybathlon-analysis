@@ -26,12 +26,22 @@ load('lapmask_16ch.mat');           % <-- To be checked if it is the correct one
 
 for fId = 1:NumFiles
     cfilename = Files{fId};
+    [~, ~, cextension] = fileparts(cfilename);
     cnbiutil_bdisp(['[io] - Loading file ' num2str(fId) '/' num2str(NumFiles)]);
     disp(['       File: ' cfilename]);
     
     % Importing gdf file
     try
-        [s, h] = sload(cfilename);
+        if(strcmp(cextension, '.gdf'))
+            [s, h] = sload(cfilename);
+        elseif(strcmp(cextension, '.mat'))
+            cdata = load(cfilename);
+            s = cdata.data;
+            h = cdata.header;
+        else
+            error('chk:ext', 'Unknown extension');
+        end
+            
     catch 
         cnbiutil_bdisp(['[io] - Corrupted file, skipping: ' cfilename]);
         continue;
