@@ -34,13 +34,13 @@ function [files, numfiles] = cnbiutil_getdata(datapath, dirpattern, filepattern,
 % SEE ALSO: cnbiutil_getdir, cnbiutil_getfile
 
 
-    folders = util_getdir(datapath, dirpattern);
+    folders = cnbiutil_getdir(datapath, dirpattern);
     nfolders = length(folders);
     
     files = {};
   
     for dId = 1:nfolders
-        cfiles = util_getfile(folders{dId}, extension, filepattern);
+        cfiles = cnbiutil_getfile(folders{dId}, extension, filepattern);
         files = cat(1, files, cfiles);
     end
     
