@@ -20,7 +20,7 @@ load('lapmask_16ch.mat');           % <-- To be checked if it is the correct one
 [Files, NumFiles] = cnbiutil_getdata(datapath, subject, pattern, '.gdf');
 
 %% Create/Check for savepath
-[~, savepath] = util_mkdir(pwd, savedir);
+[~, savepath] = cnbiutil_mkdir(pwd, savedir);
 
 %% Processing files
 
@@ -82,7 +82,7 @@ for fId = 1:NumFiles
     settings.spectrogram.wshift     = wshift;
     settings.spectrogram.pshift     = pshift;
     settings.spectrogram.mavglength = mavglength;
-    settings.spectrogram.freqgrid   = freqgrid;
+    settings.spectrogram.freqgrid   = freqs;
     
     [~, name] = fileparts(cfilename);
     sfilename = [savepath '/' name '.mat'];
