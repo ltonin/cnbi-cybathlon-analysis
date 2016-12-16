@@ -14,6 +14,7 @@ function info = cnbiutil_getfile_info(filename)
 %       .modality
 %       .task
 %       .taskset
+%       .extra
 %       .filepath
 %       .extension
 %
@@ -30,6 +31,7 @@ function info = cnbiutil_getfile_info(filename)
 %      modality: 'offline'
 %          task: 'va'
 %       taskset: 'va_brbl'
+%       extra:   '';
 %      filepath: '/mnt/data/Research/cvsa/online//20120704_b4/'
 %     extension: '.bdf'
 %
@@ -38,16 +40,18 @@ function info = cnbiutil_getfile_info(filename)
     
     fields = regexp(name, '\.', 'split');
     
-    if isequal(length(fields), 6) == false
-        error('chk:name', ['[' mfilename '] Standard filename format not recognized (' length(fields) ' fields instead of 6)']);
-    else
-        info.subject    = fields{1};
-        info.date       = fields{2};
-        info.time       = fields{3};
-        info.modality   = fields{4};
-        info.task       = fields{5};
-        info.taskset    = fields{6};
-        info.filepath   = path;
-        info.extension  = ext;
+    info.subject    = fields{1};
+    info.date       = fields{2};
+    info.time       = fields{3};
+    info.modality   = fields{4};
+    info.task       = fields{5};
+    info.taskset    = fields{6};
+    info.extra      = '';
+    if length(fields) == 7
+        info.extra      = fields{7};
+    elseif length(fields) > 7
+        info.extra = fields(7:length(fields));
     end
+    info.filepath   = path;
+    info.extension  = ext;
 end

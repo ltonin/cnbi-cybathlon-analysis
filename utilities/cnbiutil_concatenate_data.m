@@ -14,10 +14,11 @@ function [F, events, labels, settings] = cnbiutil_concatenate_data(filepaths)
 % Output:
 %   - F                 Feature matrix (windows x frequencies x channels)
 %   - events            Structure with TYP, POS and DUR field
-%   - labels            Structure with Mk (modality), Dk (day) and
+%   - labels            Structure with Mk (modality), Rk (run), Rl(runlabel), Dk (day) and
 %                       Dl (daylabel) fields. 
-%                       Mk and Dk size: (windows x 1)
+%                       Mk, Rk and Dk size: (windows x 1)
 %                       Dl size: (number of days x 1)
+%                       Rl size: (number of runs x 1);
 
     numfiles = length(filepaths);
     
@@ -28,8 +29,10 @@ function [F, events, labels, settings] = cnbiutil_concatenate_data(filepaths)
     freqs = [];
     settings = [];
     
-    Dk = [];
-    Dl = [];
+    Rk = []; 
+    Rl = cell(numfiles, 1);
+    Dk = [];            
+    Dl = [];            
     Mk = [];
     
     lday = [];
@@ -58,10 +61,14 @@ function [F, events, labels, settings] = cnbiutil_concatenate_data(filepaths)
         % Get day from filename
         if strcmpi(cinfo.date, lday) == false
             nday = nday + 1;
-            Dk = cat(1, Dk, nday*ones(size(cdata.psd, 1), 1));
             Dl = cat(1, Dl, cinfo.date);
             lday = cinfo.date;
         end
+        Dk = cat(1, Dk, nday*ones(size(cdata.psd, 1), 1));
+        
+        % Create run vector
+        Rk = cat(1, Rk, fId*ones(size(cdata.psd, 1), 1));
+        Rl{fId} = cinfo.extra;
         
         % Concatenate events
         cevents = cdata.events;
@@ -106,6 +113,8 @@ function [F, events, labels, settings] = cnbiutil_concatenate_data(filepaths)
     events.POS = POS;
     events.DUR = DUR;
     
+    labels.Rk  = Rk;
+    labels.Rl  = Rl;
     labels.Mk  = Mk;
     labels.Dl  = Dl;
     labels.Dk  = Dk;
