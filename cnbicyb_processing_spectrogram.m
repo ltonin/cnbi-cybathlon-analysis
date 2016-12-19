@@ -1,6 +1,6 @@
 clearvars; clc;
 
-subject = 'MA25VE';
+subject = 'AN14VE';
 
 pattern     = '.mi.';
 
@@ -81,7 +81,6 @@ for fId = 1:NumFiles
     settings.spectrogram.wlength    = wlength;
     settings.spectrogram.wshift     = wshift;
     settings.spectrogram.pshift     = pshift;
-    settings.spectrogram.mavglength = mavglength;
     settings.spectrogram.freqgrid   = freqs;
     
     [~, name] = fileparts(cfilename);

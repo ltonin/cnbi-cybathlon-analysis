@@ -1,4 +1,4 @@
-clearvars; clc;
+clearvars; clc; close all;
 
 subject = 'AN14VE';
 
@@ -7,6 +7,8 @@ modality    = 'offline';
 
 experiment  = 'cybathlon';
 datapath    = [pwd '/analysis/'];
+figuredir  = '/figures/';
+
 
 CueTypeId = [769 770 771 773 774 775 783];
 CueTypeLb = {'LeftHand', 'RightHand', 'BothFeet', 'BothHands', 'Boh1', 'Boh2', 'Rest'};
@@ -32,13 +34,13 @@ DataLength = size(F, 1);
 [~, CueEvents] = cnbiproc_get_event(CueTypeId, DataLength, events.POS, events.TYP, events.DUR);
 [~, CFbEvents] = cnbiproc_get_event(CFbTypeId, DataLength, events.POS, events.TYP, events.DUR);
 
-[DataLabels, DataEvents] = cnbiproc_get_event(CueTypeId, DataLength, CueEvents.POS, CueEvents.TYP, CFbEvents.DUR + CueEvents.DUR - 1, CueEvents.DUR);
+% [DataLabels, DataEvents] = cnbiproc_get_event(CueTypeId, DataLength, CueEvents.POS, CueEvents.TYP, CFbEvents.DUR + CueEvents.DUR - 1, CueEvents.DUR);
 [FixLabels, FixEvents]   = cnbiproc_get_event(FixTypeId, DataLength, events.POS, events.TYP, events.DUR);
 
 %% Compute ERD/ERS for each trial
 
 TrialSize = TrialPeriod/settings.spectrogram.wshift;            % <- (TrialPeriod*settings.data.samplerate)/(settings.spectrogram.wshift*settings.data.samplerate)
-
+FreqGrid  = settings.spectrogram.freqgrid;
 
 
 U = log(F);
@@ -46,7 +48,7 @@ U = log(F);
 NumSamples = length(TrialSize(1):TrialSize(2)) - 1;
 NumFreqs   = size(F, 2);
 NumChans   = size(F, 3);
-NumTrials  = length(DataEvents.POS);
+NumTrials  = length(CueEvents.POS);
 
 ERSP = zeros(NumSamples, NumFreqs, NumChans, NumTrials);
 Ck   = zeros(NumTrials, 1);
@@ -62,6 +64,7 @@ for trId = 1:NumTrials
     % Reference period [Fixation]
     Rstart = FixEvents.POS(trId);
     Rstop  = Rstart + FixEvents.DUR(trId) - 1;
+
     
     % Trial period [with respect to continous feedback event]
     Tstart = CFbEvents.POS(trId) + TrialSize(1);
@@ -78,7 +81,7 @@ for trId = 1:NumTrials
     end
 
     
-    Ck(trId) = DataEvents.TYP(trId);
+    Ck(trId) = CueEvents.TYP(trId);
     Rk(trId) = labels.Rk(Tstart);
     Mk(trId) = labels.Mk(Tstart);
     Dk(trId) = labels.Dk(Tstart);
@@ -97,35 +100,55 @@ LayoutPos   = find(Layout' > 0);
 SelClassId  = [771 773];
 SelClassLb   = {'BothFeet', 'BothHands'}; 
 
-FreqGrid = 4:2:48;
-
-CFbPosition = size(ERSP, 1) - unique(CFbEvents.DUR);
-CuePosition = size(ERSP, 1) - unique(CFbEvents.DUR) - unique(CueEvents.DUR);
-CuePosition = CuePosition(1);
+CFPosition  = abs(TrialSize(1));
+CuePosition = CFPosition - min(unique(CueEvents.DUR));
 
 t = TrialPeriod(1):settings.spectrogram.wshift:TrialPeriod(2) - settings.spectrogram.wshift;
 
 NumRows = 4;
 NumCols = 5;
+fig = zeros(length(SelClassId), 1);
 
 for cId = 1:length(SelClassId)
-    fig = figure;
+    fig(cId) = figure;
+    cnbifig_set_position(fig(cId), 'All');
     for chId = 1:NumChans
         
         subplot(NumRows, NumCols, LayoutPos(chId));
         cdata = mean(ERSP(:, :, chId, Ck == SelClassId(cId)), 4)';
-        imagesc(cdata,[-1 0.5])
+        imagesc(1:size(ERSP, 1), FreqGrid, cdata,[-1 0.5])
         set(gca,'YDir','normal')
         plot_vline(CuePosition, 'k', 'cue');
-        plot_vline(CFbPosition, 'k--', 'feedback');
-        ytick = get(gca, 'YTick');
-        set(gca, 'YTickLabel', FreqGrid(ytick));
-        set(gca, 'XTick', [CuePosition CFbPosition size(ERSP, 1)]);
-        set(gca, 'XTickLabel', ceil(t([CuePosition CFbPosition size(ERSP, 1)])));
+        plot_vline(CFPosition, 'k--', 'feedback');
+        set(gca, 'XTick', [CuePosition CFPosition size(ERSP, 1)]);
+        set(gca, 'XTickLabel', ceil(t([CuePosition CFPosition size(ERSP, 1)])));
         title(ChannelsLb{chId});
+        
+        [ccol, crow] = ind2sub([NumCols NumRows], LayoutPos(chId));
+        
+        if (crow == NumRows)
+            xlabel('Time [s]');
+        else
+            set(gca, 'XTick', []);
+        end
+            
+        
+        if (ccol == 1 || (ccol == 3 && crow == 1))
+            ylabel('Frequency [Hz]');
+        else
+            set(gca, 'YTick', []);
+        end
+        
+        if (ccol == 3 && crow == 1)
+           colorbar;
+        end
+        
     end
-    suptitle([subject ' - Class: ' SelClassLb{cId}]);
+    suptitle([subject ' - ' modality ' - ' SelClassLb{cId}]);
 end
 
-
-
+%% Saving figures
+[~, figurepath] = cnbiutil_mkdir(pwd, figuredir);
+for cId = 1:length(SelClassId)
+    cnbifig_figure2pdf(fig(cId), [figurepath '/' subject '_' modality '_' SelClassLb{cId} '_ersp.pdf']);
+end
