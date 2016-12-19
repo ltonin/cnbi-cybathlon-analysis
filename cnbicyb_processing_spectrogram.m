@@ -1,6 +1,6 @@
 clearvars; clc;
 
-subject = 'MA25VE';
+subject = 'AN14VE';
 
 pattern     = '.mi.';
 
@@ -10,9 +10,8 @@ savedir     = '/analysis/';
 
 %% Processing parameters
 wlength    = 0.5;
-pshift     = 0.25;                  % <-- What is it?
-wshift     = 0.0625;                % <-- What is it?
-mavglength = 1.0;
+pshift     = 0.25;                  
+wshift     = 0.0625;                
 selfreqs   = 4:2:48;
 selchans   = 1:16;                  % <-- Needed for the 2-amplifiers setup
 load('lapmask_16ch.mat');           % <-- To be checked if it is the correct one
@@ -21,18 +20,28 @@ load('lapmask_16ch.mat');           % <-- To be checked if it is the correct one
 [Files, NumFiles] = cnbiutil_getdata(datapath, subject, pattern, '.gdf');
 
 %% Create/Check for savepath
-[~, savepath] = util_mkdir(pwd, savedir);
+[~, savepath] = cnbiutil_mkdir(pwd, savedir);
 
 %% Processing files
 
 for fId = 1:NumFiles
     cfilename = Files{fId};
+    [~, ~, cextension] = fileparts(cfilename);
     cnbiutil_bdisp(['[io] - Loading file ' num2str(fId) '/' num2str(NumFiles)]);
     disp(['       File: ' cfilename]);
     
     % Importing gdf file
     try
-        [s, h] = sload(cfilename);
+        if(strcmp(cextension, '.gdf'))
+            [s, h] = sload(cfilename);
+        elseif(strcmp(cextension, '.mat'))
+            cdata = load(cfilename);
+            s = cdata.data;
+            h = cdata.header;
+        else
+            error('chk:ext', 'Unknown extension');
+        end
+            
     catch 
         cnbiutil_bdisp(['[io] - Corrupted file, skipping: ' cfilename]);
         continue;
@@ -52,7 +61,7 @@ for fId = 1:NumFiles
     s_lap = s_dc*lapmask;
     
     % Compute spectrogram
-    [psd, freqgrid] = cnbiproc_spectrogram(s_lap, wlength, wshift, pshift, h.SampleRate, mavglength);
+    [psd, freqgrid] = cnbiproc_spectrogram(s_lap, wlength, wshift, pshift, h.SampleRate);
     
     % Selecting desired frequencies
     [freqs, idfreqs] = intersect(freqgrid, selfreqs);
@@ -72,8 +81,7 @@ for fId = 1:NumFiles
     settings.spectrogram.wlength    = wlength;
     settings.spectrogram.wshift     = wshift;
     settings.spectrogram.pshift     = pshift;
-    settings.spectrogram.mavglength = mavglength;
-    settings.spectrogram.freqgrid   = freqgrid;
+    settings.spectrogram.freqgrid   = freqs;
     
     [~, name] = fileparts(cfilename);
     sfilename = [savepath '/' name '.mat'];
