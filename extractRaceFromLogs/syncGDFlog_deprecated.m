@@ -33,12 +33,8 @@ for p=1:4
     tmpCommSpeed = intersect(find(strcmp(PlayerTrack,['P' num2str(p)])),find(strcmp(Commands,'Speed')));
     tmpCommJump = intersect(find(strcmp(PlayerTrack,['P' num2str(p)])),find(strcmp(Commands,'Jump')));
     tmpCommKick = intersect(find(strcmp(PlayerTrack,['P' num2str(p)])),find(strcmp(Commands,'Kick')));
-    tmpCommSpin = intersect(find(strcmp(PlayerTrack,['P' num2str(p)])),find(strcmp(Commands,'Spin')));
-    tmpCommRoll = intersect(find(strcmp(PlayerTrack,['P' num2str(p)])),find(strcmp(Commands,'Roll')));
     IndActiveCommandP{p} = union(tmpCommSpeed,tmpCommJump);  
     IndActiveCommandP{p} = union(IndActiveCommandP{p},tmpCommKick);
-    IndActiveCommandP{p} = union(IndActiveCommandP{p},tmpCommSpin);
-    IndActiveCommandP{p} = union(IndActiveCommandP{p},tmpCommRoll);
     IndP{p} = find(strcmp(PlayerTrack,['P' num2str(p)]));
 end
 
@@ -47,9 +43,7 @@ end
 
 % This is if we consider everything between app/startgame and any next app (game closed, reset, etc)
 GameStartInd = find(strcmp(Commands,'startgame'));
-%GameEndInd = setdiff(find(strcmp(Trigger,'app')),GameStartInd);
-% Actually, only consider the End (app, state, End)
-GameEndInd = find(strcmp(End,'End'));
+GameEndInd = setdiff(find(strcmp(Trigger,'app')),GameStartInd);
 StartEndInd = union(GameStartInd,GameEndInd);
 StartEndIndVal = zeros(1,length(StartEndInd));
 StartEndIndVal(find(ismember(StartEndInd,GameStartInd)))=1;
@@ -190,51 +184,89 @@ for g=1:length(GameStartInd)
             
                 GamesFound = GamesFound +1;
                 ShowDT(GamesFound) = DT;
-                
-                thisGInd = [GameStartInd(g):GameEndInd(g)]';
-                thisPGRunInd = intersect(intersect(IndP{p},thisGInd),find(strcmp(Commands,'Run')));
-                % Remove one Run that appears very close to the End of race
-                %thisPGRunInd(find(abs(RaceCommandTime(thisPGRunInd)-RaceCommandTime(GameEndInd(g)))<0.03))=[];
-                % Actually, more generally, the last two are always bulshit
-                thisPGRunInd = thisPGRunInd(1:end-2);
-                % Find those that are 4 sec after a command
-                tmpRunMat = bsxfun(@minus,RaceCommandTime(thisPGRunInd),RaceCommandTime(thisPGActiveCommandsInd)')-4;
-                thisPGRunInd(find(sum(tmpRunMat < 0.025 & tmpRunMat > 0,2)>0))=[];
-                    
-                % Fuse triggers and Runs and hope that together they make up a
-                % proper 17-trigger group
-                thisPGTrigTimes = thisTrigPOS'/512 + DT;
-                thisPGRunTimes = RaceCommandTime(thisPGRunInd);
-                thisPGFinalTriggerTimes =  groupTriggerTimes([thisPGTrigTimes ; thisPGRunTimes]);
-                
-                % Manually fix a couple of games where I reject some run
-                % just because it is unlucky and it happened there was a
-                % command 4 sec ago. This Run should not be rejected
-                if(strcmp(SubID,'AN14VE') && g==62)
-                    thisPGFinalTriggerTimes = [thisPGFinalTriggerTimes ; 209.98];
-                    thisPGFinalTriggerTimes = sort(thisPGFinalTriggerTimes,'ascend');
-                end
-                if(strcmp(SubID,'AN14VE') && g==117)
-                    thisPGFinalTriggerTimes = [thisPGFinalTriggerTimes ; 129.2];
-                    thisPGFinalTriggerTimes = sort(thisPGFinalTriggerTimes,'ascend');
-                end
-                if(strcmp(SubID,'MA25VE') && g==89)
-                    thisPGFinalTriggerTimes = [thisPGFinalTriggerTimes ; 126.78];
-                    thisPGFinalTriggerTimes = sort(thisPGFinalTriggerTimes,'ascend');
-                end                
+                % Check if trigger missing (they should be 17 = 16 + ending pad (no trigger for starting pad, this can be retrived from startgame ). Often we get 16 or less)
+                if(length(thisTrigPOS) == 17)
+                    disp(['All triggers found!']);
+                elseif(length(thisTrigPOS) > 17)
+                    disp(['Found more tirggers than expected! That ''' 's a new one!!! Skipping...']);
+                    GamesFound = GamesFound -1;
+                    continue;
+                elseif(length(thisTrigPOS) < 17) % We are missing triggers for sure despite syncing is possible
 
-                
-                if(length(thisPGFinalTriggerTimes)~=17)
-                    disp(['Problem at game ' num2str(g), ', found game ' num2str(GamesFound) '! Exiting...']);
-                    return;
-                else
-                    % Convert time to triggers
-                    clear thisTrigPOS;
-                    thisTrigPOS = ceil((thisPGFinalTriggerTimes-DT)*512);
+                    disp(['Missing ' num2str(17 - length(thisTrigPOS)) ' triggers!!']);
+
+                    % Check if there is a levelElementEnd(Clone) as a sign
+                    % that this player really finished. Otherwise, it seems
+                    % that simply this is an incomplete game, we would
+                    % rather not take it into account
+                    HasEnd = length(intersect(find(intersect(IndP{p},find(strcmp(Pad,'End'))) >...
+                        GameStartInd(g)),find(intersect(IndP{p},find(strcmp(Pad,'End'))) < GameEndInd(g))));
+                    if(HasEnd == 0)
+                        disp(['Missing finish line event, this must be an incomplete race, skipping...']);
+                        GamesFound = GamesFound -1;
+                        continue;
+                    else
+                        disp(['There is a finish line event for this player, this must be a complete race! Trying to reinstate missing triggers']);
+                    end
+                    
+                    % Find Kick command indices in this game
+                    thisPGKickCommInd = thisPGActiveCommandsInd(find(strcmp(thisPGActiveCommands,'Kick')));
+                    thisPGPadsInd = intersect(IndActiveCommandP{p}(find(IndActiveCommandP{p}>=GameStartInd(g))),...
+                        IndActiveCommandP{p}(find(IndActiveCommandP{p}<=GameEndInd(g))));
+                    % Find Kick pads in this game
+                    IndKickP = intersect(IndP{p},find(strcmp(Pad,'Kick')));
+                    thisPGKickPadInd = intersect(IndKickP(find(IndKickP >= GameStartInd(g))),IndKickP(find(IndKickP <= GameEndInd(g))));
+                    MissingTrigCandidates = intersect(thisPGKickCommInd,thisPGKickPadInd);
+                    % Remove double entries
+                    NewMissingTrigCandidates = [];
+                    NewMissingTrigCandidates = MissingTrigCandidates(1);
+                    for m=2:length(MissingTrigCandidates)
+                        if( (RaceCommandTime(MissingTrigCandidates(m)) - RaceCommandTime(MissingTrigCandidates(m-1))) > 0.2)
+
+                            NewMissingTrigCandidates = [ NewMissingTrigCandidates MissingTrigCandidates(m)];
+                        end
+                    end
+                    MissingTrigCandidates = NewMissingTrigCandidates;clear NewMissingTrigCandidates;
+                    
+                    % There must be a "Run" very close after "Kick", say
+                    % 2.0 sec and there must be no trigger soon after, say, 0.1
+                    % sec after the Run
+                    thisGInd = [GameStartInd(g):GameEndInd(g)]';
+                    thisPGRunInd = intersect(intersect(IndP{p},thisGInd),find(strcmp(Commands,'Run')));
+                    
+                    FinalCandidateInd = [];
+                    for mm=1:length(MissingTrigCandidates)
+                        tmpDiffTime = RaceCommandTime(thisPGRunInd)'-RaceCommandTime(MissingTrigCandidates(mm));
+                        tmpDiffTime(tmpDiffTime<=0) = Inf;
+                        [minValRun minIndRun] = min(tmpDiffTime);
+                        if(minValRun <= 2.0)
+                            % There is Run very close afterwards, look now for trigger
+                            % very close
+                            if(isempty(find(min(abs(RaceCommandTime(thisPGtrigInd)-RaceCommandTime(thisPGRunInd(minIndRun)))) < 0.05)))
+                                % There is no trigger very close, so, this
+                                % must be a missing trigger position! Save
+                                % it
+                                FinalCandidateInd = [FinalCandidateInd ; [MissingTrigCandidates(mm) thisPGRunInd(minIndRun)]];
+                            end
+                        end                       
+                    end
+                    if(size(FinalCandidateInd,1) == (17 - length(thisTrigPOS)))
+                        disp('There are equal number of missing triggers and candidate positions! Reinstating triggers');
+                        thisTrigPOS = [thisTrigPOS ceil((RaceCommandTime(FinalCandidateInd(:,2))-DT)*512)'];
+                        thisTrigPOS = sort(thisTrigPOS,'ascend');
+                    else
+                        if(strcmp([thisGDate{1} thisGTime{1}],'20160831151542'))
+                            FinalCandidateInd = [57257 57262]; % This is a race of Eric where there is a second bad candidate AFTER the end of the race...
+                        else
+                            disp('There are NOT equal numbers of missing triggers and candidate positions! Skipping...');
+                            GamesFound = GamesFound -1;
+                            continue;
+                        end
+                    end    
                 end
-                
+
                 % Add in the beginning the StartGame trigger
-                thisTrigPOS = [ceil((RaceCommandTime(GameStartInd(g))-DT)*512) ; thisTrigPOS];
+                thisTrigPOS = [ceil((RaceCommandTime(GameStartInd(g))-DT)*512) thisTrigPOS];
 
                 % Find race end from game result csv
                 thisResFile = find(datenum(datetime(ResDateTime,'InputFormat','yyyyMMddHHmmss')) -...
@@ -255,30 +287,25 @@ for g=1:length(GameStartInd)
                 RT = ResData{5}(PlInd);RT = str2num(RT{1}(2:end-1));
 
                 % Race end POS trigger
-                thisTrigPOS = [thisTrigPOS ; thisTrigPOS(1)+ceil(RT*512)];
+                thisTrigPOS = [thisTrigPOS thisTrigPOS(1)+ceil(RT*512)];
+                %sclose(thisHeader);
 
                 % Make final output
                 FinalRaceTimes(GamesFound) = RT;
 
                 % load the GDF file since we want to also save the data
                 [data header] = sload([GDFSesPath '/' SubID '_' thisGDate{1} '/' thisCandRuns(gd).name]);
-
-                %Crop data between starting and ending index
-                if(thisTrigPOS(end) > size(data,1))
-                    % Apparently someone closed the GDF file before the
-                    % race finished, discard
-                    GamesFound = GamesFound -1;
-                    disp(['The GDF was closed before the race had finished, skipping this race!']);
-                    continue;
+                if(~isempty(find(header.EVENT.TYP == 771)))
+                    disp('a');
                 end
+                %Crop data between starting and ending index
                 Race.data = data(thisTrigPOS(1):thisTrigPOS(end),:);
-
                 IndUseful = intersect(find(header.EVENT.POS >= thisTrigPOS(1)) , find(header.EVENT.POS <= thisTrigPOS(end)));
                 Race.EVENT.POS = header.EVENT.POS(IndUseful) - thisTrigPOS(1);
                 Race.EVENT.TYP = header.EVENT.TYP(IndUseful);
 
                 % Remove triggers from UDP messages in case they exist
-                % They are useful for debugging but the gameevents are
+                % They are useful for debugging but the gameevetns are
                 % more accurate wrt timing
                 RemInd = ismember(Race.EVENT.TYP,[783 768 771 773]);
                 if(~isempty(RemInd))
@@ -294,17 +321,17 @@ for g=1:length(GameStartInd)
                 thisGLevelInt(find(thisGLevel{1}=='2')) = 771;
                 thisGLevelInt(find(thisGLevel{1}=='3')) = 768;
                 thisTrigTYP = [783 thisGLevelInt 783 666];
-                tmpAllPOS = [thisTrigPOS ; Race.EVENT.POS];
-                tmpAllTYP = [thisTrigTYP Race.EVENT.TYP']';
+                tmpAllPOS = [thisTrigPOS Race.EVENT.POS'];
+                tmpAllTYP = [thisTrigTYP Race.EVENT.TYP'];
                 [sorted sortInd] = sort(tmpAllPOS,'ascend');
                 Race.EVENT.POS = tmpAllPOS(sortInd);
                 Race.EVENT.TYP = tmpAllTYP(sortInd);
-                Race.EVENT.DUR = zeros(length(Race.EVENT.TYP),1);
+                Race.EVENT.DUR = zeros(1,length(Race.EVENT.TYP));
                 % Uniformize the command events among different protocols
                 Race.EVENT.TYP(Race.EVENT.TYP==5) = 25349; % BH = 5 = 25349 (0x0305 + 0x6000)
                 Race.EVENT.TYP(Race.EVENT.TYP==6) = 25347; % BH = 6 = 25347 (0x0303 + 0x6000)
-                % For the "7" I have to be careful, since it might be
-                % coming from the mi_cybathlon2 (timeout sends slide)or
+                % For the "7" I have to be careful, since it might b
+                % ecoming from the mi_cybathlon2 (timeout sends slide)or
                 % from mi_cyabthlon3 (reversing creates slide) I will try
                 % to guess, since mi_cybathlon2 had big timeouts and
                 % mi_cybathlon3 small ones
@@ -366,9 +393,9 @@ for g=1:length(GameStartInd)
                     Ind32773 = find(Race.EVENT.TYP==32773);
                     Ind32774 = find(Race.EVENT.TYP==32774);
                     Ind32775 = find(Race.EVENT.TYP==32775);
-                    Race.EVENT.TYP([Ind10; Ind11; Ind12; Ind13; Ind20; Ind21; Ind22; Ind23; Ind30; Ind31; Ind32; Ind33; Ind40; Ind41; Ind42; Ind43; Ind32773; Ind32774;; Ind32775])=[];
-                    Race.EVENT.POS([Ind10; Ind11; Ind12; Ind13; Ind20; Ind21; Ind22; Ind23; Ind30; Ind31; Ind32; Ind33; Ind40; Ind41; Ind42; Ind43; Ind32773; Ind32774 Ind32775])=[];
-                    Race.EVENT.DUR([Ind10; Ind11; Ind12; Ind13; Ind20; Ind21; Ind22; Ind23; Ind30; Ind31; Ind32; Ind33; Ind40; Ind41; Ind42; Ind43; Ind32773; Ind32774; Ind32775])=[];
+                    Race.EVENT.TYP([Ind10 Ind11 Ind12 Ind13 Ind20 Ind21 Ind22 Ind23 Ind30 Ind31 Ind32 Ind33 Ind40 Ind41 Ind42 Ind43 Ind32773 Ind32774 Ind32775])=[];
+                    Race.EVENT.POS([Ind10 Ind11 Ind12 Ind13 Ind20 Ind21 Ind22 Ind23 Ind30 Ind31 Ind32 Ind33 Ind40 Ind41 Ind42 Ind43 Ind32773 Ind32774 Ind32775])=[];
+                    Race.EVENT.DUR([Ind10 Ind11 Ind12 Ind13 Ind20 Ind21 Ind22 Ind23 Ind30 Ind31 Ind32 Ind33 Ind40 Ind41 Ind42 Ind43 Ind32773 Ind32774 Ind32775])=[];
                 end
                 % Add one to all the triggers so that it is not 0:size-1 ,
                 % but 1:size as in MATLAB style
