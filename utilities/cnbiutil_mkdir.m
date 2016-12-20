@@ -1,8 +1,12 @@
 function [success, newpath] = cnbiutil_mkdir(parentdir, newdir)
-% success = cnbiutil_mkdir(rootpath, dirpath)
+% [success, NEWDIR] = cnbiutil_mkdir(PARENTDIR, NEWDIR)
 %
 % The function creates a new directory tree NEWDIR starting from PARENTDIR 
 % (if PARENTDIR exists, otherwise it throws an error). 
+%
+% [success, NEWDIR] = cnbiutil_mkdir(NEWDIR)
+%
+% The function creates a new directory at NEWDIR 
 %
 % The function returns:
 %       ->  1       In case of success in making the new directory
@@ -11,17 +15,23 @@ function [success, newpath] = cnbiutil_mkdir(parentdir, newdir)
 %
 % SEE ALSO: mkdir
     
-    if(exist(parentdir, 'dir') ~= 7)
-        error('chk:root', ['[' mfilename '] - Parent directory does not exist']);
+    if nargin == 1
+        NEWDIR = parentdir;
+    elseif nargin == 2
+        NEWDIR = [parentdir newdir];
     end
-    
-    if (exist([parentdir newdir], 'dir') ~= 7)
-        cnbiutil_bdisp(['[' mfilename '] - Creating new directory at: ' parentdir '/' newdir]);
-        success = mkdir([parentdir newdir]);
+
+
+    if (exist(NEWDIR, 'dir') ~= 7)
+        cnbiutil_bdisp(['[' mfilename '] - Creating new directory at: ' NEWDIR]);
+        success = mkdir(NEWDIR);
     else
         success = 2;
     end
+
+    newpath = NEWDIR;
+   
     
-    newpath = [parentdir newdir];
+    
 
 end
