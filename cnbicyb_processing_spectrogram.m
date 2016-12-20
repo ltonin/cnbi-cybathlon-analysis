@@ -2,8 +2,12 @@ clearvars; clc;
 
 subject = 'AN14VE';
 
-pattern     = '.mi.';
+identifiers = {'.offline.mi.', '.gdf'};
+% identifiers = {'.online.mi.',  '.gdf'};
+% identifiers = {'.race.mi.',    '.mat'};
 
+pattern     = identifiers{1};
+extension   = identifiers{2};
 experiment  = 'cybathlon';
 datapath    = ['/mnt/data/Research/' experiment '/' subject '/'];
 savedir     = '/analysis/';
@@ -17,7 +21,7 @@ selchans   = 1:16;                  % <-- Needed for the 2-amplifiers setup
 load('lapmask_16ch.mat');           % <-- To be checked if it is the correct one
 
 %% Get datafiles
-[Files, NumFiles] = cnbiutil_getdata(datapath, subject, pattern, '.gdf');
+[Files, NumFiles] = cnbiutil_getdata(datapath, subject, pattern, extension);
 
 %% Create/Check for savepath
 [~, savepath] = cnbiutil_mkdir(pwd, savedir);
@@ -36,8 +40,9 @@ for fId = 1:NumFiles
             [s, h] = sload(cfilename);
         elseif(strcmp(cextension, '.mat'))
             cdata = load(cfilename);
-            s = cdata.data;
-            h = cdata.header;
+            s = cdata.Race.data;
+            h.EVENT = cdata.Race.EVENT;
+            h.SampleRate = 512;
         else
             error('chk:ext', 'Unknown extension');
         end
