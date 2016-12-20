@@ -25,17 +25,18 @@ TrialPeriod = [-2 4];       % With respect to continous feedback (781)
 [Files, NumFiles] = cnbiutil_getfile(datapath, '.mat', [subject '*' modality '*' pattern]);
 
 %% Concatenate data
-cnbiutil_bdisp('[io] - Import psd datafiles');
+cnbiutil_bdisp(['[io] - Import psd datafiles (' modality ')']);
 [F, events, labels, settings] = cnbiutil_concatenate_data(Files);
 DataLength = size(F, 1);
 
 %% Extract events
-
+cnbiutil_bdisp('[proc] - Extract events');
 [~, CueEvents] = cnbiproc_get_event(CueTypeId, DataLength, events.POS, events.TYP, events.DUR);
 [~, CFbEvents] = cnbiproc_get_event(CFbTypeId, DataLength, events.POS, events.TYP, events.DUR);
 [~, FixEvents] = cnbiproc_get_event(FixTypeId, DataLength, events.POS, events.TYP, events.DUR);
 
 %% Compute ERD/ERS for each trial
+cnbiutil_bdisp('[proc] - Compute ERSP for each trial');
 
 TrialSize = TrialPeriod/settings.spectrogram.wshift;            % <- (TrialPeriod*settings.data.samplerate)/(settings.spectrogram.wshift*settings.data.samplerate)
 FreqGrid  = settings.spectrogram.freqgrid;
@@ -52,8 +53,6 @@ Ck   = zeros(NumTrials, 1);
 Rk   = zeros(NumTrials, 1);
 Mk   = zeros(NumTrials, 1);
 Dk   = zeros(NumTrials, 1);
-
-cnbiutil_bdisp('[proc] - Compute ERSP for each trial');
 
 for trId = 1:NumTrials
     cnbiutil_disp_progress(trId, NumTrials, '    ');
