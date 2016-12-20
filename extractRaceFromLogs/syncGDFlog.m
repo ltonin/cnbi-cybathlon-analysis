@@ -1,4 +1,9 @@
-function [] = syncGDFlog(SubID, GDFSesPath, LogFilePath)
+function [] = syncGDFlog(SubID, GDFSesPath, LogFilePath, TargetPath)
+
+if nargin == 3
+    TargetPath = [GDFSesPath '/' SubID '_RaceMat/'];
+end
+TargetPath = regexprep(TargetPath, '//+', '/');
 
 % Add biosig
 addpath(genpath('~/Git/cnbi-smrtrain/toolboxes/biosig/'));
@@ -88,7 +93,7 @@ for g=1:length(GameStartInd)
     thisSesFold = [GDFSesPath '/' SubID '_' thisGDate{1}];
     if(exist(thisSesFold,'dir')==7)
         % Candidate runs
-        thisCandRuns = dir([thisSesFold '/' SubID '.' thisGDate{1} '.*.online.mi.mi_bhbf.gdf']);
+        thisCandRuns = dir([thisSesFold '/' SubID '.' thisGDate{1} '.*.race.mi.mi_bhbf*.gdf']);
         if(isempty(thisCandRuns))
             disp('There are no game runs in this session. Skipping game');
             continue;
@@ -392,7 +397,12 @@ for g=1:length(GameStartInd)
                 Race.GameEndInd = GameEndInd;
                 % Save the Race output
                 SessionRaceCounter = SessionRaceCounter + 1;
-                save([GDFSesPath '/RaceMat/' Race.GDFFile(1:end-4) '.race' num2str(SessionRaceCounter)  '.mat'  ],'Race');
+                
+                % Creating folder if does not exist
+                % 20161220 - ltonin
+                [~, savepath] = cnbiutil_mkdir(TargetPath);
+                
+                save([savepath '/' Race.GDFFile(1:end-4) '.race' num2str(SessionRaceCounter)  '.mat'  ],'Race');
                 clear Race data header thisGLevelInt tmpAllPOS tmpAllTYP thisTrigPOS thisTrigTYP IndUseful
                 fclose all;
             end        
