@@ -18,7 +18,7 @@ pshift     = 0.25;
 wshift     = 0.0625;                
 selfreqs   = 4:2:48;
 selchans   = 1:16;                  % <-- Needed for the 2-amplifiers setup
-load('lapmask_16ch.mat');           % <-- To be checked if it is the correct one
+load('lapmask16.mat');              % <-- To be checked if it is the correct one
 
 %% Get datafiles
 [Files, NumFiles] = cnbiutil_getdata(datapath, subject, pattern, extension);
