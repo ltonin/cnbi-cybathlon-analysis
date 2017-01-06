@@ -93,7 +93,8 @@ for g=1:length(GameStartInd)
     thisSesFold = [GDFSesPath '/' SubID '_' thisGDate{1}];
     if(exist(thisSesFold,'dir')==7)
         % Candidate runs
-        thisCandRuns = dir([thisSesFold '/' SubID '.' thisGDate{1} '.*.race.mi.mi_bhbf*.gdf']);
+        %thisCandRuns = dir([thisSesFold '/' SubID '.' thisGDate{1} '.*.race.mi.mi_bhbf*.gdf']);
+	thisCandRuns = dir([thisSesFold '/' SubID '.' thisGDate{1} '.*.online.mi.mi_bhbf*.gdf']);
         if(isempty(thisCandRuns))
             disp('There are no game runs in this session. Skipping game');
             continue;
