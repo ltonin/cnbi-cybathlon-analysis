@@ -1,76 +1,69 @@
-clearvars; clc;
+clearvars; clc; 
 
 subject = 'AN14VE';
 
 pattern     = '.mi.';
-modality    = 'online';
+modality    = 'race';
 
 experiment  = 'cybathlon';
 datapath    = [pwd '/analysis/'];
 figuredir  = '/figures/';
 
-CueTypeId = [769 770 771 773 774 775 783];
-CueTypeLb = {'LeftHand', 'RightHand', 'BothFeet', 'BothHands', 'Boh1', 'Boh2', 'Rest'};
-
-CFbTypeId = 781;
-CFbTypeLb = {'Continous Feedback'};
-
-FixTypeId = 786;
-FixTypeLb = {'Fixation'};
+PadTypeId = [768 771 773 783];
+PadTypeLb = {'Slide', 'Jump', 'Speed', 'Rest'};
 
 SelectedClassId = [771 773];
 SelectedClassLb = {'BothFeet', 'BothHands'};
 NumClasses = length(SelectedClassId);
+
+SelFreqs = 4:2:32;
+
 
 %% Get datafiles
 [Files, NumFiles] = cnbiutil_getfile(datapath, '.mat', [subject '*' modality '*' pattern]);
 
 %% Concatenate data
 cnbiutil_bdisp(['[io] - Import psd datafiles (' modality ')']);
-[F, events, labels, settings] = cnbiutil_concatenate_data(Files);
+[U, events, labels, settings] = cnbiutil_concatenate_data(Files);
+
+[FreqGrid, SelFreqIds] = intersect(settings.spectrogram.freqgrid, SelFreqs);
+F = log(U(:, SelFreqIds, :));
+
 DataLength  = size(F, 1);
 NumFreqs = size(F, 2);
 NumChans = size(F, 3);
 
+Dk = labels.Dk;
+Days    = unique(Dk);
+NumDays = length(Days);
+
+Mk = labels.Mk;
 
 %% Extract events
 cnbiutil_bdisp('[proc] - Extract events');
-[~, CueEvents] = cnbiproc_get_event(CueTypeId, DataLength, events.POS, events.TYP, events.DUR);
-[~, CFbEvents] = cnbiproc_get_event(CFbTypeId, DataLength, events.POS, events.TYP, events.DUR);
-
-NumTrials = length(CFbEvents.POS);
-
-%% Labeling data
-
-TrialCls = zeros(DataLength, 1);
-TrialRun = zeros(DataLength, 1);
-TrialDay = zeros(DataLength, 1);
-for trId = 1:NumTrials
-   cstart = CFbEvents.POS(trId);
-   cstop  = cstart + CFbEvents.DUR(trId) - 1;
-   cclass = CueEvents.TYP(trId);
-   
-   TrialCls(cstart:cstop) = cclass;
-end
-Days    = unique(labels.Dk);
-NumDays = length(Days);
+[TrialLb, TrialEvents] = cnbiproc_get_event(PadTypeId, DataLength, events.POS, events.TYP, events.DUR);
+[EyeLb, EyeEvents] = cnbiproc_get_event(267, DataLength, events.POS, events.TYP, events.DUR);
+ArtifactFree = EyeLb == 0;
 
 %% Selecting classes
-Ck = zeros(length(TrialCls), 1);
+Ck = zeros(DataLength, 1);
 for cId = 1:NumClasses
-    Ck(TrialCls == SelectedClassId(cId)) = SelectedClassId(cId);
+    Ck(TrialLb == SelectedClassId(cId)) = SelectedClassId(cId);
 end
 
+%% Generic condition
+GenericCondition = Ck > 0 & ArtifactFree;
+
 %% Compute the overall discriminancy
-NSigma = 3;
-discrovl = cnbiproc_fisher(F(Ck > 0, :, :), Ck(Ck > 0), NSigma);
+NSigma = 5;
+discrovl = cnbiproc_fisher(F(GenericCondition, :, :), Ck(GenericCondition), NSigma);
 
 %% Compute discriminancy per day
 
 discrday = [];
 discrdlb = [];
 for dId = 1:NumDays
-    cindex = labels.Dk == Days(dId) & Ck > 0;
+    cindex = labels.Dk == Days(dId) & GenericCondition;
     
     if length(unique(Ck(cindex))) == 2
         discrday = cat(2, discrday, cnbiproc_fisher(F(cindex, :, :), Ck(cindex), NSigma));
@@ -85,10 +78,10 @@ fig1 = figure;
 cnbifig_set_position(fig1, 'All');
 
 AlphaBand = 8:12;
-BetaBand  = 14:32;
+BetaBand  = 14:30;
 
-[~, AlphaBandId] = intersect(settings.spectrogram.freqgrid, AlphaBand);
-[~, BetaBandId]  = intersect(settings.spectrogram.freqgrid, BetaBand);
+[~, AlphaBandId] = intersect(FreqGrid, AlphaBand);
+[~, BetaBandId]  = intersect(FreqGrid, BetaBand);
 
 NumRows = 3;
 NumCols = size(discrday, 2);
@@ -97,7 +90,7 @@ NumCols = size(discrday, 2);
 for dId = 1:size(discrday, 2)
     subplot(NumRows, NumCols, dId);
     cdata = reshape(discrday(:, dId), [NumFreqs NumChans]);
-    imagesc(settings.spectrogram.freqgrid, 1:NumChans, cdata');
+    imagesc(FreqGrid, 1:NumChans, cdata');
     
     if dId == 1
         ylabel('Channel');
@@ -113,7 +106,7 @@ for dId = 1:size(discrday, 2)
     cdata = reshape(discrday(:, dId), [NumFreqs NumChans]);
     
     tdata = convChans(mean(cdata(AlphaBandId, :), 1));
-    topoplot(tdata, chanlocs, 'headrad', 'rim', 'maplimits', [0 0.2]);
+    topoplot(tdata, chanlocs, 'headrad', 'rim', 'maplimits', [0 0.3]);
     axis image;
     
     if dId == size(discrday, 2)
@@ -127,7 +120,7 @@ for dId = 1:size(discrday, 2)
     cdata = reshape(discrday(:, dId), [NumFreqs NumChans]);
     
     tdata = convChans(mean(cdata(BetaBandId, :), 1));
-    topoplot(tdata, chanlocs, 'headrad', 'rim', 'maplimits', [0 0.2]);
+    topoplot(tdata, chanlocs, 'headrad', 'rim', 'maplimits', [0 0.3]);
     axis image;
     title('');
     if dId == size(discrday, 2)

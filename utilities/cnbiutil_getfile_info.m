@@ -48,7 +48,7 @@ function info = cnbiutil_getfile_info(filename)
     info.taskset    = fields{6};
     info.extra      = '';
     if length(fields) == 7
-        info.extra      = fields{7};
+        info.extra      = fields(7);
     elseif length(fields) > 7
         info.extra = fields(7:length(fields));
     end
