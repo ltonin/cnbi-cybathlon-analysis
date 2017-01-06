@@ -2,8 +2,8 @@ clearvars; clc;
 
 subject = 'AN14VE';
 
-identifiers = {'.offline.mi.', '.gdf'};
-% identifiers = {'.online.mi.',  '.gdf'};
+% identifiers = {'.offline.mi.', '.gdf'};
+identifiers = {'.online.mi.',  '.gdf'};
 % identifiers = {'.race.mi.',    '.mat'};
 
 pattern     = identifiers{1};
@@ -18,7 +18,7 @@ pshift     = 0.25;
 wshift     = 0.0625;                
 selfreqs   = 4:2:48;
 selchans   = 1:16;                  % <-- Needed for the 2-amplifiers setup
-load('lapmask16.mat');              % <-- To be checked if it is the correct one
+load('extra/laplacian16.mat');              % <-- To be checked if it is the correct one
 
 %% Get datafiles
 [Files, NumFiles] = cnbiutil_getdata(datapath, subject, pattern, extension);
@@ -63,7 +63,7 @@ for fId = 1:NumFiles
     s_dc = s-repmat(mean(s),size(s,1),1);
     
     % Compute Spatial filter
-    s_lap = s_dc*lapmask;
+    s_lap = s_dc*lap;
     
     % Compute spectrogram
     [psd, freqgrid] = cnbiproc_spectrogram(s_lap, wlength, wshift, pshift, h.SampleRate);
@@ -82,7 +82,7 @@ for fId = 1:NumFiles
     settings.data.nsamples          = size(s, 1);
     settings.data.nchannels         = size(s, 2);
     settings.data.samplerate        = h.SampleRate;
-    settings.spatial.laplacian      = lapmask;
+    settings.spatial.laplacian      = lap;
     settings.spectrogram.wlength    = wlength;
     settings.spectrogram.wshift     = wshift;
     settings.spectrogram.pshift     = pshift;

@@ -87,5 +87,7 @@ function [evtvec, evtstr] = cnbiproc_get_event(evt, nsamples, POS, TYP, DUR, OFF
         evtstr.TYP(eId) = ctyp;
         evtstr.DUR(eId) = length(cstart:cstop);
     end
+    
+    evtvec = evtvec(1:nsamples);
 
 end

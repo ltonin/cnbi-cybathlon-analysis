@@ -14,6 +14,8 @@ function [F, events, labels, settings] = cnbiutil_concatenate_data(filepaths)
 % Output:
 %   - F                 Feature matrix (windows x frequencies x channels)
 %   - events            Structure with TYP, POS and DUR field
+%   - events.extra      Structure with extra event in gdf-like format 
+%                       (filled only for race runs)
 %   - labels            Structure with Mk (modality), Rk (run), Rl(runlabel), Dk (day) and
 %                       Dl (daylabel) fields. 
 %                       Mk, Rk and Dk size: (windows x 1)
@@ -23,9 +25,13 @@ function [F, events, labels, settings] = cnbiutil_concatenate_data(filepaths)
     numfiles = length(filepaths);
     
     F     = [];
-    TYP   = [];
-    POS   = [];
-    DUR   = [];
+    TYP  = []; POS  = []; DUR  = [];
+    tTYP = []; tPOS = []; tDUR = [];
+    pTYP = []; pPOS = []; pDUR = [];
+    bTYP = []; bPOS = []; bDUR = [];
+    cTYP = []; cPOS = []; cDUR = [];
+    eTYP = []; ePOS = []; eDUR = [];
+    rTYP = []; rPOS = []; rDUR = [];
     freqs = [];
     settings = [];
     
@@ -52,7 +58,11 @@ function [F, events, labels, settings] = cnbiutil_concatenate_data(filepaths)
                 modality = 0;
             case 'online'
                 modality = 1;
-            % TO BE ADDED: race, faceoff, cybathlon
+            case 'race'
+                modality = 2;
+                if strcmp(cinfo.extra{1}, 'competition')
+                    modality = 3;
+                end
             otherwise
                 error('chk:mod', ['[' mfilename '] Unknown modality']);
         end
@@ -71,11 +81,39 @@ function [F, events, labels, settings] = cnbiutil_concatenate_data(filepaths)
         Rl{fId} = cinfo.extra;
         
         % Concatenate events
-        cevents = cdata.events;
+        if modality == 2    % race runs
+            [cevents, cevtextra] = cnbiproc_extract_event_race(cdata.events);
+            tTYP = cat(1, TYP, cevtextra.trl.TYP);
+            tPOS = cat(1, POS, cevtextra.trl.POS + size(F, 1));
+            tDUR = cat(1, DUR, cevtextra.trl.DUR);
+
+            pTYP = cat(1, TYP, cevtextra.pad.TYP);
+            pPOS = cat(1, POS, cevtextra.pad.POS + size(F, 1));
+            pDUR = cat(1, DUR, cevtextra.pad.DUR);
+
+            bTYP = cat(1, TYP, cevtextra.bci.TYP);
+            bPOS = cat(1, POS, cevtextra.bci.POS + size(F, 1));
+            bDUR = cat(1, DUR, cevtextra.bci.DUR);
+
+            cTYP = cat(1, TYP, cevtextra.cmd.TYP);
+            cPOS = cat(1, POS, cevtextra.cmd.POS + size(F, 1));
+            cDUR = cat(1, DUR, cevtextra.cmd.DUR);
+
+            eTYP = cat(1, TYP, cevtextra.eye.TYP);
+            ePOS = cat(1, POS, cevtextra.eye.POS + size(F, 1));
+            eDUR = cat(1, DUR, cevtextra.eye.DUR);
+
+            rTYP = cat(1, TYP, cevtextra.race.TYP);
+            rPOS = cat(1, POS, cevtextra.race.POS + size(F, 1));
+            rDUR = cat(1, DUR, cevtextra.race.DUR);
+        else
+            cevents = cdata.events;
+        end
+        
         TYP = cat(1, TYP, cevents.TYP);
         DUR = cat(1, DUR, cevents.DUR);
         POS = cat(1, POS, cevents.POS + size(F, 1));
-        
+      
         % Concatenate features along 1st dimension (samples)
         F = cat(1, F, cdata.psd);
         
@@ -112,6 +150,30 @@ function [F, events, labels, settings] = cnbiutil_concatenate_data(filepaths)
     events.TYP = TYP;
     events.POS = POS;
     events.DUR = DUR;
+    
+    events.extra.trl.TYP = tTYP;
+    events.extra.trl.POS = tPOS;
+    events.extra.trl.DUR = tDUR;
+    
+    events.extra.pad.TYP = pTYP;
+    events.extra.pad.POS = pPOS;
+    events.extra.pad.DUR = pDUR;
+    
+    events.extra.bci.TYP = bTYP;
+    events.extra.bci.POS = bPOS;
+    events.extra.bci.DUR = bDUR;
+    
+    events.extra.cmd.TYP = cTYP;
+    events.extra.cmd.POS = cPOS;
+    events.extra.cmd.DUR = cDUR;
+    
+    events.extra.eye.TYP = eTYP;
+    events.extra.eye.POS = ePOS;
+    events.extra.eye.DUR = eDUR;
+    
+    events.extra.race.TYP = rTYP;
+    events.extra.race.POS = rPOS;
+    events.extra.race.DUR = rDUR;
     
     labels.Rk  = Rk;
     labels.Rl  = Rl;
