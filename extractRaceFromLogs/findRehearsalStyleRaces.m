@@ -1,5 +1,13 @@
 function findRehearsalStyleRaces(SubID, GDFSesPath, TargetPath)
 
+if nargin == 2
+    TargetPath = [GDFSesPath '/' SubID '_RaceMat/'];
+end
+TargetPath = regexprep(TargetPath, '//+', '/');
+
+% Add this
+addpath(genpath('/home/sperdikis/Git/cnbi-cybathlon-analysis/'));
+
 % Add biosig
 addpath(genpath('~/Git/cnbi-smrtrain/toolboxes/biosig/'));
 
@@ -40,6 +48,7 @@ for ses=1:length(SesFolders)
             [data header] = sload([GDFSesPath '/' SesFolders(ses).name '/' Runs(run).name]);
         catch
             disp(['Skipping run ' Runs(run).name ' , GDF file is corrupted!']);
+            continue;
         end
         
         % Check if there are triggers
@@ -110,7 +119,7 @@ for ses=1:length(SesFolders)
             Ind783Last = find(newTYP == 783);
             Ind783Last = Ind783Last(end);
             CommandsAfterPad = (newPOS(Ind783Last+1:end) - newPOS(Ind783Last))/512;
-            TimeOnLastPad = decideRaceEnd(CommandsAfterPad);
+            TimeOnLastPad = decideRaceEnd(CommandsAfterPad)
             POS666 = newPOS(Ind783Last) + round(TimeOnLastPad*512);
             newPOS = [newPOS ; POS666];
             newTYP = [newTYP ; 666];
@@ -180,6 +189,19 @@ for ses=1:length(SesFolders)
             Race.GameStartInd = NaN;
             Race.GameEndInd = NaN;
             
+            if(isequal(ismember([769 770 771 773], lvlInt),[0 1 1 0]))
+                Taskset = 'rhbf';
+            elseif(isequal(ismember([769 770 771 773], lvlInt),[1 1 0 0]))
+                Taskset = 'rhlh';
+            elseif(isequal(ismember([769 770 771 773], lvlInt),[1 1 1 0]))
+                Taskset = 'rhlhbf';
+            elseif(isequal(ismember([769 770 771 773], lvlInt),[0 0 1 1]))
+                Taskset = 'bhbf';
+            else
+                disp('Weird Taskset, skipping!');
+                continue;
+            end
+            
             % Save the Race output
             SessionRaceCounter = SessionRaceCounter + 1;
 
@@ -187,12 +209,11 @@ for ses=1:length(SesFolders)
             % 20161220 - ltonin
             [~, savepath] = cnbiutil_mkdir(TargetPath);
 
-            save([savepath '/' Race.GDFFile(1:end-4) '.race' num2str(SessionRaceCounter)  '.mat'  ],'Race');
-            clear Race data header newPOS newTYP newdata FirstPad* LastPad* MiddlePad* Ind*
+            RunTimeStr = Runs(run).name(RunDots(3)+1:RunDots(4)-1);
+            save([savepath '/' SubID '.' SessionDate{1} '.' RunTimeStr '.online.mi.mi_' Taskset '.race' num2str(SessionRaceCounter)  '.mat'],'Race');
+            clear Race newPOS newTYP newdata
             fclose all;            
         end
         
     end
-
-
 end
