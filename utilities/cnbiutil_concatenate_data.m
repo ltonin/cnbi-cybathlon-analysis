@@ -45,7 +45,7 @@ function [F, events, labels, settings] = cnbiutil_concatenate_data(filepaths)
     nday = 0;
     fprintf('[io] - Concatenate psd data and events:\n');
     for fId = 1:numfiles
-        util_disp_progress(fId, numfiles, '        ');
+        cnbiutil_disp_progress(fId, numfiles, '        ');
         cfilepath = filepaths{fId};
         cdata = load(cfilepath);
         

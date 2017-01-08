@@ -115,6 +115,9 @@ function [evt, extra] = cnbiproc_extract_event_race(events, PadId, ArtId, EndId)
     if(isempty(eyefreeId) == false)
         cmdtyp = cmdtyp_o(eyefreeId);
         cmdpos = cmdpos_o(eyefreeId);
+    else
+        cmdtyp = cmdtyp_o;
+        cmdpos = cmdpos_o;        
     end
     
     % Computing trial duration
@@ -138,9 +141,12 @@ function [evt, extra] = cnbiproc_extract_event_race(events, PadId, ArtId, EndId)
         ctrdur = cpaddur;
         
         
-        
+        try
         % Find types and positions of commands delivered in the current pad interval
         cindex = find(cmdpos >= cpadpos & cmdpos < (cpadpos + cpaddur)); 
+        catch
+        disp('a');    
+        end
         if (isempty(cindex) == false)
             ccmdtyp = cmdtyp(cindex);
             ccmdpos = cmdpos(cindex);

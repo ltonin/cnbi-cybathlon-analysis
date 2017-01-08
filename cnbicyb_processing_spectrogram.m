@@ -1,15 +1,16 @@
 clearvars; clc;
 
-subject = 'AN14VE';
+subject = 'AN14VE_RaceMat';
 
 % identifiers = {'.offline.mi.', '.gdf'};
-identifiers = {'.online.mi.',  '.gdf'};
-% identifiers = {'.race.mi.',    '.mat'};
+% identifiers = {'.online.mi.',  '.gdf'};
+ identifiers = {'.race.mi.',    '.mat'};
 
 pattern     = identifiers{1};
 extension   = identifiers{2};
 experiment  = 'cybathlon';
-datapath    = ['/mnt/data/Research/' experiment '/' subject '/'];
+%datapath    = ['/mnt/data/Research/' experiment '/' subject '/'];
+datapath    = ['/home/sperdikis/Desktop/tst/AN14VE'];
 savedir     = '/analysis/';
 
 %% Processing parameters
@@ -21,6 +22,7 @@ selchans   = 1:16;                  % <-- Needed for the 2-amplifiers setup
 load('extra/laplacian16.mat');              % <-- To be checked if it is the correct one
 
 %% Get datafiles
+%[Files, NumFiles] = cnbiutil_getdata(datapath, subject, pattern, extension);
 [Files, NumFiles] = cnbiutil_getdata(datapath, subject, pattern, extension);
 
 %% Create/Check for savepath

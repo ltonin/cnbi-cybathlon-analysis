@@ -208,9 +208,12 @@ for ses=1:length(SesFolders)
             % Creating folder if does not exist
             % 20161220 - ltonin
             [~, savepath] = cnbiutil_mkdir(TargetPath);
-
-            RunTimeStr = Runs(run).name(RunDots(3)+1:RunDots(4)-1);
-            save([savepath '/' SubID '.' SessionDate{1} '.' RunTimeStr '.online.mi.mi_' Taskset '.race' num2str(SessionRaceCounter)  '.mat'],'Race');
+            tmpName = Race.GDFFile(1:end-4);
+            IndOnline = strfind(tmpName,'cybathlon');
+            tmpName(IndOnline:IndOnline+9)=[];
+            tmpName = tmpName(1:22);
+            tmpName = [tmpName '.race.mi.mi_' Taskset];
+            save([savepath '/' tmpName '.race' num2str(SessionRaceCounter)  '.mat'  ],'Race');
             clear Race newPOS newTYP newdata
             fclose all;            
         end

@@ -121,7 +121,7 @@ for g=1:length(GameStartInd)
     % 20161220 - ltonin
     [~, savepath] = cnbiutil_mkdir(TargetPath);
 
-    save([savepath '/' SubID '.' thisGDate{1} '.' thisGTime{1} '.online.mi.mi_bhbf.racetime' num2str(SessionRaceCounter)  '.mat'  ],'Race');
+    save([savepath '/' SubID '.' thisGDate{1} '.' thisGTime{1} '.race.mi.mi_bhbf.race' num2str(SessionRaceCounter)  '.mat'  ],'Race');
     clear Race
     fclose all;         
 end
