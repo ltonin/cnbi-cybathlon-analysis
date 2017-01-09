@@ -1,6 +1,6 @@
 clearvars; clc; 
 
-subject = 'AN14VE';
+subject = 'MA25VE';
 
 pattern     = '.mi.';
 modality    = 'race';
@@ -28,6 +28,7 @@ cnbiutil_bdisp(['[io] - Import psd datafiles (' modality ')']);
 
 [FreqGrid, SelFreqIds] = intersect(settings.spectrogram.freqgrid, SelFreqs);
 F = log(U(:, SelFreqIds, :));
+% F = U(:, SelFreqIds, :);
 
 DataLength  = size(F, 1);
 NumFreqs = size(F, 2);
@@ -55,7 +56,7 @@ end
 GenericCondition = Ck > 0 & ArtifactFree;
 
 %% Compute the overall discriminancy
-NSigma = 5;
+NSigma = 3;
 discrovl = cnbiproc_fisher(F(GenericCondition, :, :), Ck(GenericCondition), NSigma);
 
 %% Compute discriminancy per day
