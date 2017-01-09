@@ -1,4 +1,4 @@
-function RaceTimeFromLogOnly(SubID, DesiredSessionDate, player, LogFilePath, TargetPath)
+function FRT = RaceTimeFromLogOnly(SubID, DesiredSessionDate, player, LogFilePath, TargetPath)
 
 if nargin == 3
     TargetPath = [GDFSesPath '/' SubID '_RaceMat/'];
@@ -43,6 +43,8 @@ StartEndIndVal(find(ismember(StartEndInd,GameStartInd)))=1;
 StartEndIndVal(find(ismember(StartEndInd,GameEndInd)))=2;
 GameStartInd  = StartEndInd(strfind(StartEndIndVal,[1 2]));
 GameEndInd  = StartEndInd(strfind(StartEndIndVal,[1 2])+1);
+
+FRT = [];
 
 GamesFound = 0;
 PrevSessionDate = '';
@@ -92,8 +94,12 @@ for g=1:length(GameStartInd)
     % Find the player row
     PlInd = find(strcmp(ResData{2},['"player' num2str(player) '"']));
     % Race time
-    RT = ResData{5}(PlInd);RT = str2num(RT{1}(2:end-1))
-
+    try
+        RT = ResData{5}(PlInd);RT = str2num(RT{1}(2:end-1));
+    catch
+        RT = NaN;
+    end
+    FRT = [FRT; RT];
     Race.RaceTime = RT;
     Race.data = NaN;
     Race.EVENT.POS = NaN;
