@@ -43,7 +43,7 @@ function [evt, extra] = cnbiproc_extract_event_race(events, PadId, ArtId, EndId)
 
 
     % Default input parameters
-    DefaultPadId = [768 771 773 783];
+    DefaultPadId = [768 769 770 771 773 783];
     DefaultArtId = [267 268];
     DefaultEndId = 666;
     
