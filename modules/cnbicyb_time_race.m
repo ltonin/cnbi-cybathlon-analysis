@@ -1,13 +1,15 @@
 clearvars; clc; 
 
-subject = 'AN14VE';
+%subject = 'AN14VE';
+subject = 'MA25VE';
 
 pattern     = '.mi.';
 modality    = 'race';
 
 experiment  = 'cybathlon';
 %datapath    = [pwd '/analysis/'];
-datapath    = '/home/sperdikis/Desktop/tst/AN14VE/AN14VE_RaceMat/';
+%datapath    = '/home/sperdikis/Desktop/tst/AN14VE/AN14VE_RaceMat/';
+datapath    = '/home/sperdikis/Desktop/tst/MA25VE/MA25VE_RaceMat/';
 figuredir  = '/figures/';
 
 rejectlim = 240; % Reject races above this limit, 

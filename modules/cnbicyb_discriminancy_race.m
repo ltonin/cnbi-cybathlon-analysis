@@ -9,10 +9,10 @@ experiment  = 'cybathlon';
 datapath    = [pwd '/analysis/'];
 figuredir  = '/figures/';
 
-PadTypeId = [768 771 773 783];
-PadTypeLb = {'Slide', 'Jump', 'Speed', 'Rest'};
+PadTypeId = [768 769 770 771 773 783];
+PadTypeLb = {'Slide', 'Slide', 'Speed', 'Jump', 'Speed', 'Rest'};
 
-SelectedClassId = [771 773];
+SelectedClassId = [771 783];
 SelectedClassLb = {'BothFeet', 'BothHands'};
 NumClasses = length(SelectedClassId);
 
