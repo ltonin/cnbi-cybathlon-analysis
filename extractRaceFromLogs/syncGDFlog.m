@@ -402,9 +402,6 @@ for g=1:length(GameStartInd)
                 % 20161220 - ltonin
                 [~, savepath] = cnbiutil_mkdir(TargetPath);
                 tmpName = Race.GDFFile(1:end-4);
-                IndOnline = strfind(tmpName,'online');
-                tmpName(IndOnline:IndOnline+5)=[];
-                tmpName = [tmpName(1:IndOnline-1) 'race' tmpName(IndOnline:end)];
                 save([savepath '/' tmpName '.race' num2str(SessionRaceCounter)  '.mat'  ],'Race');
                 clear Race data header thisGLevelInt tmpAllPOS tmpAllTYP thisTrigPOS thisTrigTYP IndUseful
                 fclose all;
