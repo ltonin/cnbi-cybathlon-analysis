@@ -1,6 +1,6 @@
 clearvars; clc;
 
-subject = 'AN14VE_RaceMat';
+subject = 'AN14VE';
 
 % identifiers = {'.offline.mi.', '.gdf'};
 % identifiers = {'.online.mi.',  '.gdf'};
@@ -9,8 +9,8 @@ subject = 'AN14VE_RaceMat';
 pattern     = identifiers{1};
 extension   = identifiers{2};
 experiment  = 'cybathlon';
-%datapath    = ['/mnt/data/Research/' experiment '/' subject '/'];
-datapath    = ['/home/sperdikis/Desktop/tst/AN14VE'];
+datapath    = ['/mnt/data/Research/' experiment '/' subject '/'];
+% datapath    = ['/home/sperdikis/Desktop/tst/AN14VE'];
 savedir     = '/analysis/';
 
 %% Processing parameters
@@ -35,6 +35,9 @@ for fId = 1:NumFiles
     [~, ~, cextension] = fileparts(cfilename);
     cnbiutil_bdisp(['[io] - Loading file ' num2str(fId) '/' num2str(NumFiles)]);
     disp(['       File: ' cfilename]);
+    
+    % Get information from filename
+    cinfo = cnbiutil_getfile_info(cfilename);
     
     % Importing gdf file
     try
@@ -78,6 +81,17 @@ for fId = 1:NumFiles
     events.TYP = h.EVENT.TYP;
     events.POS = floor(h.EVENT.POS/(wshift*h.SampleRate)) + 1;
     events.DUR = floor(h.EVENT.DUR/(wshift*h.SampleRate)) + 1;
+    
+    % Decided to stop recovering this info (with Simis)
+%     % Get classifiers from log file 
+%     if strcmpi(cinfo.modality, 'online') || strcmpi(cinfo.modality, 'race')
+%         clogfile = [datapath '/' cinfo.subject '_' cinfo.date '/' cinfo.subject '.' cinfo.date '.log'];
+%         [~, cfile, cext] = fileparts(cfilename);
+%         ctarget = [cfile cext];
+%         clogstr = cnbiutil_read_logfile(clogfile, ctarget(1:20));
+%        keyboard 
+%     end
+
     
     % Create settings structure
     settings.data.filename          = cfilename;
