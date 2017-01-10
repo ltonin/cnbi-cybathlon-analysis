@@ -1,6 +1,6 @@
 clearvars; clc; 
 
-subject = 'AN14VE';
+subject = 'MA25VE';
 
 pattern     = '.mi.';
 modality    = 'race';
@@ -12,7 +12,7 @@ figuredir  = '/figures/';
 PadTypeId = [768 769 770 771 773 783];
 PadTypeLb = {'Slide', 'Slide', 'Speed', 'Jump', 'Speed', 'Rest'};
 
-SelectedClassId = [771 783];
+SelectedClassId = [773 783];
 SelectedClassLb = {'BothFeet', 'BothHands'};
 NumClasses = length(SelectedClassId);
 
@@ -90,7 +90,7 @@ NumCols = size(discrday, 2);
 for dId = 1:size(discrday, 2)
     subplot(NumRows, NumCols, dId);
     cdata = reshape(discrday(:, dId), [NumFreqs NumChans]);
-    imagesc(FreqGrid, 1:NumChans, cdata');
+    imagesc(FreqGrid, 1:NumChans, cdata',[0 0.3]);
     
     if dId == 1
         ylabel('Channel');

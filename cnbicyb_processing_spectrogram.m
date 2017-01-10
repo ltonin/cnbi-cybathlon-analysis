@@ -1,6 +1,6 @@
 clearvars; clc;
 
-subject = 'AN14VE_RaceMat';
+subject = 'MA25VE_RaceMat';
 
 % identifiers = {'.offline.mi.', '.gdf'};
 % identifiers = {'.online.mi.',  '.gdf'};
@@ -10,7 +10,8 @@ pattern     = identifiers{1};
 extension   = identifiers{2};
 experiment  = 'cybathlon';
 %datapath    = ['/mnt/data/Research/' experiment '/' subject '/'];
-datapath    = ['/home/sperdikis/Desktop/tst/AN14VE'];
+%datapath    = ['/home/sperdikis/Desktop/tst/AN14VE'];
+datapath    = ['/home/sperdikis/Desktop/tst/MA25VE'];
 savedir     = '/analysis/';
 
 %% Processing parameters
@@ -43,6 +44,10 @@ for fId = 1:NumFiles
         elseif(strcmp(cextension, '.mat'))
             cdata = load(cfilename);
             s = cdata.Race.data;
+            if(isnan(s))
+                cnbiutil_bdisp(['[io] - Corrupted file (data is NaN), skipping: ' cfilename]);
+                continue;
+            end
             h.EVENT = cdata.Race.EVENT;
             h.SampleRate = 512;
         else
