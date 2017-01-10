@@ -93,14 +93,7 @@ for g=1:length(GameStartInd)
     thisSesFold = [GDFSesPath '/' SubID '_' thisGDate{1}];
     if(exist(thisSesFold,'dir')==7)
         % Candidate runs
-        %thisCandRuns = dir([thisSesFold '/' SubID '.' thisGDate{1} '.*.race.mi.mi_bhbf*.gdf']);
-        % Here it is better to not rename the source file patterns from
-        % online to race, despite the unfortunate original nameing, as it is better to
-        % always leave source files intact. Anyway, these race "online"
-        % files are never used directly, therefore we can impose the race
-        % pattern on the output mat files that are used later on in our
-        % processing
-        thisCandRuns = dir([thisSesFold '/' SubID '.' thisGDate{1} '.*.online.mi.mi_bhbf*.gdf']);
+        thisCandRuns = dir([thisSesFold '/' SubID '.' thisGDate{1} '.*.race.mi.mi_bhbf*.gdf']);
         if(isempty(thisCandRuns))
             disp('There are no game runs in this session. Skipping game');
             continue;
