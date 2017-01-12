@@ -1,6 +1,6 @@
 clearvars; clc; 
 
-subject = 'MA25VE';
+subject = 'AN14VE';
 
 pattern     = '.mi.';
 modality    = 'race';
@@ -12,7 +12,7 @@ figuredir  = '/figures/';
 PadTypeId = [768 769 770 771 773 783];
 PadTypeLb = {'Slide', 'Slide', 'Speed', 'Jump', 'Speed', 'Rest'};
 
-SelectedClassId = [773 783];
+SelectedClassId = [773 771];
 SelectedClassLb = {'BothFeet', 'BothHands'};
 NumClasses = length(SelectedClassId);
 
@@ -56,7 +56,7 @@ end
 GenericCondition = Ck > 0 & ArtifactFree;
 
 %% Compute the overall discriminancy
-NSigma = 3;
+NSigma = [];
 discrovl = cnbiproc_fisher(F(GenericCondition, :, :), Ck(GenericCondition), NSigma);
 
 %% Compute discriminancy per day
@@ -91,12 +91,12 @@ NumCols = size(discrday, 2);
 for dId = 1:size(discrday, 2)
     subplot(NumRows, NumCols, dId);
     cdata = reshape(discrday(:, dId), [NumFreqs NumChans]);
-    imagesc(FreqGrid, 1:NumChans, cdata',[0 0.3]);
+    imagesc(FreqGrid, 1:NumChans, cdata',[0 1]);
     
     if dId == 1
         ylabel('Channel');
     end
-    xlabel('Frequency [Hz]');
+    xlabel('[Hz]');
     title(discrdlb(dId, :));
 
 end
