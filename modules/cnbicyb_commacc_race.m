@@ -1,6 +1,6 @@
 clearvars; clc; 
 
-subject = 'MA25VE';
+subject = 'AN14VE';
 
 pattern     = '.mi.';
 modality    = 'race';
@@ -11,10 +11,10 @@ figuredir  = '/figures/';
 
 PadTypeId = [768 769 770 771 773 783];
 PadTypeLb = {'Slide', 'Slide', 'Speed', 'Jump', 'Speed', 'Rest'};
+PadTypeInd = [3 3 1 2 1 4];
 
-SelectedClassId = [773 783];
-SelectedClassLb = {'BothFeet', 'BothHands'};
-NumClasses = length(SelectedClassId);
+CommTypeId = PadTypeId + hex2dec('6000');
+CommTypeLb = {'Slide', 'Slide', 'Speed', 'Jump', 'Speed', 'Rest'};
 
 %% Get datafiles
 [Files, NumFiles] = cnbiutil_getfile(datapath, '.mat', [subject '*' modality '*' pattern]);
@@ -34,35 +34,47 @@ Mk = labels.Mk;
 %% Extract pad events
 cnbiutil_bdisp('[proc] - Extract events');
 [TrialLb, TrialEvents] = cnbiproc_get_event(PadTypeId, DataLength, events.POS, events.TYP, events.DUR);
-[EyeLb, EyeEvents] = cnbiproc_get_event(267, DataLength, events.POS, events.TYP, events.DUR);
-ArtifactFree = EyeLb == 0;
-
-%% Selecting classes
-Ck = zeros(DataLength, 1);
-for cId = 1:NumClasses
-    Ck(TrialLb == SelectedClassId(cId)) = SelectedClassId(cId);
-end
-
-%% Generic condition
-GenericCondition = Ck > 0 & ArtifactFree;
 
 %% Extract command events
-SelectedCommId = [];
-for cId = 1:NumClasses
-    SelectedCommId(cId) = SelectedClassId(cId) + hex2dec('6000');
-end
 cnbiutil_bdisp('[proc] - Extract commands');
-[CommLb, CommEvents] = cnbiproc_get_event(SelectedCommId, DataLength, events.POS, events.TYP, events.DUR);
-
+[CommLb, CommEvents] = cnbiproc_get_event(CommTypeId, DataLength, events.POS, events.TYP, events.DUR);
 
 %% Compute the overall accuracies
-
+[TPFPPad, TPFPTask] = cnbiproc_commacc(CommLb, TrialEvents, PadTypeId, PadTypeLb, PadTypeInd);
 
 %% Compute accuracies per day
-
+SessionTrialEvents = [];
 for dId = 1:NumDays
-
+    KeepInd = [];
+    for tr=1:length(TrialEvents.DUR)
+        if(Dk(TrialEvents.POS(tr))==dId)
+            KeepInd = [KeepInd; tr];
+        end
+    end
+    thisSessionTrialEvents.POS = TrialEvents.POS(KeepInd);
+    thisSessionTrialEvents.TYP = TrialEvents.TYP(KeepInd);
+    thisSessionTrialEvents.DUR = TrialEvents.DUR(KeepInd);
+    [TPFPPadSes{dId}, TPFPTaskSes{dId}] = cnbiproc_commacc(CommLb, thisSessionTrialEvents, PadTypeId, PadTypeLb, PadTypeInd);
+    
+    for t=1:size(TPFPPad,1)
+        AccPad(t,dId) = TPFPPadSes{dId}(t,1);
+    end
+    for t=1:size(TPFPTask,1)
+        AccTask(t,dId) = TPFPTaskSes{dId}(t,1);
+    end    
 end
 
 
 %% Plotting
+fig1 = figure;
+cnbifig_set_position(fig1, 'All');
+plot(1:NumDays,AccPad(1,:),'c',1:NumDays,AccPad(2,:),'m',1:NumDays,AccPad(3,:),'y',1:NumDays,AccPad(4,:),'k');
+legend({'Speed','Jump','Slide','Rest'});
+xlabel('Race Session','FontSize',20,'LineWidth',3);
+ylabel('Command Accuracy (sec)','FontSize',20,'LineWidth',3);
+title(subject);
+axis([0 NumDays+1 0 109]);
+set(gca,'FontSize',20,'LineWidth',3);
+set(gca,'XTick',unique(Dk));
+set(gca,'XTickLabel',labels.Dl);
+xticklabel_rotate([],45,[])

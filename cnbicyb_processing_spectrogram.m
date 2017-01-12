@@ -1,14 +1,16 @@
 clearvars; clc;
 
-subject = 'AN14VE';
+subject = 'MA25VE';
+%subject = 'AN14VE';
 
-% identifiers = {'.*line.mi.', '.gdf'};
+%identifiers = {'.*line.mi.', '.gdf'};
 identifiers = {'.race.mi.',  '.mat'};
 
 pattern     = identifiers{1};
 extension   = identifiers{2};
 experiment  = 'cybathlon';
-datapath    = ['/mnt/data/Research/' experiment '/' subject '/'];
+%datapath    = ['/mnt/data/Research/' experiment '/' subject '/'];
+datapath    = ['~/Desktop/tst/' subject '/'];
 savedir     = '/analysis/';
 
 %% Processing parameters
