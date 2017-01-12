@@ -1,29 +1,18 @@
 clearvars; clc;
 
-<<<<<<< HEAD
 subject = 'AN14VE';
-=======
-subject = 'MA25VE_RaceMat';
->>>>>>> cfc0b6a393340f5e487f5eb7491897aa51cfe392
 
-% identifiers = {'.offline.mi.', '.gdf'};
-% identifiers = {'.online.mi.',  '.gdf'};
- identifiers = {'.race.mi.',    '.mat'};
+% identifiers = {'.*line.mi.', '.gdf'};
+identifiers = {'.race.mi.',  '.mat'};
 
 pattern     = identifiers{1};
 extension   = identifiers{2};
 experiment  = 'cybathlon';
-<<<<<<< HEAD
 datapath    = ['/mnt/data/Research/' experiment '/' subject '/'];
-% datapath    = ['/home/sperdikis/Desktop/tst/AN14VE'];
-=======
-%datapath    = ['/mnt/data/Research/' experiment '/' subject '/'];
-%datapath    = ['/home/sperdikis/Desktop/tst/AN14VE'];
-datapath    = ['/home/sperdikis/Desktop/tst/MA25VE'];
->>>>>>> cfc0b6a393340f5e487f5eb7491897aa51cfe392
 savedir     = '/analysis/';
 
 %% Processing parameters
+mlength    = 1;
 wlength    = 0.5;
 pshift     = 0.25;                  
 wshift     = 0.0625;                
@@ -31,8 +20,9 @@ selfreqs   = 4:2:48;
 selchans   = 1:16;                  % <-- Needed for the 2-amplifiers setup
 load('extra/laplacian16.mat');              % <-- To be checked if it is the correct one
 
+winconv = 'backward';               % Type of conversion for events from samples to psd windows
+
 %% Get datafiles
-%[Files, NumFiles] = cnbiutil_getdata(datapath, subject, pattern, extension);
 [Files, NumFiles] = cnbiutil_getdata(datapath, subject, pattern, extension);
 
 %% Create/Check for savepath
@@ -85,16 +75,47 @@ for fId = 1:NumFiles
     s_lap = s_dc*lap;
     
     % Compute spectrogram
-    [psd, freqgrid] = cnbiproc_spectrogram(s_lap, wlength, wshift, pshift, h.SampleRate);
+    [psd, freqgrid] = cnbiproc_spectrogram(s_lap, wlength, wshift, pshift, h.SampleRate, mlength);
     
     % Selecting desired frequencies
     [freqs, idfreqs] = intersect(freqgrid, selfreqs);
     psd = psd(:, idfreqs, :);
     
-    % Resample events
-    events.TYP = h.EVENT.TYP;
-    events.POS = floor(h.EVENT.POS/(wshift*h.SampleRate)) + 1;
-    events.DUR = floor(h.EVENT.DUR/(wshift*h.SampleRate)) + 1;
+    % If it is a race, then convert events to standard format (TYP, POS, DUR)
+    % and resampling events
+    cevents     = h.EVENT;
+    cextraevents = [];
+    
+    if strcmpi(cinfo.modality, 'race')
+        disp('       Converting EVENT table from race file');
+        [cevents, cextraevents] = cnbiproc_extract_event_race(h.EVENT);
+    end
+    
+    events.TYP = cevents.TYP;
+    events.POS = cnbiproc_pos2win(cevents.POS, wshift*h.SampleRate, winconv, mlength*h.SampleRate);
+    events.DUR = floor(cevents.DUR/(wshift*h.SampleRate)) + 1;
+    events.conversion = winconv;
+    
+    if isempty(cextraevents) == false
+        events.extra.trl.TYP  = cextraevents.trl.TYP;
+        events.extra.pad.TYP  = cextraevents.pad.TYP;
+        events.extra.bci.TYP  = cextraevents.bci.TYP;
+        events.extra.cmd.TYP  = cextraevents.cmd.TYP;
+        events.extra.eye.TYP  = cextraevents.eye.TYP;
+        events.extra.race.TYP = cextraevents.race.TYP;
+        events.extra.trl.POS  = cnbiproc_pos2win(cextraevents.trl.POS,  wshift*h.SampleRate, winconv, mlength*h.SampleRate);
+        events.extra.pad.POS  = cnbiproc_pos2win(cextraevents.pad.POS,  wshift*h.SampleRate, winconv, mlength*h.SampleRate);
+        events.extra.bci.POS  = cnbiproc_pos2win(cextraevents.bci.POS,  wshift*h.SampleRate, winconv, mlength*h.SampleRate);
+        events.extra.cmd.POS  = cnbiproc_pos2win(cextraevents.cmd.POS,  wshift*h.SampleRate, winconv, mlength*h.SampleRate);
+        events.extra.eye.POS  = cnbiproc_pos2win(cextraevents.eye.POS,  wshift*h.SampleRate, winconv, mlength*h.SampleRate);
+        events.extra.race.POS = cnbiproc_pos2win(cextraevents.race.POS, wshift*h.SampleRate, winconv, mlength*h.SampleRate);
+        events.extra.trl.DUR  = floor(cextraevents.trl.DUR/(wshift*h.SampleRate)) + 1;
+        events.extra.pad.DUR  = floor(cextraevents.pad.DUR/(wshift*h.SampleRate)) + 1;
+        events.extra.bci.DUR  = floor(cextraevents.bci.DUR/(wshift*h.SampleRate)) + 1;
+        events.extra.cmd.DUR  = floor(cextraevents.cmd.DUR/(wshift*h.SampleRate)) + 1;
+        events.extra.eye.DUR  = floor(cextraevents.eye.DUR/(wshift*h.SampleRate)) + 1;
+        events.extra.race.DUR = floor(cextraevents.race.DUR/(wshift*h.SampleRate)) + 1;
+    end
     
     % Decided to stop recovering this info (with Simis)
 %     % Get classifiers from log file 
@@ -105,7 +126,6 @@ for fId = 1:NumFiles
 %         clogstr = cnbiutil_read_logfile(clogfile, ctarget(1:20));
 %        keyboard 
 %     end
-
     
     % Create settings structure
     settings.data.filename          = cfilename;
