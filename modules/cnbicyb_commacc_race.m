@@ -28,6 +28,7 @@ DataLength  = size(U, 1);
 Dk = labels.Dk;
 Days    = unique(Dk);
 NumDays = length(Days);
+Dl = labels.Dl;
 
 Mk = labels.Mk;
 
@@ -76,5 +77,5 @@ title(subject);
 axis([0 NumDays+1 0 109]);
 set(gca,'FontSize',20,'LineWidth',3);
 set(gca,'XTick',unique(Dk));
-set(gca,'XTickLabel',labels.Dl);
+set(gca,'XTickLabel',Dl);
 xticklabel_rotate([],45,[])

@@ -1,0 +1,6 @@
+Per race, Pearson Correlation r = -0.46702 with pval = 0.00024995
+Per race, Spearman Correlation r = -0.40627 with pval = 0.0018578
+Per session, Pearson Correlation r = -0.28967 with pval = 0.41688
+Per session, Spearman Correlation r = -0.24848 with pval = 0.49156
+
+
