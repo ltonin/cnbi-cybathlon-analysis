@@ -80,42 +80,47 @@ function [F, events, labels, settings] = cnbiutil_concatenate_data(filepaths)
         Rk = cat(1, Rk, fId*ones(size(cdata.psd, 1), 1));
         Rl{fId} = cinfo.extra;
         
+        % Get events
+        cevents = cdata.events;
+        
         % Concatenate events
-        if modality == 2    % race runs
-            [cevents, cevtextra] = cnbiproc_extract_event_race(cdata.events);
-            tTYP = cat(1, TYP, cevtextra.trl.TYP);
-            tPOS = cat(1, POS, cevtextra.trl.POS + size(F, 1));
-            tDUR = cat(1, DUR, cevtextra.trl.DUR);
+        if modality == 2 || modality == 3    % race runs
+            tTYP = cat(1, TYP, cevents.extra.trl.TYP);
+            tPOS = cat(1, POS, cevents.extra.trl.POS + size(F, 1));
+            tDUR = cat(1, DUR, cevents.extra.trl.DUR);
 
-            pTYP = cat(1, TYP, cevtextra.pad.TYP);
-            pPOS = cat(1, POS, cevtextra.pad.POS + size(F, 1));
-            pDUR = cat(1, DUR, cevtextra.pad.DUR);
+            pTYP = cat(1, TYP, cevents.extra.pad.TYP);
+            pPOS = cat(1, POS, cevents.extra.pad.POS + size(F, 1));
+            pDUR = cat(1, DUR, cevents.extra.pad.DUR);
 
-            bTYP = cat(1, TYP, cevtextra.bci.TYP);
-            bPOS = cat(1, POS, cevtextra.bci.POS + size(F, 1));
-            bDUR = cat(1, DUR, cevtextra.bci.DUR);
+            bTYP = cat(1, TYP, cevents.extra.bci.TYP);
+            bPOS = cat(1, POS, cevents.extra.bci.POS + size(F, 1));
+            bDUR = cat(1, DUR, cevents.extra.bci.DUR);
 
-            cTYP = cat(1, TYP, cevtextra.cmd.TYP);
-            cPOS = cat(1, POS, cevtextra.cmd.POS + size(F, 1));
-            cDUR = cat(1, DUR, cevtextra.cmd.DUR);
+            cTYP = cat(1, TYP, cevents.extra.cmd.TYP);
+            cPOS = cat(1, POS, cevents.extra.cmd.POS + size(F, 1));
+            cDUR = cat(1, DUR, cevents.extra.cmd.DUR);
 
-            eTYP = cat(1, TYP, cevtextra.eye.TYP);
-            ePOS = cat(1, POS, cevtextra.eye.POS + size(F, 1));
-            eDUR = cat(1, DUR, cevtextra.eye.DUR);
+            eTYP = cat(1, TYP, cevents.extra.eye.TYP);
+            ePOS = cat(1, POS, cevents.extra.eye.POS + size(F, 1));
+            eDUR = cat(1, DUR, cevents.extra.eye.DUR);
 
-            rTYP = cat(1, TYP, cevtextra.race.TYP);
-            rPOS = cat(1, POS, cevtextra.race.POS + size(F, 1));
-            rDUR = cat(1, DUR, cevtextra.race.DUR);
-        else
-            cevents = cdata.events;
+            rTYP = cat(1, TYP, cevents.extra.race.TYP);
+            rPOS = cat(1, POS, cevents.extra.race.POS + size(F, 1));
+            rDUR = cat(1, DUR, cevents.extra.race.DUR);
         end
         
         TYP = cat(1, TYP, cevents.TYP);
         DUR = cat(1, DUR, cevents.DUR);
         POS = cat(1, POS, cevents.POS + size(F, 1));
-      
+        if (sum(POS <= 0) > 0)
+            keyboard
+        end
+        
         % Concatenate features along 1st dimension (samples)
         F = cat(1, F, cdata.psd);
+        
+
         
         % Save the current frequency grid and check if it is different from
         % the previous one. If so, it raises an error.
