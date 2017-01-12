@@ -7,7 +7,7 @@ modality    = 'online';
 
 experiment  = 'cybathlon';
 datapath    = [pwd '/analysis/'];
-figuredir  = '/figures/';
+figuredir  = './figures/';
 
 CueTypeId = [769 770 771 773 774 775 783];
 CueTypeLb = {'LeftHand', 'RightHand', 'BothFeet', 'BothHands', 'Boh1', 'Boh2', 'Rest'};
@@ -107,7 +107,7 @@ for dId = 1:size(discrday, 2)
     if dId == 1
         ylabel('Channel');
     end
-    xlabel('Frequency [Hz]');
+    xlabel('[Hz]');
     title(discrdlb(dId, :));
 
 
@@ -121,6 +121,12 @@ for dId = 1:size(discrday, 2)
     tdata = convChans(mean(cdata(AlphaBandId, :), 1));
     topoplot(tdata, chanlocs, 'headrad', 'rim', 'maplimits', [0 0.2]);
     axis image;
+    
+    if dId == 1
+         h = axes('Position', get(gca, 'Position'), 'Visible', 'off');
+        set(h.YLabel, 'Visible', 'on');
+        ylabel('Alpha band');
+    end
     
     if dId == size(discrday, 2)
         colorbar(gca, 'EastOutside')
@@ -136,9 +142,16 @@ for dId = 1:size(discrday, 2)
     topoplot(tdata, chanlocs, 'headrad', 'rim', 'maplimits', [0 0.2]);
     axis image;
     title('');
+    if dId == 1
+         h = axes('Position', get(gca, 'Position'), 'Visible', 'off');
+        set(h.YLabel, 'Visible', 'on');
+        ylabel('Beta band');
+    end
     if dId == size(discrday, 2)
         colorbar(gca, 'EastOutside')
     end
 end
 
 suptitle([subject ' - DP - ' modality]);
+
+cnbifig_export(fig1, [figuredir '/' subject '.discriminancy.' modality '.png'], '-png');
