@@ -276,8 +276,16 @@ for g=1:length(GameStartInd)
                     disp(['The GDF was closed before the race had finished, skipping this race!']);
                     continue;
                 end
-                Race.data = data(thisTrigPOS(1):thisTrigPOS(end),:);
-
+                
+                % 20170111 - ltonin: Adding 1 second before and after the
+                % first and last event (second part at line 390)
+                offset    = thisHeader.SampleRate;
+                gdfstart  = thisTrigPOS(1) - offset;
+                gdfstop   = thisTrigPOS(end) + offset;
+                Race.data = data(gdfstart:gdfstop,:);
+%                 IndUseful = intersect(find(header.EVENT.POS >= thisTrigPOS(1)) , find(header.EVENT.POS <= thisTrigPOS(end)));
+%                 Race.EVENT.POS = header.EVENT.POS(IndUseful) - gdfstart;
+%                 Race.data = data(thisTrigPOS(1):thisTrigPOS(end),:);
                 IndUseful = intersect(find(header.EVENT.POS >= thisTrigPOS(1)) , find(header.EVENT.POS <= thisTrigPOS(end)));
                 Race.EVENT.POS = header.EVENT.POS(IndUseful) - thisTrigPOS(1);
                 Race.EVENT.TYP = header.EVENT.TYP(IndUseful);
@@ -378,6 +386,13 @@ for g=1:length(GameStartInd)
                 % Add one to all the triggers so that it is not 0:size-1 ,
                 % but 1:size as in MATLAB style
                 Race.EVENT.POS = Race.EVENT.POS + 1;
+                
+                % 20170111 - ltonin: Adding offset also to position
+                Race.EVENT.POS = Race.EVENT.POS + offset;
+                if(sum(Race.EVENT.POS <= 0) > 0)
+                    % Debug
+                    keyboard
+                end
                 Race.AlignmentOffset = DT;
                 Race.RaceTime = RT;
                 % Add also the game commands, can be useful to know
