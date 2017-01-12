@@ -7,12 +7,12 @@ modality    = 'race';
 
 experiment  = 'cybathlon';
 datapath    = [pwd '/analysis/'];
-figuredir  = '/figures/';
+figuredir  = './figures/';
 
 PadTypeId = [768 769 770 771 773 783];
 PadTypeLb = {'Slide', 'Slide', 'Speed', 'Jump', 'Speed', 'Rest'};
 
-SelectedClassId = [773 771];
+SelectedClassId = [771 773];
 SelectedClassLb = {'BothFeet', 'BothHands'};
 NumClasses = length(SelectedClassId);
 
@@ -72,8 +72,22 @@ for dId = 1:NumDays
     end
 end
 
+%% Compute discriminancy per race for competition day
 
-%% Plotting discriminancy map
+
+CybRaceId = unique(labels.Rk(labels.Mk == 3));
+NumCybRaces = length(CybRaceId);
+discrcyb = zeros(NumFreqs*NumChans, NumCybRaces);
+for rId = 1:NumCybRaces
+    craceid = CybRaceId(rId);
+    
+    cindex = labels.Rk == craceid & GenericCondition;
+    
+    discrcyb(:, rId) = cnbiproc_fisher(F(cindex, :, :), Ck(cindex), NSigma);
+    
+end
+
+%% Plotting discriminancy map per races
 load('chanlocs64.mat');
 fig1 = figure;
 cnbifig_set_position(fig1, 'All');
@@ -109,7 +123,11 @@ for dId = 1:size(discrday, 2)
     tdata = convChans(mean(cdata(AlphaBandId, :), 1));
     topoplot(tdata, chanlocs, 'headrad', 'rim', 'maplimits', [0 0.3]);
     axis image;
-    
+    if dId == 1
+        h = axes('Position', get(gca, 'Position'), 'Visible', 'off');
+        set(h.YLabel, 'Visible', 'on');
+        ylabel('Alpha band');
+    end
     if dId == size(discrday, 2)
         colorbar(gca, 'EastOutside')
     end
@@ -124,9 +142,75 @@ for dId = 1:size(discrday, 2)
     topoplot(tdata, chanlocs, 'headrad', 'rim', 'maplimits', [0 0.3]);
     axis image;
     title('');
+    if dId == 1
+        h = axes('Position', get(gca, 'Position'), 'Visible', 'off');
+        set(h.YLabel, 'Visible', 'on');
+        ylabel('Beta band');
+    end
     if dId == size(discrday, 2)
         colorbar(gca, 'EastOutside')
     end
 end
 
 suptitle([subject ' - DP - ' modality]);
+cnbifig_export(fig1, [figuredir '/' subject '.discriminancy.' modality '.png'], '-png');
+
+
+%% Plotting DP maps per race for competition day
+fig2 = figure;
+cnbifig_set_position(fig2, 'All');
+NumRows = 3;
+NumCols = NumCybRaces;
+discrcyblb = {'Qualifier', 'Final'};
+
+% Discriminancy maps
+for rId = 1:NumCybRaces
+    subplot(NumRows, NumCols, rId);
+    cdata = reshape(discrcyb(:, rId), [NumFreqs NumChans]);
+    imagesc(FreqGrid, 1:NumChans, cdata',[0 1.2]);
+    
+    if rId == 1
+        ylabel('Channel');
+    end
+    xlabel('[Hz]');
+    title(discrcyblb{rId});
+end
+
+% Topoplots
+for rId = 1:NumCybRaces
+    subplot(NumRows, NumCols, rId + NumCols);
+    cdata = reshape(discrcyb(:, rId), [NumFreqs NumChans]);
+    
+    tdata = convChans(mean(cdata(AlphaBandId, :), 1));
+    topoplot(tdata, chanlocs, 'headrad', 'rim', 'maplimits', [0 0.6]);
+    axis image;
+    if dId == 1
+        h = axes('Position', get(gca, 'Position'), 'Visible', 'off');
+        set(h.YLabel, 'Visible', 'on');
+        ylabel('Alpha band');
+    end
+    if rId == NumCybRaces
+        colorbar(gca, 'EastOutside')
+    end
+end
+
+% Topoplots
+for rId = 1:NumCybRaces
+    subplot(NumRows, NumCols, rId + 2*NumCols);
+    cdata = reshape(discrcyb(:, rId), [NumFreqs NumChans]);
+    
+    tdata = convChans(mean(cdata(BetaBandId, :), 1));
+    topoplot(tdata, chanlocs, 'headrad', 'rim', 'maplimits', [0 0.6]);
+    axis image;
+    title('');
+    if dId == 1
+        h = axes('Position', get(gca, 'Position'), 'Visible', 'off');
+        set(h.YLabel, 'Visible', 'on');
+        ylabel('Beta band');
+    end
+    if rId == NumCybRaces
+        colorbar(gca, 'EastOutside')
+    end
+end
+
+suptitle([subject ' - DP - Cybathlon']);
