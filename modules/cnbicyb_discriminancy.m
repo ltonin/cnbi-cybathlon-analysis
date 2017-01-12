@@ -22,12 +22,17 @@ SelectedClassId = [771 773];
 SelectedClassLb = {'BothFeet', 'BothHands'};
 NumClasses = length(SelectedClassId);
 
+SelFreqs = 4:2:32;
+
 %% Get datafiles
 [Files, NumFiles] = cnbiutil_getfile(datapath, '.mat', [subject '*' modality '*' pattern]);
 
 %% Concatenate data
 cnbiutil_bdisp(['[io] - Import psd datafiles (' modality ')']);
-[F, events, labels, settings] = cnbiutil_concatenate_data(Files);
+[U, events, labels, settings] = cnbiutil_concatenate_data(Files);
+[FreqGrid, SelFreqIds] = intersect(settings.spectrogram.freqgrid, SelFreqs);
+
+F = log(U(:, SelFreqIds, :));
 DataLength  = size(F, 1);
 NumFreqs = size(F, 2);
 NumChans = size(F, 3);
@@ -61,8 +66,9 @@ for cId = 1:NumClasses
     Ck(TrialCls == SelectedClassId(cId)) = SelectedClassId(cId);
 end
 
+
 %% Compute the overall discriminancy
-NSigma = 3;
+NSigma = [];
 discrovl = cnbiproc_fisher(F(Ck > 0, :, :), Ck(Ck > 0), NSigma);
 
 %% Compute discriminancy per day
@@ -71,7 +77,6 @@ discrday = [];
 discrdlb = [];
 for dId = 1:NumDays
     cindex = labels.Dk == Days(dId) & Ck > 0;
-    
     if length(unique(Ck(cindex))) == 2
         discrday = cat(2, discrday, cnbiproc_fisher(F(cindex, :, :), Ck(cindex), NSigma));
         discrdlb = cat(1, discrdlb, labels.Dl(dId, :));
@@ -87,8 +92,8 @@ cnbifig_set_position(fig1, 'All');
 AlphaBand = 8:12;
 BetaBand  = 14:32;
 
-[~, AlphaBandId] = intersect(settings.spectrogram.freqgrid, AlphaBand);
-[~, BetaBandId]  = intersect(settings.spectrogram.freqgrid, BetaBand);
+[~, AlphaBandId] = intersect(FreqGrid, AlphaBand);
+[~, BetaBandId]  = intersect(FreqGrid, BetaBand);
 
 NumRows = 3;
 NumCols = size(discrday, 2);
@@ -97,13 +102,14 @@ NumCols = size(discrday, 2);
 for dId = 1:size(discrday, 2)
     subplot(NumRows, NumCols, dId);
     cdata = reshape(discrday(:, dId), [NumFreqs NumChans]);
-    imagesc(settings.spectrogram.freqgrid, 1:NumChans, cdata');
+    imagesc(FreqGrid, 1:NumChans, cdata', [0 0.5]);
     
     if dId == 1
         ylabel('Channel');
     end
     xlabel('Frequency [Hz]');
     title(discrdlb(dId, :));
+
 
 end
 

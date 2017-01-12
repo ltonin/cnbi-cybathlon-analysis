@@ -1,5 +1,5 @@
-function [features, f] = cnbiproc_spectrogram(data, wlenght, wshift, pshift, samplerate, flag_mavg)
-% [features, f] = cnbiproc_spectrogram(data, wlenght, wshift, pshift, samplerate [, flag_mavg])
+function [features, f] = cnbiproc_spectrogram(data, wlenght, wshift, pshift, samplerate, mlength)
+% [features, f] = cnbiproc_spectrogram(data, wlenght, wshift, pshift, samplerate [, mlength])
 %
 % The function computes the spectrogram on the real data.
 %
@@ -10,8 +10,11 @@ function [features, f] = cnbiproc_spectrogram(data, wlenght, wshift, pshift, sam
 %   - wshift            Shift of the external window (e.g., frame size)     [in seconds]
 %   - pshift            Shift of the internal psd windows                   [in seconds]
 %   - samplerate        Samplerate of the data
-%   - [flag_mavg]       Optional boolean argument to apply moving average. 
-%                       Default: true
+%   - [mlength]         Optional length of the external windows to compute
+%                       the moving average.                                 [in seconds] 
+%                       By default the length of the moving average window
+%                       is set to 1 second. To not compute the moving
+%                       average, empty argument can be provided.
 %
 % Output arguments:
 %   - features          Output of the spectrogram in the format: 
@@ -31,10 +34,6 @@ function [features, f] = cnbiproc_spectrogram(data, wlenght, wshift, pshift, sam
 %   - f                 Vectore with the computed frequencies
 %
 % SEE ALSO: spectrogram, nextpow2
-
-    if nargin == 5
-        flag_mavg = true;
-    end
     
     % Data informations
     nsamples  = size(data, 1);
@@ -76,17 +75,21 @@ function [features, f] = cnbiproc_spectrogram(data, wlenght, wshift, pshift, sam
         [~,f,~,psd(:,:,chId)] = spectrogram(data(:,chId), spec_win, spec_ovl, [], samplerate);
     end
     
-    if flag_mavg
+    if nargin == 5
+        mlength = 1;
+    end
+    
+    if isempty(mlength) == false
         % Setup moving average filter parameters
         mavg_a = 1;
         if(winshift >= psdshift)
             % Case where internal windows are shifted according to psdshift
-            mavgsize  = ((wlenght*samplerate)/psdshift) - 1;   
+            mavgsize  = ((mlength*samplerate)/psdshift) - 1;   
             mavg_b    = (1/mavgsize)*ones(1,mavgsize);
             mavg_step = winshift/psdshift;
         else
             % Case where internal windows are shifted according to winshift
-            mavgsize  = ((wlenght*samplerate)/winshift) - (psdshift/winshift);   
+            mavgsize  = ((mlength*samplerate)/winshift) - (psdshift/winshift);   
             mavg_b    = zeros(1,mavgsize);
             mavg_b(1:psdshift/winshift:end-1) = 1;
             mavg_b    = mavg_b/sum(mavg_b);

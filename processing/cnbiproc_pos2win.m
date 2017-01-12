@@ -20,13 +20,13 @@ function wPOS = cnbiproc_pos2win(POS, wshift, direction, wlength)
 % Output:
 %   - wPOS          Window position
 %
-    rising = false;
+    backward = false;
     if strcmpi(direction, 'forward')
         wlength = [];
     elseif strcmpi(direction, 'backward')
-        rising = true;
+        backward = true;
         if nargin == 3
-            error('chk:arg', 'Rising edge option requires to provide wlength');
+            error('chk:arg', 'backward direction option requires to provide wlength');
         end
     else
         error('chk:arg', 'Direction not recognized: only forward and backward are allowed');
@@ -34,8 +34,8 @@ function wPOS = cnbiproc_pos2win(POS, wshift, direction, wlength)
     
     wPOS = floor(POS/wshift) + 1;
     
-    if rising == true
-        wPOS = wPOS - (floor(wlength/wshift) + 1);
+    if backward == true
+        wPOS = wPOS - (floor(wlength/wshift));
     end
 
 end

@@ -57,6 +57,7 @@ function [evt, extra] = cnbiproc_extract_event_race(events, PadId, ArtId, EndId)
     elseif nargin == 3
         EndId = DefaultEndId;
     end
+   
     
     CmdId = hex2dec(cat(2, repmat('6', length(PadId), 1), dec2hex(PadId)));
     
@@ -109,8 +110,12 @@ function [evt, extra] = cnbiproc_extract_event_race(events, PadId, ArtId, EndId)
         keyboard
     end
     
+    try
     % Removing commands delivered during artifact on
     eyefreeId = eyelabel(cmdpos_o) == false;
+    catch
+        keyboard
+    end
     
     if(isempty(eyefreeId) == false)
         cmdtyp = cmdtyp_o(eyefreeId);
