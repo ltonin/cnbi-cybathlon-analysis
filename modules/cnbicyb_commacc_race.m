@@ -1,13 +1,13 @@
 clearvars; clc; 
 
-subject = 'AN14VE';
+subject = 'MA25VE';
 
 pattern     = '.mi.';
 modality    = 'race';
 
 experiment  = 'cybathlon';
 datapath    = [pwd '/analysis/'];
-figuredir  = '/figures/';
+figuredir  = './figures/';
 
 PadTypeId = [768 769 770 771 773 783];
 PadTypeLb = {'Slide', 'Slide', 'Speed', 'Jump', 'Speed', 'Rest'};
@@ -79,3 +79,5 @@ set(gca,'FontSize',20,'LineWidth',3);
 set(gca,'XTick',unique(Dk));
 set(gca,'XTickLabel',Dl);
 xticklabel_rotate([],45,[])
+
+cnbifig_export(fig1, [figuredir '/' subject '.commacc.' modality '.png'], '-png');

@@ -10,7 +10,7 @@ experiment  = 'cybathlon';
 %datapath    = [pwd '/analysis/'];
 datapath    = '/home/sperdikis/Desktop/tst/AN14VE/AN14VE_RaceMat/';
 %datapath    = '/home/sperdikis/Desktop/tst/MA25VE/MA25VE_RaceMat/';
-figuredir  = '/figures/';
+figuredir  = './figures/';
 
 rejectlim = 240; % Reject races above this limit, 
 
@@ -101,7 +101,7 @@ set(gca,'FontSize',20,'LineWidth',3);
 disp(['Per race, Pearson Correlation r = ' num2str(r) ' with pval = ' num2str(pvalPearson)]);
 [rho pvalSperaman] = corr(xx,RT,'type','Spearman');
 disp(['Per race, Spearman Correlation r = ' num2str(rho) ' with pval = ' num2str(pvalSperaman)]);
-
+cnbifig_export(fig1, [figuredir '/' subject '.racetimerun.' modality '.png'], '-png');
 
 %% Plotting per session results
 
@@ -137,3 +137,4 @@ disp(['Per session, Pearson Correlation r = ' num2str(r) ' with pval = ' num2str
 [rho pvalSperaman] = corr(xx,SMRT','type','Spearman');
 disp(['Per session, Spearman Correlation r = ' num2str(rho) ' with pval = ' num2str(pvalSperaman)]);
 
+cnbifig_export(fig2, [figuredir '/' subject '.racetimesession.' modality '.png'], '-png');
