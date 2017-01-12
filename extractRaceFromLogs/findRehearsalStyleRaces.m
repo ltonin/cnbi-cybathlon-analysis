@@ -96,7 +96,9 @@ for ses=1:length(SesFolders)
         FirstOffset = FirstPadPOS(end)-1;
         FirstPadTYP = FirstPadTYP(1:end-1);
         FirstPadPOS = FirstPadPOS(1:end-1);
-        FirstPadData = data(FirstPadPOS(1):FirstOffset,:);
+        FirstPadData = data(header.EVENT.POS(TriggersInd(First783)):header.EVENT.POS(TriggersInd(First783))+FirstOffset,:);
+        
+        OneSecondBefore = data(header.EVENT.POS(TriggersInd(First783))-512:header.EVENT.POS(TriggersInd(First783))-1,:);
         
         LastPadTYP = header.EVENT.TYP(TriggersInd(Last783):end);
         LastPadPOS = header.EVENT.POS(TriggersInd(Last783):end) - header.EVENT.POS(TriggersInd(Last783)) + 1;
@@ -128,7 +130,13 @@ for ses=1:length(SesFolders)
             Ind666 = find(newTYP==666);
             newPOS(Ind666+1:end) = [];
             newTYP(Ind666+1:end) = [];
-            newdata = newdata(1:newPOS(end),:);
+            newdata = newdata(1:newPOS(end)+512,:); % Keep also 1 sec after 666
+            
+            % Now, add also 1 sec before the first trigger and transpose
+            % the POS as needed
+            newdata = [OneSecondBefore ; newdata];
+            newPOS = newPOS + 512;
+            
             % Check if there are enough commands
             CommandsInd = find(ismember(newTYP,[10 20 30]));
             if(length(CommandsInd) < 5)
