@@ -1,15 +1,15 @@
 clearvars; clc; 
 
-%subject = 'AN14VE';
-subject = 'MA25VE';
+subject = 'AN14VE';
+%subject = 'MA25VE';
 
 pattern     = '.mi.';
 modality    = 'race';
 
 experiment  = 'cybathlon';
 %datapath    = [pwd '/analysis/'];
-%datapath    = '/home/sperdikis/Desktop/tst/AN14VE/AN14VE_RaceMat/';
-datapath    = '/home/sperdikis/Desktop/tst/MA25VE/MA25VE_RaceMat/';
+datapath    = '/home/sperdikis/Desktop/tst/AN14VE/AN14VE_RaceMat/';
+%datapath    = '/home/sperdikis/Desktop/tst/MA25VE/MA25VE_RaceMat/';
 figuredir  = '/figures/';
 
 rejectlim = 240; % Reject races above this limit, 
@@ -65,7 +65,7 @@ for fId = 1:numfiles
     Rl{fId} = cinfo.extra;
 
     % Extract race time
-    if modality == 2    % race runs
+    if modality >= 2    % race runs
         RT = [RT ; cdata.Race.RaceTime];
     else
         error('There is no race time in modality ~= 2');

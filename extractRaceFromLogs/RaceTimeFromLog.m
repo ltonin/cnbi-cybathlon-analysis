@@ -97,7 +97,7 @@ for g=1:length(GameStartInd)
     try
         RT = ResData{5}(PlInd);RT = str2num(RT{1}(2:end-1));
     catch
-        RT = NaN;
+        continue;
     end
     FRT = [FRT; RT];
     Race.RaceTime = RT;

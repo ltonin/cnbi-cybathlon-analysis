@@ -1,10 +1,8 @@
 clearvars; clc;
 
-<<<<<<< HEAD
+
 subject = 'AN14VE';
-=======
-subject = 'MA25VE_RaceMat';
->>>>>>> cfc0b6a393340f5e487f5eb7491897aa51cfe392
+%subject = 'MA25VE_RaceMat';
 
 % identifiers = {'.offline.mi.', '.gdf'};
 % identifiers = {'.online.mi.',  '.gdf'};
