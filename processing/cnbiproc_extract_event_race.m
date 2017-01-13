@@ -161,7 +161,7 @@ function [evt, extra] = cnbiproc_extract_event_race(events, PadId, ArtId, EndId)
             ccmdvalidId = find(ismember(ccmdtyp - hex2dec('6000'), cpadtyp), 1);
             
             if (isempty(ccmdvalidId) == false)
-                ctrdur = ccmdpos(ccmdvalidId) - cpadpos;
+                ctrdur = ccmdpos(ccmdvalidId) - cpadpos + 1;
             end
         end
         trltyp(pId) = cpadtyp;
