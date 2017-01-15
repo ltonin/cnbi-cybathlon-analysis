@@ -1,18 +1,22 @@
 clearvars; clc; 
 
-subject = 'AN14VE';
-%subject = 'MA25VE';
+%subject = 'AN14VE';
+subject = 'MA25VE';
 
 pattern     = '.mi.';
 modality    = 'race';
 
 experiment  = 'cybathlon';
-%datapath    = [pwd '/analysis/'];
-datapath    = '/home/sperdikis/Desktop/tst/AN14VE/AN14VE_RaceMat/';
+datapath    = ['/mnt/data/Research/' experiment '/' subject '/' subject '_racemat/'];
+% datapath    = '/home/sperdikis/Desktop/tst/AN14VE/AN14VE_RaceMat/';
 %datapath    = '/home/sperdikis/Desktop/tst/MA25VE/MA25VE_RaceMat/';
 figuredir  = './figures/';
+savedir  = '/analysis/';
 
 rejectlim = 240; % Reject races above this limit, 
+
+%% Create/Check for savepath
+[~, savepath] = cnbiutil_mkdir(pwd, savedir);
 
 %% Get datafiles
 [Files, NumFiles] = cnbiutil_getfile(datapath, '.mat', [subject '*' modality '*' pattern]);
@@ -81,6 +85,20 @@ if(rejectlim > 0)
     Dk(IndRej) = [];
     Mk(IndRej) = [];
 end
+
+%% Saving racetime results for future porposes (e.g., correlation with DP maps)
+
+race.time = RT;
+race.Rk   = Rk;
+race.Mk   = Mk;
+race.Dk   = Dk;
+race.Dl   = Dl;
+
+filename = [savepath '/' subject '.race.time.mat'];
+cnbiutil_bdisp(['[out] - Saving race time results in: ' filename]);
+save(filename, 'race');
+
+
 
 %% Plotting per run results
 fig1 = figure;
