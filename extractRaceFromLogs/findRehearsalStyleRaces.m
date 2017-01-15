@@ -46,6 +46,7 @@ for ses=1:length(SesFolders)
     for run=1:length(Runs)
         try
             [data header] = sload([GDFSesPath '/' SesFolders(ses).name '/' Runs(run).name]);
+          
         catch
             disp(['Skipping run ' Runs(run).name ' , GDF file is corrupted!']);
             continue;
@@ -207,6 +208,17 @@ for ses=1:length(SesFolders)
                 Taskset = 'bhbf';
             else
                 disp('Weird Taskset, skipping!');
+                continue;
+            end
+            
+            % Add extra GTYP for compliancy
+            Race.EVENT.GTYP = Race.EVENT.TYP;
+            
+            % Just check that the fake race does not have any huge gap, if
+            % so, di
+            if(max(diff(Race.EVENT.POS(ismember(Race.EVENT.TYP,[768 769 770 771 773 783 666]))/512)) > 20.0)
+                % Skipping this race 
+                disp('This fake race has pads with larger duration than it should, skipping!');
                 continue;
             end
             

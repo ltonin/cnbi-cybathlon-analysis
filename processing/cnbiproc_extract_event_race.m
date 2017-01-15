@@ -97,6 +97,16 @@ function [evt, extra] = cnbiproc_extract_event_race(events, PadId, ArtId, EndId)
     cmdtyp_o = events.TYP(index);
     cmdpos_o = events.POS(index);
     
+    % Extracting command event types including the reverse command
+    % and excluding artifacts commands
+    index = false(length(events.GTYP), 1);
+    for cId = 1:length(CmdId)
+        index = index | events.GTYP == CmdId(cId);
+    end
+    
+    cmdgtyp = events.GTYP(index);
+    cmdgpos = events.POS(index); % For GTYP the artifacts are already removed
+    
     % Extracting artifact position and duration
     [eyepos, eyedur] = get_artifact_events(events, ArtId(1), ArtId(2));
     eyelabel = false(endpos, 1);
@@ -122,7 +132,7 @@ function [evt, extra] = cnbiproc_extract_event_race(events, PadId, ArtId, EndId)
         cmdpos = cmdpos_o(eyefreeId);
     else
         cmdtyp = cmdtyp_o;
-        cmdpos = cmdpos_o;        
+        cmdpos = cmdpos_o;
     end
     
     % Computing trial duration
@@ -145,23 +155,27 @@ function [evt, extra] = cnbiproc_extract_event_race(events, PadId, ArtId, EndId)
         
         ctrdur = cpaddur;
         
-        
         try
         % Find types and positions of commands delivered in the current pad interval
-        cindex = find(cmdpos >= cpadpos & cmdpos < (cpadpos + cpaddur)); 
+        cindex = find(cmdgpos >= cpadpos & cmdgpos < (cpadpos + cpaddur)); 
         catch
         disp('a');    
         end
         if (isempty(cindex) == false)
-            ccmdtyp = cmdtyp(cindex);
-            ccmdpos = cmdpos(cindex);
+            %ccmdtyp = cmdtyp(cindex);
+            try
+            ccmdgtyp = cmdgtyp(cindex); % Use this to include yellow pads
+            catch
+            disp('a');    
+            end
+            ccmdgpos = cmdgpos(cindex);
             
             % find the first command correct (if exists) with respect to
             % the current pad type
-            ccmdvalidId = find(ismember(ccmdtyp - hex2dec('6000'), cpadtyp), 1);
+            ccmdvalidId = find(ismember(ccmdgtyp - hex2dec('6000'), cpadtyp), 1);
             
             if (isempty(ccmdvalidId) == false)
-                ctrdur = ccmdpos(ccmdvalidId) - cpadpos;
+                ctrdur = ccmdgpos(ccmdvalidId) - cpadpos;
             end
         end
         trltyp(pId) = cpadtyp;
@@ -192,6 +206,11 @@ function [evt, extra] = cnbiproc_extract_event_race(events, PadId, ArtId, EndId)
     extra.cmd.POS = cmdpos;
     extra.cmd.DUR = ones(length(cmdpos), 1);
     extra.cmd.DUR(extra.cmd.DUR == 0) = 1;
+
+    extra.cmdg.TYP = cmdgtyp;
+    extra.cmdg.POS = cmdgpos;
+    extra.cmdg.DUR = ones(length(cmdgpos), 1);
+    extra.cmdg.DUR(extra.cmdg.DUR == 0) = 1;
     
     extra.eye.TYP = 267*ones(length(eyepos), 1);
     extra.eye.POS = eyepos;
@@ -203,10 +222,12 @@ function [evt, extra] = cnbiproc_extract_event_race(events, PadId, ArtId, EndId)
     extra.race.DUR = racedur;
     extra.race.DUR(extra.race.DUR == 0) = 1;
     
-    wTYP = [extra.race.TYP' extra.trl.TYP' extra.cmd.TYP' extra.eye.TYP'];
-    wPOS = [extra.race.POS' extra.trl.POS' extra.cmd.POS' extra.eye.POS'];
-    wDUR = [extra.race.DUR' extra.trl.DUR' extra.cmd.DUR' extra.eye.DUR'];
-    
+%    wTYP = [extra.race.TYP' extra.trl.TYP' extra.cmd.TYP' extra.eye.TYP'];
+%    wPOS = [extra.race.POS' extra.trl.POS' extra.cmd.POS' extra.eye.POS'];
+%    wDUR = [extra.race.DUR' extra.trl.DUR' extra.cmd.DUR' extra.eye.DUR'];
+    wTYP = [extra.race.TYP' extra.trl.TYP' extra.cmdg.TYP' extra.eye.TYP'];
+    wPOS = [extra.race.POS' extra.trl.POS' extra.cmdg.POS' extra.eye.POS'];
+    wDUR = [extra.race.DUR' extra.trl.DUR' extra.cmdg.DUR' extra.eye.DUR'];
     [~, sindex] = sort(wPOS);
     evt.TYP = wTYP(sindex)';
     evt.POS = wPOS(sindex)';

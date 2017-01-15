@@ -28,12 +28,15 @@ TD = [];
 i=0;
 while(true)
     i=i+1;
+    if(i > length(GDFTime))
+        break;
+    end
     % Find time difference
     TD(i) = GameTime(1) - GDFTime(i);
     tmpGameTime = GameTime - TD(i);
-    if(tmpGameTime(end) > max(GDFTime))
-        break;
-    end
+    %if(tmpGameTime(end) > max(GDFTime))
+    %   break;
+    %end
     
     % Check all game commands, whether they have a GDF point really close
     % in time. I check all GDF points and not simply in order (as I had

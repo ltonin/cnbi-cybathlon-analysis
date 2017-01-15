@@ -159,6 +159,14 @@ for g=1:length(GameStartInd)
             IndActiveCommandP{p}(find(IndActiveCommandP{p}<=GameEndInd(g))));
         thisPGActiveCommands = Commands(thisPGActiveCommandsInd);
         thisPGActiveCommandsTime = RaceCommandTime(thisPGActiveCommandsInd);
+        % Remove stupid duplicate entries
+        if(~isempty(thisPGActiveCommands))
+            [thisPGActiveCommands, thisPGActiveCommandsTime] = groupTriggers(thisPGActiveCommands,thisPGActiveCommandsTime);
+        else
+            disp('Skipping this game/player due to no commands found!');
+            continue;
+        end
+        
         if(length(thisPGActiveCommands) < 5)
             disp('Skipping this game/player due to too few commands found!');
             continue;
@@ -180,6 +188,7 @@ for g=1:length(GameStartInd)
             % Now attempt alignment
             DT = alignGameGDFSeries(thisPGActiveCommandsTime,thisPGActiveCommands,...
             thisGDFTimings,thisGDFTypes);
+
             % Translate the trigger times according to alignment
             thisPGtrigTimeAligned = thisPGtrigTime - DT;
             thisPGActiveCommandsTimeAligned = thisPGActiveCommandsTime - DT;
@@ -395,11 +404,6 @@ for g=1:length(GameStartInd)
                 end
                 Race.AlignmentOffset = DT;
                 Race.RaceTime = RT;
-                % Add also the game commands, can be useful to know
-                % which of the bh and bf led to "Slide"
-                Race.gamecommands.type = thisPGActiveCommands;
-                Race.gamecommands.pos = ceil((thisPGActiveCommandsTimeAligned - ...
-                    (RaceCommandTime(GameStartInd(g))-DT))*512);
                 Race.Date = thisGDate{1};
                 Race.StartTime = thisGTime{1};
                 Race.resfile = thisResFile;
@@ -410,6 +414,53 @@ for g=1:length(GameStartInd)
                 Race.Level = thisGLevel{1};
                 Race.GameStartInd = GameStartInd;
                 Race.GameEndInd = GameEndInd;
+                
+                % Add also the game commands, can be useful to know
+                % which of the bh and bf led to "Slide"
+                IndGDFComm = find(ismember(Race.EVENT.TYP,[25344 25347 25349]));
+                FinalGDFTimes = Race.EVENT.POS(IndGDFComm)/512;
+                if(length(FinalGDFTimes) < length(thisPGActiveCommandsTime))
+                    for r=1:abs(length(FinalGDFTimes)-length(thisPGActiveCommandsTime))+1
+                        FDT = alignGameGDFSeries(thisPGActiveCommandsTime(r:r+length(FinalGDFTimes)-1),thisPGActiveCommands,...
+                            FinalGDFTimes, Race.EVENT.TYP(IndGDFComm));
+                        if(~isnan(FDT))
+                            break;
+                        end
+                    end
+                else
+                    FDT = alignGameGDFSeries(thisPGActiveCommandsTime,thisPGActiveCommands,...
+                        FinalGDFTimes, Race.EVENT.TYP(IndGDFComm));                    
+                end
+                
+                if(isnan(FDT))
+                    disp('a');
+                end
+                thisPGActiveCommandsTimeAlignedNew = thisPGActiveCommandsTime - FDT;
+                Race.EVENT.GTYP = Race.EVENT.TYP;
+                for i=1:length(IndGDFComm)
+                    
+                    tmpind = find(abs(thisPGActiveCommandsTimeAlignedNew - FinalGDFTimes(i)) < 0.1);
+                    if(isempty(tmpind))
+                        tmpGameType = 'None';
+                    else
+                        tmpGameType = thisPGActiveCommands{tmpind};
+                    end
+                    
+                    switch(tmpGameType)
+                        case {'Speed','Spin'}
+                            Race.EVENT.GTYP(IndGDFComm(i)) = 25349;
+                        case {'Jump'}
+                            Race.EVENT.GTYP(IndGDFComm(i)) = 25347;
+                        case {'Kick','Roll','Slide'}
+                            Race.EVENT.GTYP(IndGDFComm(i)) = 25344;
+                        otherwise
+                            Race.EVENT.GTYP(IndGDFComm(i)) = 267 + hex2dec('6000');
+                    end
+                end
+                
+                Race.gamecommands.type = Race.EVENT.GTYP;
+                Race.gamecommands.pos = Race.EVENT.POS;
+                
                 % Save the Race output
                 SessionRaceCounter = SessionRaceCounter + 1;
                 

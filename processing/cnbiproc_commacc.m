@@ -1,7 +1,10 @@
-function [TPFPPad, TPFPTask] = cnbiproc_commacc(CommLb, TrialEvents, PadTypeId, PadTypeLb, PadTypeInd)
+function [TPFPPad, TPFPTask, SpeedPad, SpeedTask] = cnbiproc_commacc(CommLb, TrialEvents, PadTypeId, PadTypeLb, PadTypeInd)
 
 TPFPPad = zeros(4,2);
 TPFPTask = zeros(length(PadTypeId),2);
+SpeedPad  = cell(4,1);
+SpeedTask  = cell(length(PadTypeId),1);
+
 for tr=1:length(TrialEvents.TYP)
     TaskTyp = TrialEvents.TYP(tr);
     TrialInd = PadTypeInd(find(PadTypeId==TaskTyp));
@@ -13,6 +16,8 @@ for tr=1:length(TrialEvents.TYP)
     if(sum(TrialCommLb == (TaskTyp + hex2dec('6000')))>0)
         TPFPPad(TrialInd,1) = TPFPPad(TrialInd,1)+1;
         TPFPTask(find(PadTypeId==TaskTyp),1) = TPFPTask(find(PadTypeId==TaskTyp),1)+1;
+        SpeedPad{TrialInd} = [SpeedPad{TrialInd} ; 0.0625*TrialEvents.DUR(tr)];
+        SpeedTask{find(PadTypeId==TaskTyp)} = [SpeedTask{find(PadTypeId==TaskTyp)} ; 0.0625*TrialEvents.DUR(tr)];
     else
         TPFPPad(TrialInd,2) = TPFPPad(TrialInd,2)+1;
         TPFPTask(find(PadTypeId==TaskTyp),2) = TPFPTask(find(PadTypeId==TaskTyp),2)+1;

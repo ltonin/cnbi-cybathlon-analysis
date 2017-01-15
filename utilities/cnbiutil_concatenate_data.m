@@ -30,6 +30,7 @@ function [F, events, labels, settings] = cnbiutil_concatenate_data(filepaths)
     pTYP = []; pPOS = []; pDUR = [];
     bTYP = []; bPOS = []; bDUR = [];
     cTYP = []; cPOS = []; cDUR = [];
+    cgTYP = []; cgPOS = []; cgDUR = [];
     eTYP = []; ePOS = []; eDUR = [];
     rTYP = []; rPOS = []; rDUR = [];
     freqs = [];
@@ -85,29 +86,33 @@ function [F, events, labels, settings] = cnbiutil_concatenate_data(filepaths)
         
         % Concatenate events
         if modality == 2 || modality == 3    % race runs
-            tTYP = cat(1, TYP, cevents.extra.trl.TYP);
-            tPOS = cat(1, POS, cevents.extra.trl.POS + size(F, 1));
-            tDUR = cat(1, DUR, cevents.extra.trl.DUR);
+            tTYP = cat(1, tTYP, cevents.extra.trl.TYP);
+            tPOS = cat(1, tPOS, cevents.extra.trl.POS + size(F, 1));
+            tDUR = cat(1, tDUR, cevents.extra.trl.DUR);
 
-            pTYP = cat(1, TYP, cevents.extra.pad.TYP);
-            pPOS = cat(1, POS, cevents.extra.pad.POS + size(F, 1));
-            pDUR = cat(1, DUR, cevents.extra.pad.DUR);
+            pTYP = cat(1, pTYP, cevents.extra.pad.TYP);
+            pPOS = cat(1, pPOS, cevents.extra.pad.POS + size(F, 1));
+            pDUR = cat(1, pDUR, cevents.extra.pad.DUR);
 
-            bTYP = cat(1, TYP, cevents.extra.bci.TYP);
-            bPOS = cat(1, POS, cevents.extra.bci.POS + size(F, 1));
-            bDUR = cat(1, DUR, cevents.extra.bci.DUR);
+            bTYP = cat(1, bTYP, cevents.extra.bci.TYP);
+            bPOS = cat(1, bPOS, cevents.extra.bci.POS + size(F, 1));
+            bDUR = cat(1, bDUR, cevents.extra.bci.DUR);
 
-            cTYP = cat(1, TYP, cevents.extra.cmd.TYP);
-            cPOS = cat(1, POS, cevents.extra.cmd.POS + size(F, 1));
-            cDUR = cat(1, DUR, cevents.extra.cmd.DUR);
+            cTYP = cat(1, cTYP, cevents.extra.cmd.TYP);
+            cPOS = cat(1, cPOS, cevents.extra.cmd.POS + size(F, 1));
+            cDUR = cat(1, cDUR, cevents.extra.cmd.DUR);
 
-            eTYP = cat(1, TYP, cevents.extra.eye.TYP);
-            ePOS = cat(1, POS, cevents.extra.eye.POS + size(F, 1));
-            eDUR = cat(1, DUR, cevents.extra.eye.DUR);
+            cgTYP = cat(1, cgTYP, cevents.extra.cmdg.TYP);
+            cgPOS = cat(1, cgPOS, cevents.extra.cmdg.POS + size(F, 1));
+            cgDUR = cat(1, cgDUR, cevents.extra.cmdg.DUR);            
+            
+            eTYP = cat(1, eTYP, cevents.extra.eye.TYP);
+            ePOS = cat(1, ePOS, cevents.extra.eye.POS + size(F, 1));
+            eDUR = cat(1, eDUR, cevents.extra.eye.DUR);
 
-            rTYP = cat(1, TYP, cevents.extra.race.TYP);
-            rPOS = cat(1, POS, cevents.extra.race.POS + size(F, 1));
-            rDUR = cat(1, DUR, cevents.extra.race.DUR);
+            rTYP = cat(1, rTYP, cevents.extra.race.TYP);
+            rPOS = cat(1, rPOS, cevents.extra.race.POS + size(F, 1));
+            rDUR = cat(1, rDUR, cevents.extra.race.DUR);
         end
         
         TYP = cat(1, TYP, cevents.TYP);
@@ -171,6 +176,10 @@ function [F, events, labels, settings] = cnbiutil_concatenate_data(filepaths)
     events.extra.cmd.TYP = cTYP;
     events.extra.cmd.POS = cPOS;
     events.extra.cmd.DUR = cDUR;
+    
+    events.extra.cmdg.TYP = cgTYP;
+    events.extra.cmdg.POS = cgPOS;
+    events.extra.cmdg.DUR = cgDUR;    
     
     events.extra.eye.TYP = eTYP;
     events.extra.eye.POS = ePOS;
