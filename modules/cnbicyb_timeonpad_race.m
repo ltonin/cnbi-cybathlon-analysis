@@ -50,6 +50,13 @@ for dId = 1:NumDays
     thisSessionTOP.DUR = events.extra.pad.DUR(KeepInd);
     [TOPPadSes{dId} TOPTaskSes{dId}] = cnbiproc_timeonpad(thisSessionTOP, PadTypeId, PadTypeLb);
     
+    for t=1:5
+        MTOPPad(dId,t) = mean(TOPPadSes{dId}{t});
+        STOPPad(dId,t) = std2(TOPPadSes{dId}{t});
+        MedTOPPad(dId,t) = median(TOPPadSes{dId}{t});
+        PLowTOPPad(dId,t) = prctile(TOPPadSes{dId}{t},25);
+        PUpTOPPad(dId,t) = prctile(TOPPadSes{dId}{t},75);
+    end
 end
 
 
@@ -68,4 +75,50 @@ ylabel('Time On Pad (sec)','FontSize',20,'LineWidth',3);
 title(subject);
 axis([0 6 0 21]);
 set(gca,'FontSize',20,'LineWidth',3);
-cnbifig_export(fig1, [figuredir '/' subject '.commacc.' modality '.png'], '-png');
+cnbifig_export(fig1, [figuredir '/' subject '.timeonpad.' modality '.png'], '-png');
+
+% Per session results, mean std
+fig2 = figure;
+cnbifig_set_position(fig2, 'All');
+plot(1:NumDays,MTOPPad(:,1),'c',1:NumDays,MTOPPad(:,2),'m',1:NumDays,MTOPPad(:,3),'y',1:NumDays,MTOPPad(:,4),'k',1:NumDays,MTOPPad(:,5),'r','LineWidth',3);
+legend({'Speed','Jump','Slide','Rest','Start/End'});
+hold on;
+shadedErrorBar(1:NumDays,squeeze(MTOPPad(:,1))',squeeze(STOPPad(:,1))','c',1);
+shadedErrorBar(1:NumDays,squeeze(MTOPPad(:,2))',squeeze(MTOPPad(:,2))','m',1);
+shadedErrorBar(1:NumDays,squeeze(MTOPPad(:,3))',squeeze(MTOPPad(:,3))','y',1);
+shadedErrorBar(1:NumDays,squeeze(MTOPPad(:,4))',squeeze(MTOPPad(:,4))','k',1);
+shadedErrorBar(1:NumDays,squeeze(MTOPPad(:,5))',squeeze(MTOPPad(:,5))','r',1);
+hold off;
+xlabel('Pad Type','FontSize',20,'LineWidth',3);
+ylabel('Average Time On Pad (sec)','FontSize',20,'LineWidth',3);
+title(subject);
+%axis([1 max(Dk) min(min(MTOPPad - STOPPad)) max(max(MTOPPad + STOPPad))]);
+axis([1 max(Dk) 0 21]);
+set(gca,'FontSize',20,'LineWidth',3);
+set(gca,'XTick',unique(Dk));
+set(gca,'XTickLabel',Dl);
+xticklabel_rotate([],45,[])
+cnbifig_export(fig2, [figuredir '/' subject '.racetimesession.' modality '.png'], '-png');
+
+% Per session results, median and percentiles
+fig3 = figure;
+cnbifig_set_position(fig3, 'All');
+plot(1:NumDays,MedTOPPad(:,1),'c',1:NumDays,MedTOPPad(:,2),'m',1:NumDays,MedTOPPad(:,3),'y',1:NumDays,MedTOPPad(:,4),'k',1:NumDays,MedTOPPad(:,5),'r','LineWidth',3);
+legend({'Speed','Jump','Slide','Rest','Start/End'});
+hold on;
+shadedErrorBar(1:NumDays,squeeze(MedTOPPad(:,1))',[PUpTOPPad(:,1)' ; PLowTOPPad(:,1)'],'c',1);
+shadedErrorBar(1:NumDays,squeeze(MedTOPPad(:,2))',[PUpTOPPad(:,2)' ; PLowTOPPad(:,2)'],'m',1);
+shadedErrorBar(1:NumDays,squeeze(MedTOPPad(:,3))',[PUpTOPPad(:,3)' ; PLowTOPPad(:,3)'],'y',1);
+shadedErrorBar(1:NumDays,squeeze(MedTOPPad(:,4))',[PUpTOPPad(:,4)' ; PLowTOPPad(:,4)'],'k',1);
+shadedErrorBar(1:NumDays,squeeze(MedTOPPad(:,5))',[PUpTOPPad(:,5)' ; PLowTOPPad(:,5)'],'r',1);
+hold off;
+xlabel('Pad Type','FontSize',20,'LineWidth',3);
+ylabel('Average Time On Pad (sec)','FontSize',20,'LineWidth',3);
+title(subject);
+%axis([1 max(Dk) min(min(MTOPPad - STOPPad)) max(max(MTOPPad + STOPPad))]);
+axis([1 max(Dk) 0 21]);
+set(gca,'FontSize',20,'LineWidth',3);
+set(gca,'XTick',unique(Dk));
+set(gca,'XTickLabel',Dl);
+xticklabel_rotate([],45,[])
+cnbifig_export(fig3, [figuredir '/' subject '.racetimesessionmedian.' modality '.png'], '-png');

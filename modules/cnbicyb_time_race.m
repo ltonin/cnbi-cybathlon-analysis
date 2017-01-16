@@ -7,9 +7,9 @@ pattern     = '.mi.';
 modality    = 'race';
 
 experiment  = 'cybathlon';
-datapath    = ['/mnt/data/Research/' experiment '/' subject '/' subject '_racemat/'];
+%datapath    = ['/mnt/data/Research/' experiment '/' subject '/' subject '_racemat/'];
 % datapath    = '/home/sperdikis/Desktop/tst/AN14VE/AN14VE_RaceMat/';
-%datapath    = '/home/sperdikis/Desktop/tst/MA25VE/MA25VE_RaceMat/';
+datapath    = '/home/sperdikis/Desktop/tst/MA25VE/MA25VE_RaceMat/';
 figuredir  = './figures/';
 savedir  = '/analysis/';
 
@@ -43,18 +43,18 @@ for fId = 1:numfiles
     % Get modality from filename
     switch lower(cinfo.modality)
         case 'offline'
-            modality = 0;
+            modal = 0;
         case 'online'
-            modality = 1;
+            modal = 1;
         case 'race'
-            modality = 2;
+            modal = 2;
             if strcmp(cinfo.extra{1}, 'competition')
-                modality = 3;
+                modal = 3;
             end
         otherwise
             error('chk:mod', ['[' mfilename '] Unknown modality']);
     end
-    Mk = cat(1, Mk, modality*ones(1, 1));
+    Mk = cat(1, Mk, modal*ones(1, 1));
     
     % Get day from filename
     if strcmpi(cinfo.date, lday) == false
@@ -69,7 +69,7 @@ for fId = 1:numfiles
     Rl{fId} = cinfo.extra;
 
     % Extract race time
-    if modality >= 2    % race runs
+    if modal >= 2    % race runs
         RT = [RT ; cdata.Race.RaceTime];
     else
         error('There is no race time in modality ~= 2');
