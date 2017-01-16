@@ -135,6 +135,16 @@ function [evt, extra] = cnbiproc_extract_event_race(events, PadId, ArtId, EndId)
         cmdpos = cmdpos_o;
     end
     
+    % Check if cmdpos and cmdgpos agree
+    if(length(cmdpos)~=length(cmdgpos))
+        % Remove the extra cmdpos/typ entries, clearly a misalignment of
+        % the artifact rejection procedure. cmdgpos is essentially the
+        % ground truth and we can trust it
+        indrem = find(cmdpos == setdiff(cmdpos,cmdgpos));
+        cmdpos(indrem) = [];
+        cmdtyp(indrem) = [];
+    end
+    
     % Computing trial duration
     npads  = length(padtyp);
     paddur = zeros(npads, 1);
@@ -175,7 +185,7 @@ function [evt, extra] = cnbiproc_extract_event_race(events, PadId, ArtId, EndId)
             ccmdvalidId = find(ismember(ccmdgtyp - hex2dec('6000'), cpadtyp), 1);
             
             if (isempty(ccmdvalidId) == false)
-                ctrdur = ccmdpos(ccmdvalidId) - cpadpos + 1;
+                ctrdur = ccmdgpos(ccmdvalidId) - cpadpos + 1;
             end
         end
         trltyp(pId) = cpadtyp;

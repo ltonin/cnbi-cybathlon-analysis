@@ -9,16 +9,23 @@ if(mod(length(padevents.TYP),18) ~= 0)
 end
 
 % Find starting and ending pads
-startendInd = [];
+startInd = [];
 for r=1:length(padevents.TYP)/18
-    startendInd = [startendInd ; (r-1)*18 + 1 ; (r-1)*18 + 18];
+    startInd = [startInd ; (r-1)*18+1];
 end
+endInd = [];
+for r=1:length(padevents.TYP)/18
+    endInd = [endInd ; r*18];
+end
+startendInd = union(startInd, endInd);
+
 
 for p=1:3
     TOPPad{p} = padevents.DUR(ismember(padevents.TYP,PadTypeId(strcmp(PadTypeLb,SPadT{p}))))*0.0625;
 end
 TOPPad{4} = padevents.DUR(setdiff(find(padevents.TYP==783),startendInd))*0.0625;
-TOPPad{5} = padevents.DUR(startendInd)*0.0625;
+TOPPad{5} = padevents.DUR(startInd)*0.0625;
+TOPPad{6} = padevents.DUR(endInd)*0.0625;
 
 % Normally I should separate start/end from rest also here, but....screw it
 for t=1:length(PadTypeId)
