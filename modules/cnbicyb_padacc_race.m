@@ -42,10 +42,10 @@ cnbiutil_bdisp('[proc] - Extract commands');
 [CommLb, CommEvents] = cnbiproc_get_event(CommTypeId, DataLength, events.POS, events.TYP, events.DUR);
 
 %% Compute the overall accuracies (one decision per pad)
-[TPFPPad, TPFPTask, SpeedPad, SpeedTask] = cnbiproc_commacc(CommLb, TrialEvents, PadTypeId, PadTypeLb, PadTypeInd);
+[TPFPPad, TPFPTask, SpeedPad, SpeedTask] = cnbiproc_padacc(CommLb, TrialEvents, PadTypeId, PadTypeLb, PadTypeInd);
 
 %% Compute the overall accuracies (one decision per command/trial)
-[TPFPPad, TPFPTask, SpeedPad, SpeedTask] = cnbiproc_commacc(CommLb, TrialEvents, PadTypeId, PadTypeLb, PadTypeInd);
+[TPFPPad, TPFPTask, SpeedPad, SpeedTask] = cnbiproc_padacc(CommLb, TrialEvents, PadTypeId, PadTypeLb, PadTypeInd);
 
 %% Compute accuracies per day
 SessionTrialEvents = [];
