@@ -1,10 +1,10 @@
 clearvars; clc;
 
-%subject = 'MA25VE';
-subject = 'AN14VE';
+subject = 'MA25VE';
+% subject = 'AN14VE';
 
-identifiers = {'.*line.mi.', '.gdf'};
-% identifiers = {'.race.mi.',  '.mat'};
+% identifiers = {'.*line.mi.', '.gdf'};
+identifiers = {'.race.mi.',  '.mat'};
 
 pattern     = identifiers{1};
 extension   = identifiers{2};
@@ -153,7 +153,7 @@ for fId = 1:NumFiles
     if strcmpi(cinfo.modality, 'online') || strcmpi(cinfo.modality, 'race')
         clogfile = [datapath '/' cinfo.subject '_' cinfo.date '/' cinfo.subject '.' cinfo.date '.log'];
         [~, cfile, cext] = fileparts(cfilename);
-        ctarget = regexp(cfile, '(\w*)\.(\d*)\.(\d*)', 'match');
+        ctarget = char(regexp(cfile, '(\w*)\.(\d*)\.(\d*)', 'match'));
         
         clogstr = cnbiutil_read_logfile(clogfile, ctarget);
         try
