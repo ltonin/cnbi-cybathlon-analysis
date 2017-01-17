@@ -3,14 +3,14 @@ clearvars; clc;
 %subject = 'MA25VE';
 subject = 'AN14VE';
 
-%identifiers = {'.*line.mi.', '.gdf'};
-identifiers = {'.race.mi.',  '.mat'};
+identifiers = {'.*line.mi.', '.gdf'};
+% identifiers = {'.race.mi.',  '.mat'};
 
 pattern     = identifiers{1};
 extension   = identifiers{2};
 experiment  = 'cybathlon';
-%datapath    = ['/mnt/data/Research/' experiment '/' subject '/'];
-datapath    = ['~/Desktop/tst/' subject '/'];
+datapath    = ['/mnt/data/Research/' experiment '/' subject '/'];
+% datapath    = ['~/Desktop/tst/' subject '/'];
 savedir     = '/analysis/';
 
 %% Processing parameters
@@ -148,14 +148,30 @@ for fId = 1:NumFiles
     end
     
     % Decided to stop recovering this info (with Simis)
-%     % Get classifiers from log file 
-%     if strcmpi(cinfo.modality, 'online') || strcmpi(cinfo.modality, 'race')
-%         clogfile = [datapath '/' cinfo.subject '_' cinfo.date '/' cinfo.subject '.' cinfo.date '.log'];
-%         [~, cfile, cext] = fileparts(cfilename);
-%         ctarget = [cfile cext];
-%         clogstr = cnbiutil_read_logfile(clogfile, ctarget(1:20));
-%        keyboard 
-%     end
+    % Get classifiers from log file 
+    classifier = [];
+    if strcmpi(cinfo.modality, 'online') || strcmpi(cinfo.modality, 'race')
+        clogfile = [datapath '/' cinfo.subject '_' cinfo.date '/' cinfo.subject '.' cinfo.date '.log'];
+        [~, cfile, cext] = fileparts(cfilename);
+        ctarget = regexp(cfile, '(\w*)\.(\d*)\.(\d*)', 'match');
+        
+        clogstr = cnbiutil_read_logfile(clogfile, ctarget);
+        try
+            canalysis = load([datapath '/classifiers/' clogstr.classifier]);
+        catch 
+            error('chk:classifier', ['Classifier ' clogstr.classifier ' not found in ' datapath '/classifiers/']);
+        end
+        
+        classifier.filename    = clogstr.classifier;
+        classifier.gau         = canalysis.analysis.tools.net.gau;
+        classifier.features    = canalysis.analysis.tools.features;
+        classifier.rejection   = clogstr.rejection;
+        classifier.integration = clogstr.integration;
+        classifier.thresholds  = clogstr.thresholds;
+        
+        disp(['       Imported classifier belonging to this file: ' clogstr.classifier]);
+  
+    end
     
     % Create settings structure
     settings.data.filename          = cfilename;
@@ -173,5 +189,5 @@ for fId = 1:NumFiles
     [~, name] = fileparts(cfilename);
     sfilename = [savepath '/' name '.mat'];
     cnbiutil_bdisp(['[out] - Saving psd in: ' sfilename]);
-    save(sfilename, 'psd', 'freqs', 'events', 'settings'); 
+    save(sfilename, 'psd', 'freqs', 'events', 'settings', 'classifier'); 
 end

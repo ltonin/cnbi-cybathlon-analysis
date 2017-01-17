@@ -1,6 +1,6 @@
 clearvars; clc; 
 
-subject = 'AN14VE';
+subject = 'MA25VE';
 
 pattern     = '.mi.';
 modality    = 'race';
@@ -8,13 +8,17 @@ modality    = 'race';
 experiment  = 'cybathlon';
 datapath    = [pwd '/analysis/'];
 figuredir  = './figures/';
+AnalysisType = 'all'; % 'correct'       % Select if all trials are taken into account or only the correct ones (no big changes)
 
-PadTypeId = [768 769 770 771 773 783];
-PadTypeLb = {'Slide', 'Slide', 'Speed', 'Jump', 'Speed', 'Rest'};
 
-SelectedClassId = [770 771];
+TrialTypeId = [768 769 770 771 773 783];
+TrialTypeLb = {'Slide', 'Slide', 'Speed', 'Jump', 'Speed', 'Rest'};
+
+SelectedClassId = [773 771];
 SelectedClassLb = {'BothFeet', 'BothHands'};
 NumClasses = length(SelectedClassId);
+
+CommandId = SelectedClassId + hex2dec('6000');
 
 SelFreqs = 4:2:32;
 
@@ -42,9 +46,24 @@ Mk = labels.Mk;
 
 %% Extract events
 cnbiutil_bdisp('[proc] - Extract events');
-[TrialLb, TrialEvents] = cnbiproc_get_event(PadTypeId, DataLength, events.POS, events.TYP, events.DUR);
-[EyeLb, EyeEvents] = cnbiproc_get_event(267, DataLength, events.POS, events.TYP, events.DUR);
+[TrialLb, TrialEvents] = cnbiproc_get_event(TrialTypeId, DataLength, events.POS, events.TYP, events.DUR);
+[~, CmdEvents]         = cnbiproc_get_event(CommandId, DataLength, events.POS, events.TYP, events.DUR);
+[EyeLb, EyeEvents]     = cnbiproc_get_event(267, DataLength, events.POS, events.TYP, events.DUR);
 ArtifactFree = EyeLb == 0;
+
+%% Create correct command label (only for jump and speed pad)
+CorrectLb = false(DataLength, 1);
+for trId = 1:length(TrialEvents.TYP)
+   cstart = TrialEvents.POS(trId);
+   cstop  = cstart + TrialEvents.DUR(trId) + 1;
+   ctype  = TrialEvents.TYP(trId);
+   
+   index = ctype == (CmdEvents.TYP - hex2dec('6000')) & CmdEvents.POS >= cstart & CmdEvents.POS <= cstop;
+   
+   if sum(index) > 0
+       CorrectLb(cstart:cstop) = true;
+   end
+end
 
 %% Selecting classes
 Ck = zeros(DataLength, 1);
@@ -54,6 +73,10 @@ end
 
 %% Generic condition
 GenericCondition = Ck > 0 & ArtifactFree;
+
+if strcmpi(AnalysisType, 'correct')
+    GenericCondition = GenericCondition & CorrectLb;
+end
 
 %% Compute the overall discriminancy
 NSigma = [];
@@ -74,17 +97,13 @@ end
 
 %% Compute discriminancy per race for competition day
 
-
 CybRaceId = unique(labels.Rk(labels.Mk == 3));
 NumCybRaces = length(CybRaceId);
 discrcyb = zeros(NumFreqs*NumChans, NumCybRaces);
 for rId = 1:NumCybRaces
     craceid = CybRaceId(rId);
-    
     cindex = labels.Rk == craceid & GenericCondition;
-    
     discrcyb(:, rId) = cnbiproc_fisher(F(cindex, :, :), Ck(cindex), NSigma);
-    
 end
 
 %% Plotting discriminancy map per races
@@ -152,7 +171,7 @@ for dId = 1:size(discrday, 2)
     end
 end
 
-suptitle([subject ' - DP - ' modality]);
+suptitle([subject ' - DP - ' modality ' (' AnalysisType ')']);
 cnbifig_export(fig1, [figuredir '/' subject '.discriminancy.' modality '.png'], '-png');
 
 
@@ -167,7 +186,7 @@ discrcyblb = {'Qualifier', 'Final'};
 for rId = 1:NumCybRaces
     subplot(NumRows, NumCols, rId);
     cdata = reshape(discrcyb(:, rId), [NumFreqs NumChans]);
-    imagesc(FreqGrid, 1:NumChans, cdata',[0 1.2]);
+    imagesc(FreqGrid, 1:NumChans, cdata',[0 1]);
     
     if rId == 1
         ylabel('Channel');
@@ -213,4 +232,4 @@ for rId = 1:NumCybRaces
     end
 end
 
-suptitle([subject ' - DP - Cybathlon']);
+suptitle([subject ' - DP - Cybathlon (' AnalysisType ')']);
