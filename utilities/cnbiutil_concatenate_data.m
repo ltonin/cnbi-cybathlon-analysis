@@ -1,5 +1,5 @@
-function [F, events, labels, settings] = cnbiutil_concatenate_data(filepaths)
-% [F, events, labels, settings] = cnbiutil_concatenate_data(filepaths)
+function [F, events, labels, settings, classifiers] = cnbiutil_concatenate_data(filepaths)
+% [F, events, labels, settings, classifiers] = cnbiutil_concatenate_data(filepaths)
 %
 % The function concatenates preprocessed psd datafiles (done by 
 % cnbicyb_processing_spectrogram). It concatenates:
@@ -16,11 +16,14 @@ function [F, events, labels, settings] = cnbiutil_concatenate_data(filepaths)
 %   - events            Structure with TYP, POS and DUR field
 %   - events.extra      Structure with extra event in gdf-like format 
 %                       (filled only for race runs)
+%   - classifiers       Structure with size equal to the number of
+%                       different classifier
 %   - labels            Structure with Mk (modality), Rk (run), Rl(runlabel), Dk (day) and
-%                       Dl (daylabel) fields. 
-%                       Mk, Rk and Dk size: (windows x 1)
+%                       Dl (daylabel) fields, Xk (classifier id). 
+%                       Mk, Rk Dk and Xk size: (windows x 1)
 %                       Dl size: (number of days x 1)
-%                       Rl size: (number of runs x 1);
+%                       Rl size: (number of runs x 1)
+
 
     numfiles = length(filepaths);
     
@@ -35,12 +38,14 @@ function [F, events, labels, settings] = cnbiutil_concatenate_data(filepaths)
     rTYP = []; rPOS = []; rDUR = [];
     freqs = [];
     settings = [];
+    classifiers = [];
     
     Rk = []; 
     Rl = cell(numfiles, 1);
     Dk = [];            
     Dl = [];            
     Mk = [];
+    Xk = [];
     
     lday = [];
     nday = 0;
@@ -125,8 +130,6 @@ function [F, events, labels, settings] = cnbiutil_concatenate_data(filepaths)
         % Concatenate features along 1st dimension (samples)
         F = cat(1, F, cdata.psd);
         
-
-        
         % Save the current frequency grid and check if it is different from
         % the previous one. If so, it raises an error.
         cfreqs = cdata.freqs;
@@ -154,6 +157,24 @@ function [F, events, labels, settings] = cnbiutil_concatenate_data(filepaths)
             error('chk:stn', ['Different processing settings for file: ' cfilepath]);
            
         end
+        
+        % Classifiers concatenation
+        if isempty(cdata.classifier) == false
+            cclassifier = cdata.classifier;
+            if isempty(classifiers) == true
+                classifiers = cat(2, classifiers, cclassifier);
+            elseif isequal(cclassifier.filename, classifiers(end).filename) == false
+                
+                classifiers = cat(2, classifiers, cclassifier);
+            end
+            
+            Xk = cat(1, Xk, length(classifiers)*ones(size(cdata.psd, 1), 1));
+        else
+            Xk = cat(1, Xk, zeros(size(cdata.psd, 1), 1));
+        end
+            
+        
+
         
     end
     
@@ -194,5 +215,6 @@ function [F, events, labels, settings] = cnbiutil_concatenate_data(filepaths)
     labels.Mk  = Mk;
     labels.Dl  = Dl;
     labels.Dk  = Dk;
+    labels.Xk  = Xk;
 
 end
