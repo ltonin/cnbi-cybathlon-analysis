@@ -3,8 +3,8 @@ clearvars; clc;
 subject = 'MA25VE';
 % subject = 'AN14VE';
 
-% identifiers = {'.*line.mi.', '.gdf'};
-identifiers = {'.race.mi.',  '.mat'};
+identifiers = {'.*line.mi.', '.gdf'};
+% identifiers = {'.race.mi.',  '.mat'};
 
 pattern     = identifiers{1};
 extension   = identifiers{2};
@@ -147,10 +147,10 @@ for fId = 1:NumFiles
         events.extra.protocol.DUR = events.extra.race.DUR;
     end
     
-    % Decided to stop recovering this info (with Simis)
-    % Get classifiers from log file 
+    % Get classifiers from log file (only for online and race excluding
+    % rehearsalstyle
     classifier = [];
-    if strcmpi(cinfo.modality, 'online') || strcmpi(cinfo.modality, 'race')
+    if strcmpi(cinfo.modality, 'online') || strcmpi(cinfo.modality, 'race') && strcmpi(cdata.Race.protocol, 'rehearsalstyle') == false
         clogfile = [datapath '/' cinfo.subject '_' cinfo.date '/' cinfo.subject '.' cinfo.date '.log'];
         [~, cfile, cext] = fileparts(cfilename);
         ctarget = char(regexp(cfile, '(\w*)\.(\d*)\.(\d*)', 'match'));
