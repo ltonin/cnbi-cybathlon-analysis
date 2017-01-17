@@ -39,13 +39,50 @@ cnbiutil_bdisp('[proc] - Extract events');
 
 %% Extract command events
 cnbiutil_bdisp('[proc] - Extract commands');
-[CommLb, CommEvents] = cnbiproc_get_event(CommTypeId, DataLength, events.POS, events.TYP, events.DUR);
+[CommRL, CommRLEvents] = cnbiproc_get_event(CommTypeId, DataLength, events.extra.cmd.POS, events.extra.cmd.TYP, events.extra.cmd.DUR);
+[CommAll, CommAllEvents] = cnbiproc_get_event(CommTypeId, DataLength, events.extra.cmdg.POS, events.extra.cmdg.TYP, events.extra.cmdg.DUR);
 
-%% Compute the overall accuracies (one decision per pad)
-[TPFPPad, TPFPTask, SpeedPad, SpeedTask] = cnbiproc_padacc(CommLb, TrialEvents, PadTypeId, PadTypeLb, PadTypeInd);
+%% Compute the overall accuracies
+%[CommAcc] = cnbiproc_commacc(CommRL, CommAll, TrialEvents, events, PadTypeId, PadTypeLb, PadTypeInd);
 
-%% Compute the overall accuracies (one decision per command/trial)
-[TPFPPad, TPFPTask, SpeedPad, SpeedTask] = cnbiproc_padacc(CommLb, TrialEvents, PadTypeId, PadTypeLb, PadTypeInd);
+% Find all commands
+IndComm = find(CommAll~=0);
+tmpval = max(TrialLb(IndComm),TrialLb(IndComm-1));
+CommGT = zeros(length(TrialLb),1);
+CommGT(IndComm) = tmpval;
+
+remIndSample = setdiff(find(CommAll~=0),find(CommGT~=0));
+remIndTrial = find(ismember(CommRLEvents.POS,remIndSample));
+
+CommRL(remIndSample)=0;
+CommAll(remIndSample)=0;
+CommGT(remIndSample)=0;
+
+CommRLEvents.TYP(remIndTrial)=[];
+CommRLEvents.POS(remIndTrial)=[];
+CommRLEvents.DUR(remIndTrial)=[];
+CommAllEvents.TYP(remIndTrial)=[];
+CommAllEvents.POS(remIndTrial)=[];
+CommAllEvents.DUR(remIndTrial)=[];
+
+CommProt = nan(length(CommAll),1);
+for p=1:length(events.extra.protocol.TYP)
+    CommProt(events.extra.protocol.POS(p):events.extra.protocol.POS(p)+events.extra.protocol.DUR(p)-1) = events.extra.protocol.TYP(p);
+end
+
+% The problem is only with the 768 labels, that can have a number of
+% interpretations depending on the protocol and order. Reassign them
+RealGT = CommGT;
+RealComm = CommRL;
+
+% Case of protocol 5 (mi_cybathlon2), where slide is essentially rest
+IndPad786Prot5 = intersect(find(CommProt==5), find(CommGT==768));
+RealGT(IndPad786Prot5) = 783;
+RealComm(IndPad786Prot5) = 783+hex2dec('6000');
+
+% Case of protocol 6 (mi_cybathlon3/controller)
+
+
 
 %% Compute accuracies per day
 SessionTrialEvents = [];

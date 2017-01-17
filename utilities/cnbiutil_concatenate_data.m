@@ -36,6 +36,7 @@ function [F, events, labels, settings, classifiers] = cnbiutil_concatenate_data(
     cgTYP = []; cgPOS = []; cgDUR = [];
     eTYP = []; ePOS = []; eDUR = [];
     rTYP = []; rPOS = []; rDUR = [];
+    prTYP = []; prPOS = []; prDUR = [];
     freqs = [];
     settings = [];
     classifiers = [];
@@ -99,6 +100,10 @@ function [F, events, labels, settings, classifiers] = cnbiutil_concatenate_data(
             pPOS = cat(1, pPOS, cevents.extra.pad.POS + size(F, 1));
             pDUR = cat(1, pDUR, cevents.extra.pad.DUR);
 
+            prTYP = cat(1, prTYP, cevents.extra.protocol.TYP);
+            prPOS = cat(1, prPOS, cevents.extra.protocol.POS + size(F, 1));
+            prDUR = cat(1, prDUR, cevents.extra.protocol.DUR);
+            
             bTYP = cat(1, bTYP, cevents.extra.bci.TYP);
             bPOS = cat(1, bPOS, cevents.extra.bci.POS + size(F, 1));
             bDUR = cat(1, bDUR, cevents.extra.bci.DUR);
@@ -147,6 +152,7 @@ function [F, events, labels, settings, classifiers] = cnbiutil_concatenate_data(
         csettings = cdata.settings;
         csettings.data.nsamples = nan;
         csettings.data.filename = nan;
+        csettings.protocol = nan;
         
         if(isempty(settings))
             settings = csettings;
@@ -209,6 +215,10 @@ function [F, events, labels, settings, classifiers] = cnbiutil_concatenate_data(
     events.extra.race.TYP = rTYP;
     events.extra.race.POS = rPOS;
     events.extra.race.DUR = rDUR;
+    
+    events.extra.protocol.TYP = prTYP;
+    events.extra.protocol.POS = prPOS;
+    events.extra.protocol.DUR = prDUR;    
     
     labels.Rk  = Rk;
     labels.Rl  = Rl;

@@ -1,7 +1,7 @@
 clearvars; clc;
 
-subject = 'MA25VE';
-%subject = 'AN14VE';
+%subject = 'MA25VE';
+subject = 'AN14VE';
 
 identifiers = {'.*line.mi.', '.gdf'};
 % identifiers = {'.race.mi.',  '.mat'};
@@ -98,6 +98,28 @@ for fId = 1:NumFiles
     events.DUR = floor(cevents.DUR/(wshift*h.SampleRate)) + 1;
     events.conversion = winconv;
     
+    if(strcmp(cinfo.modality,'race'))
+        if(strcmp(cdata.Race.protocol ,'rehearsalstyle'))
+            protocol = 3;
+        elseif(strcmp(cdata.Race.protocol,'mi_cybathlon1'))
+            protocol = 4;
+        elseif(strcmp(cdata.Race.protocol,'mi_cybathlon2'))
+            protocol = 5;
+        elseif(strcmp(cdata.Race.protocol,'mi_cybathlon3/controller'))
+            protocol = 6;
+        else
+            protocol = 0;
+        end
+    else
+        if(strcmp(cinfo.modality,'offline'))
+            protocol = 1;
+        elseif(strcmp(cinfo.modality,'online'))
+            protocol = 2;
+        else
+            protocol = 0;            
+        end
+    end
+    
     if isempty(cextraevents) == false
         events.extra.trl.TYP  = cextraevents.trl.TYP;
         events.extra.pad.TYP  = cextraevents.pad.TYP;
@@ -106,6 +128,7 @@ for fId = 1:NumFiles
         events.extra.cmdg.TYP  = cextraevents.cmdg.TYP;
         events.extra.eye.TYP  = cextraevents.eye.TYP;
         events.extra.race.TYP = cextraevents.race.TYP;
+        events.extra.protocol.TYP = protocol;
         events.extra.trl.POS  = cnbiproc_pos2win(cextraevents.trl.POS,  wshift*h.SampleRate, winconv, mlength*h.SampleRate);
         events.extra.pad.POS  = cnbiproc_pos2win(cextraevents.pad.POS,  wshift*h.SampleRate, winconv, mlength*h.SampleRate);
         events.extra.bci.POS  = cnbiproc_pos2win(cextraevents.bci.POS,  wshift*h.SampleRate, winconv, mlength*h.SampleRate);
@@ -113,6 +136,7 @@ for fId = 1:NumFiles
         events.extra.cmdg.POS  = cnbiproc_pos2win(cextraevents.cmdg.POS,  wshift*h.SampleRate, winconv, mlength*h.SampleRate);
         events.extra.eye.POS  = cnbiproc_pos2win(cextraevents.eye.POS,  wshift*h.SampleRate, winconv, mlength*h.SampleRate);
         events.extra.race.POS = cnbiproc_pos2win(cextraevents.race.POS, wshift*h.SampleRate, winconv, mlength*h.SampleRate);
+        events.extra.protocol.POS = events.extra.race.POS;
         events.extra.trl.DUR  = floor(cextraevents.trl.DUR/(wshift*h.SampleRate)) + 1;
         events.extra.pad.DUR  = floor(cextraevents.pad.DUR/(wshift*h.SampleRate)) + 1;
         events.extra.bci.DUR  = floor(cextraevents.bci.DUR/(wshift*h.SampleRate)) + 1;
@@ -120,6 +144,7 @@ for fId = 1:NumFiles
         events.extra.cmdg.DUR  = floor(cextraevents.cmdg.DUR/(wshift*h.SampleRate)) + 1;
         events.extra.eye.DUR  = floor(cextraevents.eye.DUR/(wshift*h.SampleRate)) + 1;
         events.extra.race.DUR = floor(cextraevents.race.DUR/(wshift*h.SampleRate)) + 1;
+        events.extra.protocol.DUR = events.extra.race.DUR;
     end
     
     % Decided to stop recovering this info (with Simis)
@@ -158,6 +183,8 @@ for fId = 1:NumFiles
     settings.spectrogram.wshift     = wshift;
     settings.spectrogram.pshift     = pshift;
     settings.spectrogram.freqgrid   = freqs;
+    settings.protocollegend         = {'offline','online','rehearsalstyle','cybathlon1','cybathlon2','cybathlon3'};
+    settings.protocol = protocol;
     
     [~, name] = fileparts(cfilename);
     sfilename = [savepath '/' name '.mat'];

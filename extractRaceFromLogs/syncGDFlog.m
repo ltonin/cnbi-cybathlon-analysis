@@ -322,17 +322,15 @@ for g=1:length(GameStartInd)
                 Race.EVENT.POS = tmpAllPOS(sortInd);
                 Race.EVENT.TYP = tmpAllTYP(sortInd);
                 Race.EVENT.DUR = zeros(length(Race.EVENT.TYP),1);
-                % Uniformize the command events among different protocols
-                Race.EVENT.TYP(Race.EVENT.TYP==5) = 25349; % BH = 5 = 25349 (0x0305 + 0x6000)
-                Race.EVENT.TYP(Race.EVENT.TYP==6) = 25347; % BH = 6 = 25347 (0x0303 + 0x6000)
+
                 % For the "7" I have to be careful, since it might be
                 % coming from the mi_cybathlon2 (timeout sends slide)or
-                % from mi_cyabthlon3 (reversing creates slide) I will try
-                % to guess, since mi_cybathlon2 had big timeouts and
-                % mi_cybathlon3 small ones
-                if(sum(Race.EVENT.TYP==7) > 0) % If there are 7s
+                % from mi_cyabthlon3 (reversing creates slide). I will try
+                % to guess, since mi_cybathlon2 has small variance (always
+                % at timeout) and mi_cybathlon3 bigger (non-zero)
+                if( (sum(Race.EVENT.TYP==7) > 0) ) % If there are 7s
                     % Find the time elapsed from previous commands
-                    CommInd = find(ismember(Race.EVENT.TYP,[25349 25347 7]));
+                    CommInd = find(ismember(Race.EVENT.TYP,[25349 25347 5 6 7]));
                     Comm7Ind = find(Race.EVENT.TYP==7);
                     if(~isempty(find(diff(find(ismember(CommInd,Comm7Ind)==1))==1)))
                         disp('a');
@@ -348,25 +346,44 @@ for g=1:length(GameStartInd)
                     
                     if(StdDiff < 0.1)
                         % Assume it is mi_cybathlon2
-                        Race.EVENT.TYP(Race.EVENT.TYP==7) = 25344; % BH = 7 = 25344 (0x0300 + 0x6000)
                         Race.protocol = 'mi_cybathlon2';
                     else
                         % Assume it is mi_cybathlon3
                         % It is the opposite of the previous command
                         for slides=1:length(Comm7Ind)
-                            if(Race.EVENT.TYP(CommInd(find(ismember(CommInd,Comm7Ind(slides)))-1)) == 25347)
+                            if(Race.EVENT.TYP(CommInd(find(ismember(CommInd,Comm7Ind(slides)))-1)) == 6)
                                 Race.EVENT.TYP(Comm7Ind(slides)) = 25349;
-                            elseif(Race.EVENT.TYP(CommInd(find(ismember(CommInd,Comm7Ind(slides)))-1)) == 25349)
+                            elseif(Race.EVENT.TYP(CommInd(find(ismember(CommInd,Comm7Ind(slides)))-1)) == 5)
                                 Race.EVENT.TYP(Comm7Ind(slides)) = 25347;
                             else
                                 disp('Shit!');
+                                keyboard;
                             end
                         end
                         Race.protocol = 'mi_cybathlon3/controller';
                     end
                 else
-                    Race.protocol = 'mi_cybathlon1';
+                    if(sum(ismember(Race.EVENT.TYP,[25344 25347 25349])) == 0)
+                        Race.protocol = 'mi_cybathlon1';
+                        if(sum(strcmp(thisPGActiveCommands,'Kick'))>0)
+                            keyboard
+                        end
+                        if(sum(strcmp(thisPGActiveCommands,'Roll'))>0)
+                            keyboard
+                        end
+                        if(sum(strcmp(thisPGActiveCommands,'Slide'))>0)
+                            keyboard
+                        end
+                    else
+                        Race.protocol = 'mi_cybathlon3/controller';                        
+                    end
                 end
+                
+                % Uniformize the command events among different protocols
+                Race.EVENT.TYP(Race.EVENT.TYP==5) = 25349; % BH = 5 = 25349 (0x0305 + 0x6000)
+                Race.EVENT.TYP(Race.EVENT.TYP==6) = 25347; % BH = 6 = 25347 (0x0303 + 0x6000)                
+                Race.EVENT.TYP(Race.EVENT.TYP==7) = 25344; % BH = 7 = 25344 (0x0300 + 0x6000)                
+                
                 if(~isempty(find(ismember(unique(Race.EVENT.TYP),[768 771 773 783 25344 25347 25349 781 267 268 666])==0)))
                     % There are weird triggers, remove them
                     Ind10 = find(Race.EVENT.TYP==10);
