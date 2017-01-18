@@ -39,7 +39,6 @@ for c=1:length(CueTypeId)
     CommAcc(c) = 100*sum(CueEvents.TYP==CueTypeId(c) & HitMissEvents.TYP==897)/sum(CueEvents.TYP==CueTypeId(c));
 end
 
-
 %% Compute discriminancy per day
 
 for dId = 1:NumDays
@@ -57,7 +56,7 @@ cnbifig_set_position(fig1, 'All');
 plot(1:NumDays,CommAccSes(1,:),'y',1:NumDays,CommAccSes(2,:),'b',1:NumDays,CommAccSes(3,:),'m',1:NumDays,CommAccSes(4,:),'c',1:NumDays,CommAccSes(5,:),'k',1:NumDays,nanmean(CommAccSes,1),'--g','LineWidth',3);
 legend({'Left Hand','Right Hand','Both Feet','Both Hands','Rest','Average'});
 xlabel('Feedback Session','FontSize',20,'LineWidth',3);
-ylabel('Command Accuracy (sec)','FontSize',20,'LineWidth',3);
+ylabel('Command Accuracy (%)','FontSize',20,'LineWidth',3);
 title(subject);
 axis([0 NumDays+1 0 109]);
 set(gca,'FontSize',20,'LineWidth',3);

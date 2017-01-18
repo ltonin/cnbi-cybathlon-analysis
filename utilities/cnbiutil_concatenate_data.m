@@ -75,7 +75,9 @@ function [F, events, labels, settings, classifiers] = cnbiutil_concatenate_data(
         cnbiutil_disp_progress(fId, numfiles, '        ');
         cfilepath = filepaths{fId};
         cdata = load(cfilepath);
-        
+        if(sum(sum(sum(isnan(cdata.psd)))) ~=0)
+            keyboard
+        end
         % Get current position 
         cstart   = fileseek;
         cstop    = cstart + datasize(1, fId) - 1;
