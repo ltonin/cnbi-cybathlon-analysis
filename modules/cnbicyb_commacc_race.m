@@ -173,4 +173,4 @@ set(gca,'XTick',unique(Dk));
 set(gca,'XTickLabel',Dl);
 xticklabel_rotate([],45,[])
 
-cnbifig_export(fig1, [figuredir '/' subject '.commacc.' modality '.png'], '-png');
+cnbifig_export(fig1, [figuredir '/' subject '.commaccrace.' modality '.png'], '-png');
