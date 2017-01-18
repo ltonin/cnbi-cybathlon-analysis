@@ -1,6 +1,7 @@
 clearvars; clc; 
 
-subject = 'MA25VE';
+%subject = 'MA25VE';
+subject = 'AN14VE';
 
 pattern     = '.mi.';
 modality    = 'race';
@@ -14,7 +15,8 @@ AnalysisType = 'all'; % 'correct'       % Select if all trials are taken into ac
 TrialTypeId = [768 769 770 771 773 783];
 TrialTypeLb = {'Slide', 'Slide', 'Speed', 'Jump', 'Speed', 'Rest'};
 
-SelectedClassId = [773 771];
+%SelectedClassId = [773 771];
+SelectedClassId = [770 771];
 SelectedClassLb = {'BothFeet', 'BothHands'};
 NumClasses = length(SelectedClassId);
 
