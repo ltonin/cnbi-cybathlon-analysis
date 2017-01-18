@@ -78,48 +78,92 @@ RealComm = CommRL;
 % Case of protocol 5 (mi_cybathlon2), where slide is essentially rest
 IndPad786Prot5 = intersect(find(CommProt==5), find(CommGT==768));
 RealGT(IndPad786Prot5) = 783;
-RealComm(IndPad786Prot5) = 783+hex2dec('6000');
+RealComm(IndPad786Prot5(find(RealComm(IndPad786Prot5)==25344))) = 783+hex2dec('6000');
 
-% Case of protocol 6 (mi_cybathlon3/controller)
 
+% Case of protocol 6 (mi_cybathlon3/controller), where reverse + timeout
+% sends a command
+IndRealComm = find(RealComm~=0);
+Prot = [];
+GT = [];
+PossibleClasses = [771 773];
+for tr=1:length(events.extra.pad.TYP)
+    Prot = events.extra.protocol.TYP(floor((tr-1)/18)+1);
+    BiasedClass = mode(RealComm(IndRealComm(intersect(find(IndRealComm >= events.extra.race.POS(floor((tr-1)/18)+1)),...
+            find(IndRealComm < events.extra.race.POS(floor((tr-1)/18)+1) + ...
+            events.extra.race.DUR(floor((tr-1)/18)+1))))))-hex2dec('6000');
+    BiasClassInd = find(PossibleClasses==BiasedClass);
+    GT = events.extra.pad.TYP(tr);
+    BeginPad = events.extra.pad.POS(tr);
+    if( (Prot==6) && (GT==768) )
+        % Find the indices of commands inside there
+        CommIndInTrial = intersect(find(IndRealComm >= events.extra.pad.POS(tr)),...
+            find(IndRealComm < events.extra.pad.POS(tr) + events.extra.pad.DUR(tr)));
+        if(isempty(CommIndInTrial))
+            continue;
+        end
+        
+        % Find time since immediately previous command
+        TimeFromPrevious = (BeginPad-IndRealComm(CommIndInTrial(1)-1))*0.0625;
+        TypePrevious = RealComm(IndRealComm(CommIndInTrial(1)-1));
+        PreviousInd = find(PossibleClasses==BiasedClass);
+        
+        if(TimeFromPrevious <= 3.0)
+            % If small amount of time has elapsed since the last command
+            % when the pad starts, we can almost safely assume that he was
+            % trying to reach the inverse, so that he can slide.
+            PredictedInd = 3-PreviousInd;
+            PredictedType = PossibleClasses(PredictedInd);
+        else
+            % If too much time has passed, itis most likely they wanted to
+            % deliver their "easy"/biased command first
+            PredictedInd = BiasClassInd;
+            PredictedType = PossibleClasses(BiasClassInd);
+        end
+        
+        for c=1:length(CommIndInTrial)
+            if(CommAll(IndRealComm(CommIndInTrial(c))) == 25344)
+                % Never mind the prediction, if we are lucky and there is a
+                % slide command, we are sure the real command is correct.
+                % So, change the 768 label to the one corresponding to this
+                % command
+                RealGT(IndRealComm(CommIndInTrial(c))) = RealComm(IndRealComm(CommIndInTrial(c)))-hex2dec('6000');
+            else
+                % Change to the predicted one
+                RealGT(IndRealComm(CommIndInTrial(c))) = PredictedType;
+                % Update the predicted to the opposite of this one, now we
+                % can be pretty sure that he simply tried for the inverse
+                IndCurrent = find(PossibleClasses == (RealComm(IndRealComm(CommIndInTrial(c)))-hex2dec('6000')));
+                PredictedInd = 3-IndCurrent;
+                PredictedType = PossibleClasses(PredictedInd);
+            end
+        end        
+    end
+end
+
+% Allrighty, now it is easy to calculate a confusion matrix
+ConfMat = cnbiproc_commacc(RealGT, RealComm, PadTypeId, ones(size(Dk)));
 
 
 %% Compute accuracies per day
-SessionTrialEvents = [];
-MSpeedPadSes = [];
+CommAcc = [];
 for dId = 1:NumDays
-    KeepInd = [];
-    for tr=1:length(TrialEvents.DUR)
-        if(Dk(TrialEvents.POS(tr))==dId)
-            KeepInd = [KeepInd; tr];
-        end
-    end
-    thisSessionTrialEvents.POS = TrialEvents.POS(KeepInd);
-    thisSessionTrialEvents.TYP = TrialEvents.TYP(KeepInd);
-    thisSessionTrialEvents.DUR = TrialEvents.DUR(KeepInd);
-    [TPFPPadSes{dId}, TPFPTaskSes{dId}, SpeedPadSes, SpeedTaskSes] = cnbiproc_commacc(CommLb, thisSessionTrialEvents, PadTypeId, PadTypeLb, PadTypeInd);
-    
-    for t=1:size(TPFPPad,1)
-        AccPad(t,dId) = TPFPPadSes{dId}(t,1);
-    end
-    for t=1:size(TPFPTask,1)
-        AccTask(t,dId) = TPFPTaskSes{dId}(t,1);
-    end
-    
-    MSpeedPadSes(dId,1) = mean(SpeedPadSes{1});
-    SSpeedPadSes(dId,1) = std2(SpeedPadSes{1});
-    MSpeedPadSes(dId,2) = mean(SpeedPadSes{2});
-    SSpeedPadSes(dId,2) = std2(SpeedPadSes{2});
-    MSpeedPadSes(dId,3) = mean(SpeedPadSes{3});
-    SSpeedPadSes(dId,3) = std2(SpeedPadSes{3});
+    UseInd = (Dk==dId);
+    ConfMatSes{dId} = cnbiproc_commacc(RealGT, RealComm, PadTypeId, UseInd);
+    % We are mainly interested in 771 and 773
+    CommAcc(1,dId) = ConfMatSes{dId}(4,4); % 771, feet
+    CommAcc(2,dId) = ConfMatSes{dId}(5,5); % 773, hands
+    CommAcc(3,dId) = ConfMatSes{dId}(3,3); % 770, right hand
+    CommAcc(4,dId) = ConfMatSes{dId}(2,2); % 769, left hand
+    %CommAcc(3,dId) = sum([ ConfMatSes{dId}(3,3) ConfMatSes{dId}(5,5) ]); % 770 or 773
 end
 
 
 %% Plotting
 fig1 = figure;
 cnbifig_set_position(fig1, 'All');
-plot(1:NumDays,AccPad(1,:),'c',1:NumDays,AccPad(2,:),'m',1:NumDays,AccPad(3,:),'y',1:NumDays,AccPad(4,:),'k',1:NumDays,nanmean(AccPad(1:3,:)),'--g','LineWidth',3);
-legend({'Speed','Jump','Slide','Rest','Average (active)'});
+plot(1:NumDays,CommAcc(1,:),'m',1:NumDays,CommAcc(2,:),'c',1:NumDays,CommAcc(3,:),'b',1:NumDays,CommAcc(4,:),'y',1:NumDays,nanmean(CommAcc,1),'k','LineWidth',3);
+legend({'Both Feet','Both Hands','Right Hand','Left Hand','Average'});
 xlabel('Race Session','FontSize',20,'LineWidth',3);
 ylabel('Command Accuracy (sec)','FontSize',20,'LineWidth',3);
 title(subject);
@@ -130,23 +174,3 @@ set(gca,'XTickLabel',Dl);
 xticklabel_rotate([],45,[])
 
 cnbifig_export(fig1, [figuredir '/' subject '.commacc.' modality '.png'], '-png');
-
-
-fig2 = figure;
-cnbifig_set_position(fig2, 'All');
-plot(1:NumDays,MSpeedPadSes(:,1),'c',1:NumDays,MSpeedPadSes(:,2),'m',1:NumDays,MSpeedPadSes(:,3),'y','LineWidth',3, 'MarkerSize',10,'LineWidth',3);
-legend({'Speed','Jump','Slide'});
-hold on;
-shadedErrorBar(1:NumDays,MSpeedPadSes(:,1),SSpeedPadSes(:,1),'*c',1);
-shadedErrorBar(1:NumDays,MSpeedPadSes(:,2),SSpeedPadSes(:,2),'*m',1);
-shadedErrorBar(1:NumDays,MSpeedPadSes(:,3),SSpeedPadSes(:,3),'*y',1);
-hold off;
-xlabel('Race Session','FontSize',20,'LineWidth',3);
-ylabel('Average Command Delivery Time (sec)','FontSize',20,'LineWidth',3);
-title(subject);
-axis([1 max(Dk) 0 11]);
-set(gca,'FontSize',20,'LineWidth',3);
-set(gca,'XTick',unique(Dk));
-set(gca,'XTickLabel',Dl);
-xticklabel_rotate([],45,[])
-cnbifig_export(fig2, [figuredir '/' subject '.commtime.' modality '.png'], '-png');

@@ -60,7 +60,7 @@ for dId = 1:NumDays
     thisSessionTrialEvents.POS = TrialEvents.POS(KeepInd);
     thisSessionTrialEvents.TYP = TrialEvents.TYP(KeepInd);
     thisSessionTrialEvents.DUR = TrialEvents.DUR(KeepInd);
-    [TPFPPadSes{dId}, TPFPTaskSes{dId}, SpeedPadSes, SpeedTaskSes] = cnbiproc_commacc(CommLb, thisSessionTrialEvents, PadTypeId, PadTypeLb, PadTypeInd);
+    [TPFPPadSes{dId}, TPFPTaskSes{dId}, SpeedPadSes, SpeedTaskSes] = cnbiproc_padacc(CommLb, thisSessionTrialEvents, PadTypeId, PadTypeLb, PadTypeInd);
     
     for t=1:size(TPFPPad,1)
         AccPad(t,dId) = TPFPPadSes{dId}(t,1);
@@ -92,7 +92,7 @@ set(gca,'XTick',unique(Dk));
 set(gca,'XTickLabel',Dl);
 xticklabel_rotate([],45,[])
 
-cnbifig_export(fig1, [figuredir '/' subject '.commacc.' modality '.png'], '-png');
+cnbifig_export(fig1, [figuredir '/' subject '.padacc.' modality '.png'], '-png');
 
 
 fig2 = figure;
@@ -112,4 +112,4 @@ set(gca,'FontSize',20,'LineWidth',3);
 set(gca,'XTick',unique(Dk));
 set(gca,'XTickLabel',Dl);
 xticklabel_rotate([],45,[])
-cnbifig_export(fig2, [figuredir '/' subject '.commtime.' modality '.png'], '-png');
+cnbifig_export(fig2, [figuredir '/' subject '.padtime.' modality '.png'], '-png');

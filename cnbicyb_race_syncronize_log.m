@@ -1,10 +1,12 @@
 clearvars; clc;
 
 subject = 'AN14VE';
+%subject = 'MA25VE';
 
 
 experiment  = 'cybathlon';
-datapath    = ['/mnt/data/Research/' experiment '/' subject '/'];
+%datapath    = ['/mnt/data/Research/' experiment '/' subject '/'];
+datapath    = ['~/Desktop/tst/' subject '/'];
 targetpath  = [datapath '/' subject '_racemat/'];
 
 %% Sync race and gdf
