@@ -27,35 +27,59 @@ function [F, events, labels, settings, classifiers] = cnbiutil_concatenate_data(
 
     numfiles = length(filepaths);
     
-    F     = [];
-    TYP  = []; POS  = []; DUR  = [];
-    tTYP = []; tPOS = []; tDUR = [];
-    pTYP = []; pPOS = []; pDUR = [];
-    bTYP = []; bPOS = []; bDUR = [];
-    cTYP = []; cPOS = []; cDUR = [];
+    % Getting size info to allocate memory and speedup the concatenation
+    datasize   = get_data_size(filepaths);
+    NumSamples = sum(datasize(1, :));
+    NumFreqs   = unique(datasize(2, :));
+    NumChans   = unique(datasize(3, :));
+    
+    if length(NumFreqs) > 1
+        error('chk:dim', 'Files do not have the same number of frequencies. Cannot concatenate');
+    end
+    
+    if length(NumChans) > 1
+        error('chk:dim', 'Files do not have the same number of channels. Cannot concatenate');
+    end
+    
+    % Pre-allocate variables
+    F     = zeros(NumSamples, NumFreqs, NumChans);
+    Rk    = zeros(NumSamples, 1);
+    Dk    = zeros(NumSamples, 1);
+    Mk    = zeros(NumSamples, 1);
+    Xk    = zeros(NumSamples, 1);
+    Rl    = cell(numfiles, 1);
+    Dl    = [];
+    
+    % I don't know the number of events a-priori. Anyway it should not
+    % impact the speed too much
+    TYP   = [];  POS  = [];  DUR  = [];
+    tTYP  = [];  tPOS = [];  tDUR = [];
+    pTYP  = [];  pPOS = [];  pDUR = [];
+    bTYP  = [];  bPOS = [];  bDUR = [];
+    cTYP  = [];  cPOS = [];  cDUR = [];
     cgTYP = []; cgPOS = []; cgDUR = [];
-    eTYP = []; ePOS = []; eDUR = [];
-    rTYP = []; rPOS = []; rDUR = [];
+    eTYP  = [];  ePOS = [];  eDUR = [];
+    rTYP  = [];  rPOS = [];  rDUR = [];
     prTYP = []; prPOS = []; prDUR = [];
+    
     freqs = [];
     settings = [];
     classifiers = [];
     
-    Rk = []; 
-    Rl = cell(numfiles, 1);
-    Dk = [];            
-    Dl = [];            
-    Mk = [];
-    Xk = [];
-    
     lday = [];
     nday = 0;
     fprintf('[io] - Concatenate psd data and events:\n');
+    
+    fileseek = 1;
     for fId = 1:numfiles
         cnbiutil_disp_progress(fId, numfiles, '        ');
         cfilepath = filepaths{fId};
         cdata = load(cfilepath);
         
+        % Get current position 
+        cstart   = fileseek;
+        cstop    = cstart + datasize(1, fId) - 1;
+       
         % Extract information from filename
         cinfo = cnbiutil_getfile_info(cfilepath);
         
@@ -73,7 +97,7 @@ function [F, events, labels, settings, classifiers] = cnbiutil_concatenate_data(
             otherwise
                 error('chk:mod', ['[' mfilename '] Unknown modality']);
         end
-        Mk = cat(1, Mk, modality*ones(size(cdata.psd, 1), 1));
+        Mk(cstart:cstop) = modality;
         
         % Get day from filename
         if strcmpi(cinfo.date, lday) == false
@@ -81,11 +105,14 @@ function [F, events, labels, settings, classifiers] = cnbiutil_concatenate_data(
             Dl = cat(1, Dl, cinfo.date);
             lday = cinfo.date;
         end
-        Dk = cat(1, Dk, nday*ones(size(cdata.psd, 1), 1));
+        Dk(cstart:cstop) = nday;
         
         % Create run vector
-        Rk = cat(1, Rk, fId*ones(size(cdata.psd, 1), 1));
+        Rk(cstart:cstop) = fId;
         Rl{fId} = cinfo.extra;
+        
+        % Concatenate features along 1st dimension (samples)
+        F(cstart:cstop, :, :) = cdata.psd;
         
         % Get events
         cevents = cdata.events;
@@ -93,47 +120,44 @@ function [F, events, labels, settings, classifiers] = cnbiutil_concatenate_data(
         % Concatenate events
         if modality == 2 || modality == 3    % race runs
             tTYP = cat(1, tTYP, cevents.extra.trl.TYP);
-            tPOS = cat(1, tPOS, cevents.extra.trl.POS + size(F, 1));
+            tPOS = cat(1, tPOS, cevents.extra.trl.POS + fileseek - 1);
             tDUR = cat(1, tDUR, cevents.extra.trl.DUR);
 
             pTYP = cat(1, pTYP, cevents.extra.pad.TYP);
-            pPOS = cat(1, pPOS, cevents.extra.pad.POS + size(F, 1));
+            pPOS = cat(1, pPOS, cevents.extra.pad.POS + fileseek - 1);
             pDUR = cat(1, pDUR, cevents.extra.pad.DUR);
 
             prTYP = cat(1, prTYP, cevents.extra.protocol.TYP);
-            prPOS = cat(1, prPOS, cevents.extra.protocol.POS + size(F, 1));
+            prPOS = cat(1, prPOS, cevents.extra.protocol.POS + fileseek - 1);
             prDUR = cat(1, prDUR, cevents.extra.protocol.DUR);
             
             bTYP = cat(1, bTYP, cevents.extra.bci.TYP);
-            bPOS = cat(1, bPOS, cevents.extra.bci.POS + size(F, 1));
+            bPOS = cat(1, bPOS, cevents.extra.bci.POS + fileseek - 1);
             bDUR = cat(1, bDUR, cevents.extra.bci.DUR);
 
             cTYP = cat(1, cTYP, cevents.extra.cmd.TYP);
-            cPOS = cat(1, cPOS, cevents.extra.cmd.POS + size(F, 1));
+            cPOS = cat(1, cPOS, cevents.extra.cmd.POS + fileseek - 1);
             cDUR = cat(1, cDUR, cevents.extra.cmd.DUR);
 
             cgTYP = cat(1, cgTYP, cevents.extra.cmdg.TYP);
-            cgPOS = cat(1, cgPOS, cevents.extra.cmdg.POS + size(F, 1));
+            cgPOS = cat(1, cgPOS, cevents.extra.cmdg.POS + fileseek - 1);
             cgDUR = cat(1, cgDUR, cevents.extra.cmdg.DUR);            
             
             eTYP = cat(1, eTYP, cevents.extra.eye.TYP);
-            ePOS = cat(1, ePOS, cevents.extra.eye.POS + size(F, 1));
+            ePOS = cat(1, ePOS, cevents.extra.eye.POS + fileseek - 1);
             eDUR = cat(1, eDUR, cevents.extra.eye.DUR);
 
             rTYP = cat(1, rTYP, cevents.extra.race.TYP);
-            rPOS = cat(1, rPOS, cevents.extra.race.POS + size(F, 1));
+            rPOS = cat(1, rPOS, cevents.extra.race.POS + fileseek - 1);
             rDUR = cat(1, rDUR, cevents.extra.race.DUR);
         end
         
         TYP = cat(1, TYP, cevents.TYP);
         DUR = cat(1, DUR, cevents.DUR);
-        POS = cat(1, POS, cevents.POS + size(F, 1));
+        POS = cat(1, POS, cevents.POS + fileseek - 1);
         if (sum(POS <= 0) > 0)
-            keyboard
+            error('chk:pos', 'Positions < 0');
         end
-        
-        % Concatenate features along 1st dimension (samples)
-        F = cat(1, F, cdata.psd);
         
         % Save the current frequency grid and check if it is different from
         % the previous one. If so, it raises an error.
@@ -159,9 +183,7 @@ function [F, events, labels, settings, classifiers] = cnbiutil_concatenate_data(
         end
         
         if (isequaln(csettings, settings) == false)
-             keyboard
             error('chk:stn', ['Different processing settings for file: ' cfilepath]);
-           
         end
         
         % Classifiers concatenation
@@ -173,15 +195,13 @@ function [F, events, labels, settings, classifiers] = cnbiutil_concatenate_data(
                 
                 classifiers = cat(2, classifiers, cclassifier);
             end
-            
-            Xk = cat(1, Xk, length(classifiers)*ones(size(cdata.psd, 1), 1));
+            Xk(cstart:cstop) = length(classifiers);
         else
-            Xk = cat(1, Xk, zeros(size(cdata.psd, 1), 1));
+            Xk(cstart:cstop) = 0;
         end
             
-        
-
-        
+        % Update the fileseek position
+        fileseek = cstop + 1;
     end
     
     events.TYP = TYP;
@@ -226,5 +246,20 @@ function [F, events, labels, settings, classifiers] = cnbiutil_concatenate_data(
     labels.Dl  = Dl;
     labels.Dk  = Dk;
     labels.Xk  = Xk;
+
+end
+
+function dsizes = get_data_size(filepaths)
+
+    nfiles = length(filepaths);
+    ndimensions = 3;                            % samples x freqs x chans
+    
+    dsizes = zeros(ndimensions, nfiles);
+    
+    for fId = 1:nfiles
+        cfilepath = filepaths{fId};
+        cinfo = whos('-file', cfilepath, 'psd');
+        dsizes(:, fId) = cinfo.size;    
+    end
 
 end
