@@ -129,8 +129,8 @@ cnbifig_export(fig3, [figuredir '/' subject '.racetimesessionmedian.' modality '
 %% Saving metadata
 
 % Grouping results
-time.pad = MTOPPad;
-time.label   = Dl;
+timepad.values = MTOPPad;
+timepad.label   = Dl;
 
 savefile = [savedir '/' subject '.metadata.mat'];
 if exist(savefile, 'file')
@@ -138,7 +138,7 @@ if exist(savefile, 'file')
     load(savefile);
 end
 
-metadata.online.time = time;
+metadata.race.timepad = timepad;
 
-cnbiutil_bdisp(['Saving timings (race) results in: ' savefile]);
+cnbiutil_bdisp(['Saving timings on pad (race) results in: ' savefile]);
 save(savefile, 'metadata');

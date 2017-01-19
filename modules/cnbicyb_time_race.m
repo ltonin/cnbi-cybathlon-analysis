@@ -161,7 +161,7 @@ cnbifig_export(fig2, [figuredir '/' subject '.racetimesession.' modality '.png']
 %% Saving metadata
 
 % Grouping results
-time.overall = [SMRT; SSRT]';
+time.values = [SMRT; SSRT]';
 time.label   = Dl;
 
 savefile = [savedir '/' subject '.metadata.mat'];
@@ -170,7 +170,7 @@ if exist(savefile, 'file')
     load(savefile);
 end
 
-metadata.online.time = time;
+metadata.race.time = time;
 
 cnbiutil_bdisp(['Saving timings (race) results in: ' savefile]);
 save(savefile, 'metadata');
