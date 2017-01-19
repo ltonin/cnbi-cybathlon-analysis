@@ -1,14 +1,15 @@
-clearvars; clc; 
-
-subject = 'MA25VE';
-%subject = 'AN14VE';
+% clearvars; clc; 
+% 
+% subject = 'MA25VE';
+% %subject = 'AN14VE';
 
 pattern     = '.mi.';
 modality    = 'race';
 
 experiment  = 'cybathlon';
 datapath    = [pwd '/analysis/'];
-figuredir  = './figures/';
+figuredir   = './figures/';
+savedir     = [pwd '/analysis/'];
 AnalysisType = 'all'; % 'correct'       % Select if all trials are taken into account or only the correct ones (no big changes)
 
 
@@ -132,3 +133,20 @@ set(gca,'XTickLabel',SimAccSesLb);
 xticklabel_rotate([],45,[])
 
 cnbifig_export(fig1, [figuredir '/' subject '.simaccrace.' modality '.png'], '-png');
+
+%% Saving metadata
+
+% Grouping results
+simulated.accuracy = SimAccSes;
+simulated.label    = cell2mat(SimAccSesLb);
+
+savefile = [savedir '/' subject '.metadata.mat'];
+if exist(savefile, 'file')
+    cnbiutil_bdisp(['Loading metadata from: ' savefile]);
+    load(savefile);
+end
+
+metadata.race.simulated = simulated;
+
+cnbiutil_bdisp(['Saving simulated accuracy (race) results in: ' savefile]);
+save(savefile, 'metadata');

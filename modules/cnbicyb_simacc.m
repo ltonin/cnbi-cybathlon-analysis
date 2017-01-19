@@ -1,7 +1,7 @@
-clearvars; clc;
-
-%subject = 'AN14VE';
-subject = 'MA25VE';
+% clearvars; clc;
+% 
+% %subject = 'AN14VE';
+% subject = 'MA25VE';
 
 pattern     = '.mi.';
 modality    = 'online';
@@ -9,6 +9,7 @@ modality    = 'online';
 experiment  = 'cybathlon';
 datapath    = [pwd '/analysis/'];
 figuredir  = './figures/';
+savedir     = [pwd '/analysis/'];
 
 CueTypeId = [769 770 771 773 774 775 783];
 CueTypeLb = {'LeftHand', 'RightHand', 'BothFeet', 'BothHands', 'Boh1', 'Boh2', 'Rest'};
@@ -103,3 +104,20 @@ set(gca,'XTickLabel',SimAccSesLb);
 xticklabel_rotate([],45,[])
 
 cnbifig_export(fig1, [figuredir '/' subject '.simacc.' modality '.png'], '-png');
+
+%% Saving metadata
+
+% Grouping results
+simulated.accuracy = SimAccSes;
+simulated.label    = cell2mat(SimAccSesLb);
+
+savefile = [savedir '/' subject '.metadata.mat'];
+if exist(savefile, 'file')
+    cnbiutil_bdisp(['Loading metadata from: ' savefile]);
+    load(savefile);
+end
+
+metadata.online.simulated = simulated;
+
+cnbiutil_bdisp(['Saving simulated accuracy (online) results in: ' savefile]);
+save(savefile, 'metadata');

@@ -1,14 +1,14 @@
-clearvars; clc; 
-
-subject = 'AN14VE';
+% clearvars; clc; 
+% 
+% subject = 'MA25VE';
 
 pattern     = '.mi.';
 modality    = 'online';
 
 experiment  = 'cybathlon';
 datapath    = [pwd '/analysis/'];
-figuredir  = './figures/';
-
+figuredir   = './figures/';
+savedir     = [pwd '/analysis/'];
 
 CueTypeId = [769 770 771 773 774 775 783];
 CueTypeLb = {'LeftHand', 'RightHand', 'BothFeet', 'BothHands', 'Boh1', 'Boh2', 'Rest'};
@@ -188,3 +188,20 @@ title('Single sample accuracy/rejection (per day)');
 
 suptitle([subject ' - Accuracy/Rejection (' modality ')']);
 
+%% Saving metadata
+
+% Grouping results
+singlesample.accuracy  = DayAccuracy;
+singlesample.rejection = DayRejection;
+singlesample.label     = labels.Dl;
+
+savefile = [savedir '/' subject '.metadata.mat'];
+if exist(savefile, 'file')
+    cnbiutil_bdisp(['Loading metadata from: ' savefile]);
+    load(savefile);
+end
+
+metadata.online.singlesample = singlesample;
+
+cnbiutil_bdisp(['Saving singlesample (online) results in: ' savefile]);
+save(savefile, 'metadata');

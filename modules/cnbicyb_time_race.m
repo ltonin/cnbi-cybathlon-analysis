@@ -1,18 +1,18 @@
-clearvars; clc; 
-
-subject = 'AN14VE';
-%subject = 'MA25VE';
+% clearvars; clc; 
+% 
+% subject = 'AN14VE';
+% % subject = 'MA25VE';
 
 pattern     = '.mi.';
 modality    = 'race';
 
 experiment  = 'cybathlon';
-%datapath    = ['/mnt/data/Research/' experiment '/' subject '/' subject '_racemat/'];
+datapath    = ['/mnt/data/Research/' experiment '/' subject '/' subject '_racemat/'];
 % datapath    = '/home/sperdikis/Desktop/tst/AN14VE/AN14VE_RaceMat/';
 %datapath    = '~/Desktop/tst/MA25VE/MA25VE_racemat/';
-datapath    = '~/Desktop/tst/AN14VE/AN14VE_racemat/';
+% datapath    = '~/Desktop/tst/AN14VE/AN14VE_racemat/';
 figuredir  = './figures/';
-savedir  = '/analysis/';
+savedir  = [pwd '/analysis/'];
 
 rejectlim = 240; % Reject races above this limit, 
 
@@ -157,3 +157,20 @@ disp(['Per session, Pearson Correlation r = ' num2str(r) ' with pval = ' num2str
 disp(['Per session, Spearman Correlation r = ' num2str(rho) ' with pval = ' num2str(pvalSperaman)]);
 
 cnbifig_export(fig2, [figuredir '/' subject '.racetimesession.' modality '.png'], '-png');
+
+%% Saving metadata
+
+% Grouping results
+time.overall = [SMRT; SSRT]';
+time.label   = Dl;
+
+savefile = [savedir '/' subject '.metadata.mat'];
+if exist(savefile, 'file')
+    cnbiutil_bdisp(['Loading metadata from: ' savefile]);
+    load(savefile);
+end
+
+metadata.online.time = time;
+
+cnbiutil_bdisp(['Saving timings (race) results in: ' savefile]);
+save(savefile, 'metadata');

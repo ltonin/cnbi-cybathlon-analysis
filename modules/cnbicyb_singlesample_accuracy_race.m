@@ -1,14 +1,14 @@
-clearvars; clc; 
-
-subject = 'AN14VE';
+% clearvars; clc; 
+% 
+% subject = 'MA25VE';
 
 pattern     = '.mi.';
 modality    = 'race';
 
 experiment  = 'cybathlon';
 datapath    = [pwd '/analysis/'];
-figuredir  = './figures/';
-
+figuredir   = './figures/';
+savedir     = [pwd '/analysis/'];
 
 TrialTypeId = [768 769 770 771 773 783];
 TrialTypeLb = {'Slide', 'Slide', 'Speed', 'Jump', 'Speed', 'Rest'};
@@ -168,3 +168,20 @@ title('Single sample accuracy/rejection (per day)');
 
 suptitle([subject ' - Accuracy/Rejection (' modality ')']);
 
+%% Saving metadata
+
+% Grouping results
+singlesample.accuracy  = DayAccuracy;
+singlesample.rejection = DayRejection;
+singlesample.label     = labels.Dl;
+
+savefile = [savedir '/' subject '.metadata.mat'];
+if exist(savefile, 'file')
+    cnbiutil_bdisp(['Loading metadata from: ' savefile]);
+    load(savefile);
+end
+
+metadata.race.singlesample = singlesample;
+
+cnbiutil_bdisp(['Saving singlesample (race) results in: ' savefile]);
+save(savefile, 'metadata');

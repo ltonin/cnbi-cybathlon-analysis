@@ -1,22 +1,22 @@
-clearvars; clc; 
-
-%subject = 'MA25VE';
-subject = 'AN14VE';
+% clearvars; clc; 
+% 
+% subject = 'MA25VE';
+% %subject = 'AN14VE';
 
 pattern     = '.mi.';
 modality    = 'race';
 
 experiment  = 'cybathlon';
 datapath    = [pwd '/analysis/'];
-figuredir  = './figures/';
+figuredir   = './figures/';
 AnalysisType = 'all'; % 'correct'       % Select if all trials are taken into account or only the correct ones (no big changes)
-
+savedir     = [pwd '/analysis/'];
 
 TrialTypeId = [768 769 770 771 773 783];
 TrialTypeLb = {'Slide', 'Slide', 'Speed', 'Jump', 'Speed', 'Rest'};
 
-%SelectedClassId = [773 771];
-SelectedClassId = [770 771];
+SelectedClassId = [773 771];
+% SelectedClassId = [770 771];
 SelectedClassLb = {'BothFeet', 'BothHands'};
 NumClasses = length(SelectedClassId);
 
@@ -235,3 +235,20 @@ for rId = 1:NumCybRaces
 end
 
 suptitle([subject ' - DP - Cybathlon (' AnalysisType ')']);
+
+%% Saving metadata
+
+% Grouping results
+discriminancy.fisherscore = discrday;
+discriminancy.label       = discrdlb;
+
+savefile = [savedir '/' subject '.metadata.mat'];
+if exist(savefile, 'file')
+    cnbiutil_bdisp(['Loading metadata from: ' savefile]);
+    load(savefile);
+end
+
+metadata.race.discriminancy = discriminancy;
+
+cnbiutil_bdisp(['Saving discriminancy (race) results in: ' savefile]);
+save(savefile, 'metadata');

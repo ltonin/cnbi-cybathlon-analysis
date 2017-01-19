@@ -1,13 +1,14 @@
-clearvars; clc;
-
-subject = 'AN14VE';
+% clearvars; clc;
+% 
+% subject = 'MA25VE';
 
 pattern     = '.mi.';
 modality    = 'online';
 
 experiment  = 'cybathlon';
 datapath    = [pwd '/analysis/'];
-figuredir  = './figures/';
+figuredir   = './figures/';
+savedir     = [pwd '/analysis/'];
 
 CueTypeId = [769 770 771 773 774 775 783];
 CueTypeLb = {'LeftHand', 'RightHand', 'BothFeet', 'BothHands', 'Boh1', 'Boh2', 'Rest'};
@@ -155,3 +156,20 @@ end
 suptitle([subject ' - DP - ' modality]);
 
 cnbifig_export(fig1, [figuredir '/' subject '.discriminancy.' modality '.png'], '-png');
+
+%% Saving metadata
+
+% Grouping results
+discriminancy.fisherscore = discrday;
+discriminancy.label       = discrdlb;
+
+savefile = [savedir '/' subject '.metadata.mat'];
+if exist(savefile, 'file')
+    cnbiutil_bdisp(['Loading metadata from: ' savefile]);
+    load(savefile);
+end
+
+metadata.online.discriminancy = discriminancy;
+
+cnbiutil_bdisp(['Saving discriminancy (online) results in: ' savefile]);
+save(savefile, 'metadata');

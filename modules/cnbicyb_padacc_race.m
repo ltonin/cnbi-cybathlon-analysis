@@ -1,14 +1,15 @@
-clearvars; clc; 
-
-%subject = 'AN14VE';
-subject = 'MA25VE';
+% clearvars; clc; 
+% 
+% subject = 'AN14VE';
+% % subject = 'MA25VE';
 
 pattern     = '.mi.';
 modality    = 'race';
 
 experiment  = 'cybathlon';
 datapath    = [pwd '/analysis/'];
-figuredir  = './figures/';
+figuredir   = './figures/';
+savedir     = [pwd '/analysis/'];
 
 PadTypeId = [768 769 770 771 773 783];
 PadTypeLb = {'Slide', 'Slide', 'Speed', 'Jump', 'Speed', 'Rest'};
@@ -113,3 +114,21 @@ set(gca,'XTick',unique(Dk));
 set(gca,'XTickLabel',Dl);
 xticklabel_rotate([],45,[])
 cnbifig_export(fig2, [figuredir '/' subject '.padtime.' modality '.png'], '-png');
+
+%% Saving metadata
+
+% Grouping results
+pad.accuracy = AccPad;
+pad.speed    = MSpeedPadSes;
+pad.label    = Dl;
+
+savefile = [savedir '/' subject '.metadata.mat'];
+if exist(savefile, 'file')
+    cnbiutil_bdisp(['Loading metadata from: ' savefile]);
+    load(savefile);
+end
+
+metadata.race.pad = pad;
+
+cnbiutil_bdisp(['Saving pad accuracy/speed (race) results in: ' savefile]);
+save(savefile, 'metadata');
