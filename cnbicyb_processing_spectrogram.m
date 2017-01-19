@@ -1,10 +1,10 @@
 clearvars; clc;
 
-subject = 'MA25VE';
-%subject = 'AN14VE';
+% subject = 'MA25VE';
+subject = 'AN14VE';
 
 identifiers = {'.*line.mi.', '.gdf'};
-%identifiers = {'.race.mi.',  '.mat'};
+% identifiers = {'.race.mi.',  '.mat'};
 
 pattern     = identifiers{1};
 extension   = identifiers{2};
@@ -48,7 +48,7 @@ for fId = 1:NumFiles
         elseif(strcmp(cextension, '.mat'))
             cdata = load(cfilename);
             s = cdata.Race.data;
-            if(isnan(s))
+            if(sum(sum(isnan(s))) > 0)
                 cnbiutil_bdisp(['[io] - Corrupted file (data is NaN), skipping: ' cfilename]);
                 continue;
             end
