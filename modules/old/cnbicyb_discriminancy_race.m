@@ -9,14 +9,18 @@ modality    = 'race';
 experiment  = 'cybathlon';
 datapath    = [pwd '/analysis/'];
 figuredir   = './figures/';
-AnalysisType = 'all'; % 'correct'       % Select if all trials are taken into account or only the correct ones (no big changes)
 savedir     = [pwd '/analysis/'];
 
 TrialTypeId = [768 769 770 771 773 783];
 TrialTypeLb = {'Slide', 'Slide', 'Speed', 'Jump', 'Speed', 'Rest'};
 
+CFbTypeId = 781;
+CFbTypeLb = {'Continous Feedback'};
+
+FixTypeId = 786;
+FixTypeLb = {'Fixation'};
+
 SelectedClassId = [773 771];
-% SelectedClassId = [770 771];
 SelectedClassLb = {'BothFeet', 'BothHands'};
 NumClasses = length(SelectedClassId);
 
@@ -24,18 +28,15 @@ CommandId = SelectedClassId + hex2dec('6000');
 
 SelFreqs = 4:2:32;
 
-
 %% Get datafiles
 [Files, NumFiles] = cnbiutil_getfile(datapath, '.mat', [subject '*' modality '*' pattern]);
 
 %% Concatenate data
 cnbiutil_bdisp(['[io] - Import psd datafiles (' modality ')']);
 [U, events, labels, settings] = cnbiutil_concatenate_data(Files);
-
 [FreqGrid, SelFreqIds] = intersect(settings.spectrogram.freqgrid, SelFreqs);
-F = log(U(:, SelFreqIds, :));
-% F = U(:, SelFreqIds, :);
 
+F = log(U(:, SelFreqIds, :));
 DataLength  = size(F, 1);
 NumFreqs = size(F, 2);
 NumChans = size(F, 3);

@@ -1,7 +1,7 @@
-clearvars; clc; 
-
-subject = 'MA25VE';
-% subject = 'AN14VE';
+% clearvars; clc; 
+% 
+% subject = 'MA25VE';
+% %subject = 'AN14VE';
 
 pattern     = '.mi.';
 modality    = 'online';
@@ -11,8 +11,8 @@ datapath    = [pwd '/analysis/'];
 figuredir   = './figures/';
 savedir     = [pwd '/analysis/'];
 
-TaskTypeId = [769 770 771 773 774 775 783];
-TaskTypeLb = {'LeftHand', 'RightHand', 'BothFeet', 'BothHands', 'Boh1', 'Boh2', 'Rest'};
+CueTypeId = [769 770 771 773 774 775 783];
+CueTypeLb = {'LeftHand', 'RightHand', 'BothFeet', 'BothHands', 'Boh1', 'Boh2', 'Rest'};
 
 CFbTypeId = 781;
 CFbTypeLb = {'Continous Feedback'};
@@ -48,66 +48,51 @@ NumDays = length(Days);
 Mk = labels.Mk;
 
 %% Extract events
-cnbiutil_bdisp(['[proc] - Extract events (' modality ')']);
-if strcmpi(modality, 'online')
-    disp('         Based on cue and continous feedback');
-    [~, CueEvents] = cnbiproc_get_event(TaskTypeId, DataLength, events.POS, events.TYP, events.DUR);
-    [~, CFbEvents] = cnbiproc_get_event(CFbTypeId,  DataLength, events.POS, events.TYP, events.DUR);
-    NumTrials = length(CFbEvents.POS);
-    ArtifactFree = true(DataLength, 1);
-elseif strcmpi(modality, 'race')
-    disp('         Based on pad and eye artifacts');
-    [TrialLb, TrialEvents] = cnbiproc_get_event(TaskTypeId, DataLength, events.POS, events.TYP, events.DUR);
-    [EyeLb, EyeEvents]     = cnbiproc_get_event(267, DataLength, events.POS, events.TYP, events.DUR);
-    ArtifactFree = EyeLb == 0;
-end
+cnbiutil_bdisp('[proc] - Extract events');
+[~, CueEvents] = cnbiproc_get_event(CueTypeId, DataLength, events.POS, events.TYP, events.DUR);
+[~, CFbEvents] = cnbiproc_get_event(CFbTypeId, DataLength, events.POS, events.TYP, events.DUR);
+
+NumTrials = length(CFbEvents.POS);
 
 %% Labeling data
-cnbiutil_bdisp(['[proc] - Labeling data (' modality ')']);
-if strcmpi(modality, 'online') 
-    TrialLb = zeros(DataLength, 1);
-    TrialRun = zeros(DataLength, 1);
-    TrialDay = zeros(DataLength, 1);
-    for trId = 1:NumTrials
-       cstart = CFbEvents.POS(trId);
-       cstop  = cstart + CFbEvents.DUR(trId) - 1;
-       cclass = CueEvents.TYP(trId);
-       TrialLb(cstart:cstop) = cclass;
-    end
-elseif strcmpi(modality, 'race')
-    for trId = 1:length(TrialEvents.TYP)
-       cstart = TrialEvents.POS(trId);
-       cstop  = cstart + TrialEvents.DUR(trId) + 1;
-       ctype  = TrialEvents.TYP(trId);
-    end
+
+TrialCls = zeros(DataLength, 1);
+TrialRun = zeros(DataLength, 1);
+TrialDay = zeros(DataLength, 1);
+for trId = 1:NumTrials
+   cstart = CFbEvents.POS(trId);
+   cstop  = cstart + CFbEvents.DUR(trId) - 1;
+   cclass = CueEvents.TYP(trId);
+   
+   TrialCls(cstart:cstop) = cclass;
 end
+Days    = unique(labels.Dk);
+NumDays = length(Days);
 
 %% Selecting classes
-cnbiutil_bdisp(['[proc] - Selecting required classes: ' num2str(SelectedClassId)]);
-Ck = zeros(length(TrialLb), 1);
+Ck = zeros(length(TrialCls), 1);
 for cId = 1:NumClasses
-    Ck(TrialLb == SelectedClassId(cId)) = SelectedClassId(cId);
+    Ck(TrialCls == SelectedClassId(cId)) = SelectedClassId(cId);
 end
 
-%% Generic condition
-cnbiutil_bdisp('[proc] - Set generic condition mask');
-GenericCondition = Ck > 0 & ArtifactFree;
+%% Compute the overall discriminancy
+NSigma = [];
+discrovl = cnbiproc_fisher(F(Ck > 0, :, :), Ck(Ck > 0), NSigma);
 
 %% Compute discriminancy per day
-cnbiutil_bdisp('[proc] - Compute discriminancy per day');
-NSigma   = [];
-discrlb  = cell(NumDays, 1);
-discrday = zeros(NumFreqs*NumChans, NumDays);
+
+discrday = [];
+discrdlb = [];
 for dId = 1:NumDays
     cindex = labels.Dk == Days(dId) & Ck > 0;
     if length(unique(Ck(cindex))) == 2
-        discrday(:, dId) = cnbiproc_fisher(F(cindex, :, :), Ck(cindex), NSigma);
+        discrday = cat(2, discrday, cnbiproc_fisher(F(cindex, :, :), Ck(cindex), NSigma));
+        discrdlb = cat(1, discrdlb, labels.Dl(dId, :));
     end
-    discrlb{dId}     = char(labels.Dl(dId, :));
 end
 
+
 %% Plotting discriminancy map
-cnbiutil_bdisp('[proc] - Plotting');
 load('chanlocs64.mat');
 fig1 = figure;
 cnbifig_set_position(fig1, 'All');
@@ -131,7 +116,9 @@ for dId = 1:size(discrday, 2)
         ylabel('Channel');
     end
     xlabel('[Hz]');
-    title(discrlb{dId});
+    title(discrdlb(dId, :));
+
+
 end
 
 % Topoplots
@@ -173,7 +160,7 @@ for dId = 1:size(discrday, 2)
     end
 end
 
-suptitle([subject ' - DP - ' modality ' - Classes: ' num2str(SelectedClassId)]);
+suptitle([subject ' - DP - ' modality]);
 
 cnbifig_export(fig1, [figuredir '/' subject '.discriminancy.' modality '.png'], '-png');
 
@@ -181,9 +168,15 @@ cnbifig_export(fig1, [figuredir '/' subject '.discriminancy.' modality '.png'], 
 
 % Grouping results
 discriminancy.fisherscore = discrday;
-discriminancy.label       = discrlb;
+discriminancy.label       = discrdlb;
 
-savefile = [savedir '/' subject '.discriminancy.' modality '.mat'];
+savefile = [savedir '/' subject '.metadata.mat'];
+if exist(savefile, 'file')
+    cnbiutil_bdisp(['Loading metadata from: ' savefile]);
+    load(savefile);
+end
 
-cnbiutil_bdisp(['Saving discriminancy (' modality ') results in: ' savefile]);
-save(savefile, 'discriminancy');
+metadata.online.discriminancy = discriminancy;
+
+cnbiutil_bdisp(['Saving discriminancy (online) results in: ' savefile]);
+save(savefile, 'metadata');
