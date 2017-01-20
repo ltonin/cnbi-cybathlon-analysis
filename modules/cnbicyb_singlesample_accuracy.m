@@ -167,7 +167,7 @@ subplot(NumRows, NumCols, 1);
 cindex = RunAccuracy > 0;
 hold on;
 plot(Runs(cindex), RunAccuracy(cindex), 'k', 'LineWidth', 2);
-plot(Runs(cindex), RunRejection(cindex), 'r');
+plot(Runs(cindex), RunRejection(cindex), 'r');  
 hold off;
 xlim([min(Runs(cindex)) max(Runs(cindex))]);
 ylim([0 100]);

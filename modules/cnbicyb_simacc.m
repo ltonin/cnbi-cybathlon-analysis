@@ -1,6 +1,6 @@
-% clearvars; clc;
-% 
-% %subject = 'AN14VE';
+clearvars; clc;
+
+subject = 'AN14VE';
 % subject = 'MA25VE';
 
 pattern     = '.mi.';
@@ -111,13 +111,7 @@ cnbifig_export(fig1, [figuredir '/' subject '.simacc.' modality '.png'], '-png')
 simulated.accuracy = SimAccSes;
 simulated.label    = cell2mat(SimAccSesLb);
 
-savefile = [savedir '/' subject '.metadata.mat'];
-if exist(savefile, 'file')
-    cnbiutil_bdisp(['Loading metadata from: ' savefile]);
-    load(savefile);
-end
+savefile = [savedir '/' subject '.simaccuracy.' modality '.mat'];
 
-metadata.online.simulated = simulated;
-
-cnbiutil_bdisp(['Saving simulated accuracy (online) results in: ' savefile]);
-save(savefile, 'metadata');
+cnbiutil_bdisp(['Saving simulated accuracy (' modality ') results in: ' savefile]);
+save(savefile, 'simulated');
