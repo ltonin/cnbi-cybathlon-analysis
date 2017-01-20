@@ -5,8 +5,8 @@ subject = 'AN14VE';
 
 
 experiment  = 'cybathlon';
-%datapath    = ['/mnt/data/Research/' experiment '/' subject '/'];
-datapath    = ['~/Desktop/tst/' subject '/'];
+datapath    = ['/mnt/data/Research/' experiment '/' subject '/'];
+% datapath    = ['~/Desktop/tst/' subject '/'];
 targetpath  = [datapath '/' subject '_racemat/'];
 
 %% Sync race and gdf
@@ -24,7 +24,7 @@ if strcmpi(subject, 'MA25VE')
     RaceTimeFromLog(subject, '20160922', 1, logpath, targetpath);  % Second face off (no gdf data)
 elseif strcmpi(subject, 'AN14VE')
     disp('         Date: 20160825');
-    RaceTimeFromLog(subject, '20160825', 1, logpath, targetpath);  % First face off (no gdf data)
+    RaceTimeFromLog(subject, '20160825', 2, logpath, targetpath);  % First face off (no gdf data)
     disp('         Date: 20161006');
     RaceTimeFromLog(subject, '20161006', 1, logpath, targetpath);  
     disp('         RehearsalStyle');
