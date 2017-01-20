@@ -129,11 +129,12 @@ end
 %% Plotting simulated single-sample accuracy
 fig1 = figure;
 cnbifig_set_position(fig1, 'All');
-plot(1:length(SimAccSes),SimAccSes,1:length(SimAccSes),SimAccSes,1:length(SimAccSes),SimAccSes,'LineWidth',3);
+plot(1:length(SimAccSes),SimAccSes,'--g',1:length(SimAccSes),SimAccClassSes(:,1),'c',1:length(SimAccSes),SimAccClassSes(:,2),'m','LineWidth',3);
+legend({'Overall',SelectedClassLb{1},SelectedClassLb{2}})
 xlabel('Race Session','FontSize',20,'LineWidth',3);
 ylabel('Simulated single-sample Accuracy (%)','FontSize',20,'LineWidth',3);
 title(subject);
-axis([0 length(SimAccSes)+1 45 100]);
+axis([0 length(SimAccSes)+1 40 100]);
 set(gca,'FontSize',20,'LineWidth',3);
 set(gca,'XTick',[1:length(SimAccSes)]);
 set(gca,'XTickLabel',SimAccSesLb);
