@@ -1,7 +1,7 @@
-% clearvars; clc; 
-% 
+clearvars; clc; 
+
 % subject = 'AN14VE';
-% % subject = 'MA25VE';
+subject = 'MA25VE';
 
 pattern     = '.mi.';
 modality    = 'race';
@@ -164,13 +164,7 @@ cnbifig_export(fig2, [figuredir '/' subject '.racetimesession.' modality '.png']
 time.values = [SMRT; SSRT]';
 time.label   = Dl;
 
-savefile = [savedir '/' subject '.metadata.mat'];
-if exist(savefile, 'file')
-    cnbiutil_bdisp(['Loading metadata from: ' savefile]);
-    load(savefile);
-end
+savefile = [savedir '/' subject '.time.' modality '.mat'];
 
-metadata.race.time = time;
-
-cnbiutil_bdisp(['Saving timings (race) results in: ' savefile]);
-save(savefile, 'metadata');
+cnbiutil_bdisp(['Saving timings (' modality ') results in: ' savefile]);
+save(savefile, 'time');

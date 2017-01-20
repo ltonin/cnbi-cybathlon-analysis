@@ -1,7 +1,7 @@
-% clearvars; clc; 
-% 
-% %subject = 'AN14VE';
-subject = 'MA25VE';
+clearvars; clc; 
+
+subject = 'AN14VE';
+% subject = 'MA25VE';
 
 pattern     = '.mi.';
 modality    = 'race';
@@ -182,13 +182,7 @@ cnbifig_export(fig1, [figuredir '/' subject '.commaccrace.' modality '.png'], '-
 command.accuracy  = CommAcc;
 command.label     = Dl;
 
-savefile = [savedir '/' subject '.metadata.mat'];
-if exist(savefile, 'file')
-    cnbiutil_bdisp(['Loading metadata from: ' savefile]);
-    load(savefile);
-end
+savefile = [savedir '/' subject '.cmdaccuracy.' modality '.mat'];
 
-metadata.race.command = command;
-
-cnbiutil_bdisp(['Saving command accuracy (race) results in: ' savefile]);
-save(savefile, 'metadata');
+cnbiutil_bdisp(['Saving command accuracy (' modality ') results in: ' savefile]);
+save(savefile, 'command');

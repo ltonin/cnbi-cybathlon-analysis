@@ -49,6 +49,8 @@ function [F, events, labels, settings, classifiers] = cnbiutil_concatenate_data(
     Xk    = zeros(NumSamples, 1);
     Rl    = cell(numfiles, 1);
     Dl    = [];
+    Pk    = zeros(NumSamples, 1);
+    Pl    = cell(numfiles, 1);
     
     % I don't know the number of events a-priori. Anyway it should not
     % impact the speed too much
@@ -112,6 +114,10 @@ function [F, events, labels, settings, classifiers] = cnbiutil_concatenate_data(
         % Create run vector
         Rk(cstart:cstop) = fId;
         Rl{fId} = cinfo.extra;
+        
+        % Create protocol vector
+        Pk(cstart:cstop) = cdata.settings.protocol;
+        Pl{fId} = cdata.settings.protocollegend{cdata.settings.protocol};
         
         % Concatenate features along 1st dimension (samples)
         F(cstart:cstop, :, :) = cdata.psd;
@@ -248,6 +254,8 @@ function [F, events, labels, settings, classifiers] = cnbiutil_concatenate_data(
     labels.Dl  = Dl;
     labels.Dk  = Dk;
     labels.Xk  = Xk;
+    labels.Pk  = Pk;
+    labels.Pl  = Pl;
 
 end
 

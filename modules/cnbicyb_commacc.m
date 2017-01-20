@@ -1,7 +1,7 @@
-% clearvars; clc;
-% 
+clearvars; clc;
+
 % subject = 'AN14VE';
-% % subject = 'MA25VE';
+subject = 'MA25VE';
 
 pattern     = '.mi.';
 modality    = 'online';
@@ -73,13 +73,7 @@ cnbifig_export(fig1, [figuredir '/' subject '.commacc.' modality '.png'], '-png'
 command.accuracy  = CommAccSes;
 command.label     = Dl;
 
-savefile = [savedir '/' subject '.metadata.mat'];
-if exist(savefile, 'file')
-    cnbiutil_bdisp(['Loading metadata from: ' savefile]);
-    load(savefile);
-end
+savefile = [savedir '/' subject '.cmdaccuracy.' modality '.mat'];
 
-metadata.online.command = command;
-
-cnbiutil_bdisp(['Saving command accuracy (online) results in: ' savefile]);
-save(savefile, 'metadata');
+cnbiutil_bdisp(['Saving command accuracy (' modality ') results in: ' savefile]);
+save(savefile, 'command');

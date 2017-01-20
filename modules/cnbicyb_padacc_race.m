@@ -1,7 +1,7 @@
-% clearvars; clc; 
-% 
+clearvars; clc; 
+
 % subject = 'AN14VE';
-% % subject = 'MA25VE';
+subject = 'MA25VE';
 
 pattern     = '.mi.';
 modality    = 'race';
@@ -122,13 +122,7 @@ pad.accuracy = AccPad;
 pad.speed    = MSpeedPadSes;
 pad.label    = Dl;
 
-savefile = [savedir '/' subject '.metadata.mat'];
-if exist(savefile, 'file')
-    cnbiutil_bdisp(['Loading metadata from: ' savefile]);
-    load(savefile);
-end
+savefile = [savedir '/' subject '.padaccuracy.' modality '.mat'];
 
-metadata.race.pad = pad;
-
-cnbiutil_bdisp(['Saving pad accuracy/speed (race) results in: ' savefile]);
-save(savefile, 'metadata');
+cnbiutil_bdisp(['Saving pad accuracy/speed (' modality ') results in: ' savefile]);
+save(savefile, 'pad');
