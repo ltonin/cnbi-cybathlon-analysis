@@ -1,4 +1,4 @@
-function [ConfMatClass ConfMatAll Accuracy Error] = eegc3_confusion_matrix(TrueLabels, FoundLabels, NClass)
+function [ConfMatClass, ConfMatAll, Accuracy, Error, ConfMatReal] = confusion_matrix(TrueLabels, FoundLabels, NClass)
 
 % function [ConfMatClass ConfMatAll Accuracy Error] =
 % eegc3_confusion_matrix(TrueLabels, FoundLabels)
@@ -53,6 +53,7 @@ for i=1:NSample
         ConfMat(TrueLabels(i),FoundLabels(i)) + 1;
 end
 
+ConfMatReal = ConfMat;
 ConfMatAll = 100*ConfMat/sum(ConfMat(:));
 
 ConfMatClass = nan(NClass);

@@ -1,4 +1,4 @@
-function AvgAcc = cvk(afeats, alabels, atrials, K, NFeat)
+function [AvgAcc AvgCM AvgCMReal] = cvk(afeats, alabels, atrials, K, NFeat)
 
 % Accuracy with cross validation (balanced groups, random shuffling)
 %cvind = crossvalind('Kfold',alabels,K);
@@ -46,12 +46,14 @@ for i=K:-1:1
         end
     end
     
-    [~, err_tr(i)] = classify(strdata,strdata,strlabels,'diaglinear');
+    [~, err_tr(i)] = classify(strdata,strdata,strlabels);
     %[~, err_tr(i)] = classify(strdata,strdata,strlabels,'diaglinear');
     
     AccCVtr(i) = 100*(1-err_tr(i));
     fclass = classify(ststdata,strdata,strlabels);
     %fclass = classify(ststdata,strdata,strlabels,'diaglinear');
-    [~,~,AccCVtst(i)] = confusion_matrix(fclass, ststlabels, 2);
+    [CMCVtst(i,:,:),~,AccCVtst(i), ~, CMRealCVtst(i,:,:) ] = confusion_matrix(fclass, ststlabels, 2);
 end
 AvgAcc = mean(AccCVtst);
+AvgCM = squeeze(mean(CMCVtst,1));
+AvgCMReal = squeeze(mean(CMRealCVtst,1));

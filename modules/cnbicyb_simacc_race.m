@@ -1,6 +1,6 @@
 % clearvars; clc; 
 % 
-% subject = 'MA25VE';
+subject = 'MA25VE';
 % %subject = 'AN14VE';
 
 pattern     = '.mi.';
@@ -85,14 +85,17 @@ if strcmpi(AnalysisType, 'correct')
     GenericCondition = GenericCondition & CorrectLb;
 end
 
-%% Compute the overall discriminancy
+%% Compute the overall simulated accuracy
 Lbl = Ck(GenericCondition);
 Lbl(Lbl==SelectedClassId(1))=1;
 Lbl(Lbl==SelectedClassId(2))=2;
-SimAcc =  cvk(F(GenericCondition, :, :), Lbl, TrialInd(GenericCondition), KFolds, NFeats);
+[SimAcc, SimCM] =  cvk(F(GenericCondition, :, :), Lbl, TrialInd(GenericCondition), KFolds, NFeats);
+SimAccClass = [SimCM(1,1) SimCM(2,2)];
 
-%% Compute discriminancy per day
+%% Compute simulated accuracy per day
 SimAccSes = [];
+SimAccClassSes = [];
+SimCMSes = [];
 SimAccSesLb = {};
 for dId = 1:NumDays
     cindex = labels.Dk == Days(dId) & Ck > 0;
@@ -100,23 +103,27 @@ for dId = 1:NumDays
         Lbl = Ck(cindex);
         Lbl(Lbl==SelectedClassId(1))=1;
         Lbl(Lbl==SelectedClassId(2))=2;
-        SimAccSes = cat(1, SimAccSes, cvk(F(cindex, :, :), Lbl, TrialInd(cindex), KFolds, NFeats));
+        [tmpSimAcc, tmpCM] = cvk(F(cindex, :, :), Lbl, TrialInd(cindex), KFolds, NFeats);
+        SimAccSes = cat(1, SimAccSes, tmpSimAcc);
+        SimCMSes = cat(3, SimCMSes, tmpCM);
         SimAccSesLb = cat(1, SimAccSesLb, labels.Dl(dId, :));
+        SimAccClassSes = cat(3,SimAccClassSes,[tmpCM(1,1) tmpCM(2,2)]);
     end
 end
-
-%% Compute discriminancy per race for competition day
+SimAccClassSes = squeeze(SimAccClassSes)';
+%% Compute simulated accuracy per race for competition day
 
 CybRaceId = unique(labels.Rk(labels.Mk == 3));
 NumCybRaces = length(CybRaceId);
 SimAccCyb = zeros(2,1);
+SimCMCyb = zeros(2,2,2);
 for rId = 1:NumCybRaces
     craceid = CybRaceId(rId);
     cindex = labels.Rk == craceid & GenericCondition;
     Lbl = Ck(cindex);
     Lbl(Lbl==SelectedClassId(1))=1;
     Lbl(Lbl==SelectedClassId(2))=2;
-    SimAccCyb(rId) = cvk(F(cindex, :, :), Lbl, TrialInd(cindex), KFolds, NFeats);
+    [SimAccCyb(rId) SimCMCyb(rId,:,:)] = cvk(F(cindex, :, :), Lbl, TrialInd(cindex), KFolds, NFeats);
 end
 
 %% Plotting simulated single-sample accuracy
