@@ -1,17 +1,17 @@
-% clearvars; clc; 
-% 
-% subject = 'MA25VE';
+clearvars; clc; 
+
+subject = 'AN14VE';
 
 pattern     = '.mi.';
-modality    = 'online';
+modality    = 'race';
 
 experiment  = 'cybathlon';
 datapath    = [pwd '/analysis/'];
 figuredir   = './figures/';
 savedir     = [pwd '/analysis/'];
 
-CueTypeId = [769 770 771 773 774 775 783];
-CueTypeLb = {'LeftHand', 'RightHand', 'BothFeet', 'BothHands', 'Boh1', 'Boh2', 'Rest'};
+TaskTypeId = [769 770 771 773 774 775 783];
+TaskTypeLb = {'LeftHand', 'RightHand', 'BothFeet', 'BothHands', 'Boh1', 'Boh2', 'Rest'};
 
 CFbTypeId = 781;
 CFbTypeLb = {'Continous Feedback'};
@@ -54,41 +54,51 @@ ClassifierIds  = unique(Xk);
 NumClassifiers = length(ClassifierIds);
 
 %% Extract events
-cnbiutil_bdisp('[proc] - Extract events');
-[~, CueEvents] = cnbiproc_get_event(CueTypeId, NumSamples, events.POS, events.TYP, events.DUR);
-[~, CFbEvents] = cnbiproc_get_event(CFbTypeId, NumSamples, events.POS, events.TYP, events.DUR);
-
-NumTrials = length(CFbEvents.POS);
+cnbiutil_bdisp(['[proc] - Extract events (' modality ')']);
+if strcmpi(modality, 'online')
+    disp('         Based on cue and continous feedback');
+    [~, CueEvents] = cnbiproc_get_event(TaskTypeId, NumSamples, events.POS, events.TYP, events.DUR);
+    [~, CFbEvents] = cnbiproc_get_event(CFbTypeId, NumSamples, events.POS, events.TYP, events.DUR);
+    NumTrials = length(CFbEvents.POS);
+    ArtifactFree = true(NumSamples, 1);
+elseif strcmpi(modality, 'race')
+    [TrialLb, TrialEvents] = cnbiproc_get_event(TaskTypeId, NumSamples, events.POS, events.TYP, events.DUR);
+    [EyeLb, EyeEvents]     = cnbiproc_get_event(267, NumSamples, events.POS, events.TYP, events.DUR);
+    ArtifactFree = EyeLb == 0;
+end
   
 %% Labeling data
-TrialCls = zeros(NumSamples, 1);
-TrialRun = zeros(NumSamples, 1);
-TrialDay = zeros(NumSamples, 1);
-for trId = 1:NumTrials
-   cstart = CFbEvents.POS(trId);
-   cstop  = cstart + CFbEvents.DUR(trId) - 1;
-   cclass = CueEvents.TYP(trId);
-   
-   TrialCls(cstart:cstop) = cclass;
+cnbiutil_bdisp(['[proc] - Labeling data (' modality ')']);
+if strcmpi(modality, 'online') 
+    TrialLb = zeros(NumSamples, 1);
+    TrialRun = zeros(NumSamples, 1);
+    TrialDay = zeros(NumSamples, 1);
+    for trId = 1:NumTrials
+       cstart = CFbEvents.POS(trId);
+       cstop  = cstart + CFbEvents.DUR(trId) - 1;
+       cclass = CueEvents.TYP(trId);
+
+       TrialLb(cstart:cstop) = cclass;
+    end
 end
-Days    = unique(labels.Dk);
-NumDays = length(Days);
 
 %% Selecting classes
-Ck = zeros(length(TrialCls), 1);
+cnbiutil_bdisp(['[proc] - Selecting required classes: ' num2str(SelectedClassId)]);
+Ck = zeros(length(TrialLb), 1);
 for cId = 1:NumClasses
-    Ck(TrialCls == SelectedClassId(cId)) = SelectedClassId(cId);
+    Ck(TrialLb == SelectedClassId(cId)) = SelectedClassId(cId);
 end
 
 %% Generic condition
-GenericCondition = Ck > 0;
+cnbiutil_bdisp('[proc] - Set generic condition mask');
+GenericCondition = Ck > 0 & ArtifactFree;
 
 %% Reshaping features
 rF = cnbiproc_reshape_ts_bc(F);
 
 %% Computing single sample accuracy for each online
 
-ConfMatr = zeros(2, 3, NumRuns);
+ConfMatr = zeros(NumClasses, NumClasses+1, NumRuns);
 for rId = 1:NumRuns
     
     cindex = Rk == Runs(rId) & Ck > 0;
@@ -195,13 +205,6 @@ singlesample.accuracy  = DayAccuracy;
 singlesample.rejection = DayRejection;
 singlesample.label     = labels.Dl;
 
-savefile = [savedir '/' subject '.metadata.mat'];
-if exist(savefile, 'file')
-    cnbiutil_bdisp(['Loading metadata from: ' savefile]);
-    load(savefile);
-end
-
-metadata.online.singlesample = singlesample;
-
-cnbiutil_bdisp(['Saving singlesample (online) results in: ' savefile]);
-save(savefile, 'metadata');
+savefile = [savedir '/' subject '.ssaccuracy.' modality '.mat'];
+cnbiutil_bdisp(['Saving singlesample (' modality ') results in: ' savefile]);
+save(savefile, 'singlesample');
