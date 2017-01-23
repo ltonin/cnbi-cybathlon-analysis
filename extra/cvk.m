@@ -52,7 +52,7 @@ for i=K:-1:1
     AccCVtr(i) = 100*(1-err_tr(i));
     fclass = classify(ststdata,strdata,strlabels);
     %fclass = classify(ststdata,strdata,strlabels,'diaglinear');
-    [CMCVtst(i,:,:),~,AccCVtst(i), ~, CMRealCVtst(i,:,:) ] = confusion_matrix(fclass, ststlabels, 2);
+    [CMCVtst(i,:,:),~,AccCVtst(i), ~, CMRealCVtst(i,:,:) ] = confusion_matrix(fclass, ststlabels, length(unique(alabels)));
 end
 AvgAcc = mean(AccCVtst);
 AvgCM = squeeze(mean(CMCVtst,1));
