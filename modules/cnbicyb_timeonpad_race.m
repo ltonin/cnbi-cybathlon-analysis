@@ -1,7 +1,7 @@
 clearvars; clc; 
 
-subject = 'AN14VE';
-% subject = 'MA25VE';
+% subject = 'AN14VE';
+subject = 'MA25VE';
 
 pattern     = '.mi.';
 modality    = 'race';
@@ -129,12 +129,11 @@ cnbifig_export(fig3, [figuredir '/' subject '.racetimesessionmedian.' modality '
 %% Saving metadata
 
 % Grouping results
-timepad.values = MTOPPad;
-timepad.label   = Dl;
+timeonpad.values    = plotpad;
+timeonpad.label.pad = plotlbl;
+timeonpad.label.padlb = {'Speed','Jump','Slide','Rest','Start','End'};
 
-savefile = [savedir '/' subject '.timepad.' modality '.mat'];
-
-metadata.race.timepad = timepad;
+savefile = [savedir '/' subject '.timeonpad.' modality '.mat'];
 
 cnbiutil_bdisp(['Saving timings on pad (' modality ') results in: ' savefile]);
-save(savefile, 'timepad');
+save(savefile, 'timeonpad');
