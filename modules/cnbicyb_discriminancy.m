@@ -1,10 +1,10 @@
 clearvars; clc; 
 
 % subject = 'MA25VE';
-% subject = 'AN14VE';
+subject = 'AN14VE';
 
 pattern     = '.mi.';
-modality    = 'online';
+modality    = 'race';
 
 experiment  = 'cybathlon';
 datapath    = [pwd '/analysis/'];
@@ -20,7 +20,7 @@ CFbTypeLb = {'Continous Feedback'};
 FixTypeId = 786;
 FixTypeLb = {'Fixation'};
 
-SelectedClassId = [771 773];
+SelectedClassId = [773 771];
 SelectedClassLb = {'BothFeet', 'BothHands'};
 NumClasses = length(SelectedClassId);
 
@@ -49,7 +49,7 @@ Mk = labels.Mk;
 
 %% Extract events
 cnbiutil_bdisp(['[proc] - Extract events (' modality ')']);
-if strcmpi(modality, 'online')
+if strcmpi(modality, 'online') || strcmpi(modality, 'offline') 
     disp('         Based on cue and continous feedback');
     [~, CueEvents] = cnbiproc_get_event(TaskTypeId, DataLength, events.POS, events.TYP, events.DUR);
     [~, CFbEvents] = cnbiproc_get_event(CFbTypeId,  DataLength, events.POS, events.TYP, events.DUR);
@@ -64,7 +64,7 @@ end
 
 %% Labeling data
 cnbiutil_bdisp(['[proc] - Labeling data (' modality ')']);
-if strcmpi(modality, 'online') 
+if strcmpi(modality, 'online') || strcmpi(modality, 'offline') 
     TrialLb = zeros(DataLength, 1);
     TrialRun = zeros(DataLength, 1);
     TrialDay = zeros(DataLength, 1);
@@ -125,7 +125,7 @@ NumCols = size(discrday, 2);
 for dId = 1:size(discrday, 2)
     subplot(NumRows, NumCols, dId);
     cdata = reshape(discrday(:, dId), [NumFreqs NumChans]);
-    imagesc(FreqGrid, 1:NumChans, cdata', [0 0.5]);
+    imagesc(FreqGrid, 1:NumChans, cdata');
     
     if dId == 1
         ylabel('Channel');
@@ -140,7 +140,7 @@ for dId = 1:size(discrday, 2)
     cdata = reshape(discrday(:, dId), [NumFreqs NumChans]);
     
     tdata = convChans(mean(cdata(AlphaBandId, :), 1));
-    topoplot(tdata, chanlocs, 'headrad', 'rim', 'maplimits', [0 0.2]);
+    topoplot(tdata, chanlocs, 'headrad', 'rim');
     axis image;
     
     if dId == 1
@@ -160,7 +160,7 @@ for dId = 1:size(discrday, 2)
     cdata = reshape(discrday(:, dId), [NumFreqs NumChans]);
     
     tdata = convChans(mean(cdata(BetaBandId, :), 1));
-    topoplot(tdata, chanlocs, 'headrad', 'rim', 'maplimits', [0 0.2]);
+    topoplot(tdata, chanlocs, 'headrad', 'rim');
     axis image;
     title('');
     if dId == 1
