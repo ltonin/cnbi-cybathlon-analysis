@@ -1,7 +1,7 @@
 clearvars; clc; 
 
-% subject = 'AN14VE';
-subject = 'MA25VE';
+subject = 'AN14VE';
+% subject = 'MA25VE';
 
 pattern     = '.mi.';
 modality    = 'race';
@@ -12,7 +12,7 @@ datapath    = ['/mnt/data/Research/' experiment '/' subject '/' subject '_racema
 %datapath    = '~/Desktop/tst/MA25VE/MA25VE_racemat/';
 % datapath    = '~/Desktop/tst/AN14VE/AN14VE_racemat/';
 figuredir  = './figures/';
-savedir  = [pwd '/analysis/'];
+savedir  =  '/analysis/';
 
 rejectlim = 240; % Reject races above this limit, 
 
@@ -25,6 +25,8 @@ rejectlim = 240; % Reject races above this limit,
 numfiles = length(Files);
 Rk = []; 
 Rl = cell(numfiles, 1);
+Pk = [];
+Pl = cell(numfiles, 1);
 Dk = [];            
 Dl = [];            
 Mk = [];
@@ -69,6 +71,23 @@ for fId = 1:numfiles
     Rk = cat(1, Rk, fId*ones(1, 1));
     Rl{fId} = cinfo.extra;
 
+    % Create protocol vector
+    if(strcmp(cdata.Race.protocol ,'rehearsalstyle'))
+        protocol = 3;
+    elseif(strcmp(cdata.Race.protocol,'mi_cybathlon1'))
+        protocol = 4;
+    elseif(strcmp(cdata.Race.protocol,'mi_cybathlon2'))
+        protocol = 5;
+    elseif(strcmp(cdata.Race.protocol,'mi_cybathlon3/controller'))
+        protocol = 6;
+    elseif(strcmp(cdata.Race.protocol,'racetime'))                          % To be checked with Simis
+        protocol = 6;
+    else
+        protocol = 0;
+    end
+    Pk = cat(1, Pk, protocol);
+    Pl{fId} = cdata.Race.protocol;
+    
     % Extract race time
     if modal >= 2    % race runs
         RT = [RT ; cdata.Race.RaceTime];
@@ -161,10 +180,16 @@ cnbifig_export(fig2, [figuredir '/' subject '.racetimesession.' modality '.png']
 %% Saving metadata
 
 % Grouping results
-time.values = [SMRT; SSRT]';
-time.label   = Dl;
+time.run.values = RT;
+time.run.label.Rk = Rk;
+time.run.label.Dk = Dk;
+time.run.label.Dl = Dl;
+time.run.label.Pk = Pk;
+time.run.label.Pl = Pl;
+time.session.values = [SMRT; SSRT]';
+time.session.label   = Dl;
 
-savefile = [savedir '/' subject '.time.' modality '.mat'];
+savefile = [pwd '/' savedir '/' subject '.time.' modality '.mat'];
 
 cnbiutil_bdisp(['Saving timings (' modality ') results in: ' savefile]);
 save(savefile, 'time');
