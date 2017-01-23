@@ -16,7 +16,7 @@ AnalysisType = 'all'; % 'correct'       % Select if all trials are taken into ac
 TrialTypeId = [768 769 770 771 773 783];
 TrialTypeLb = {'Slide', 'Slide', 'Speed', 'Jump', 'Speed', 'Rest'};
 
-SelectedClassId = [773 771];
+SelectedClassId = [773 783]; % Attention! AnalysisType should be set to 'all' for 3-class problems
 SelectedClassLb = {'BothFeet', 'BothHands'};
 NumClasses = length(SelectedClassId);
 
@@ -87,10 +87,11 @@ end
 
 %% Compute the overall simulated accuracy
 Lbl = Ck(GenericCondition);
-Lbl(Lbl==SelectedClassId(1))=1;
-Lbl(Lbl==SelectedClassId(2))=2;
+for t=1:length(SelectedClassId)
+    Lbl(Lbl==SelectedClassId(t))=t;
+end
 [SimAcc, SimCM] =  cvk(F(GenericCondition, :, :), Lbl, TrialInd(GenericCondition), KFolds, NFeats);
-SimAccClass = [SimCM(1,1) SimCM(2,2)];
+SimAccClass = diag(SimCM);
 
 %% Compute simulated accuracy per day
 SimAccSes = [];
@@ -101,13 +102,14 @@ for dId = 1:NumDays
     cindex = labels.Dk == Days(dId) & Ck > 0;
     if length(unique(Ck(cindex))) == 2
         Lbl = Ck(cindex);
-        Lbl(Lbl==SelectedClassId(1))=1;
-        Lbl(Lbl==SelectedClassId(2))=2;
+        for t=1:length(SelectedClassId)
+            Lbl(Lbl==SelectedClassId(t))=t;
+        end
         [tmpSimAcc, tmpCM] = cvk(F(cindex, :, :), Lbl, TrialInd(cindex), KFolds, NFeats);
         SimAccSes = cat(1, SimAccSes, tmpSimAcc);
         SimCMSes = cat(3, SimCMSes, tmpCM);
         SimAccSesLb = cat(1, SimAccSesLb, labels.Dl(dId, :));
-        SimAccClassSes = cat(3,SimAccClassSes,[tmpCM(1,1) tmpCM(2,2)]);
+        SimAccClassSes = cat(3,SimAccClassSes,diag(tmpCM));
     end
 end
 SimAccClassSes = squeeze(SimAccClassSes)';
@@ -121,8 +123,9 @@ for rId = 1:NumCybRaces
     craceid = CybRaceId(rId);
     cindex = labels.Rk == craceid & GenericCondition;
     Lbl = Ck(cindex);
-    Lbl(Lbl==SelectedClassId(1))=1;
-    Lbl(Lbl==SelectedClassId(2))=2;
+    for t=1:length(SelectedClassId)
+        Lbl(Lbl==SelectedClassId(t))=t;
+    end
     [SimAccCyb(rId) SimCMCyb(rId,:,:)] = cvk(F(cindex, :, :), Lbl, TrialInd(cindex), KFolds, NFeats);
 end
 
@@ -130,7 +133,7 @@ end
 fig1 = figure;
 cnbifig_set_position(fig1, 'All');
 plot(1:length(SimAccSes),SimAccSes,'--g',1:length(SimAccSes),SimAccClassSes(:,1),'c',1:length(SimAccSes),SimAccClassSes(:,2),'m','LineWidth',3);
-legend({'Overall',SelectedClassLb{1},SelectedClassLb{2}})
+cat(1,'Overall',SelectedClassLb');
 xlabel('Race Session','FontSize',20,'LineWidth',3);
 ylabel('Simulated single-sample Accuracy (%)','FontSize',20,'LineWidth',3);
 title(subject);
