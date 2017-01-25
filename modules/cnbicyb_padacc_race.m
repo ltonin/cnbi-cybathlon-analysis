@@ -111,6 +111,11 @@ for rId = 1:(length(TrialEvents.DUR)/18)
     SSpeedPadRace(rId,3) = std2(SpeedPadRace{3});
 end
 
+[r pvalPearson] = corr([1:(length(TrialEvents.DUR)/18)]',nanmean(AccPadRace(1:3,:))','type','Pearson');
+disp(['Per run, Pearson Correlation r = ' num2str(r) ' with pval = ' num2str(pvalPearson)]);
+[rho pvalSperaman] = corr([1:(length(TrialEvents.DUR)/18)]',nanmean(AccPadRace(1:3,:))','type','Spearman');
+disp(['Per run, Spearman Correlation r = ' num2str(rho) ' with pval = ' num2str(pvalSperaman)]);
+
 %% Plotting
 fig1 = figure;
 cnbifig_set_position(fig1, 'All');
@@ -175,7 +180,7 @@ set(gca,'XTick',unique(labels.Rk));
 %xticklabel_rotate([],45,[])
 cnbifig_export(fig4, [figuredir '/' subject '.padaccrace.' modality '.png'], '-png');
 
-%% Saving metadata
+cd%% Saving metadata
 
 % Grouping results
 pad.accuracy = AccPad;
