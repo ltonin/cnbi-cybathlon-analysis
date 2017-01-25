@@ -80,6 +80,42 @@ for dId = 1:NumDays
 end
 
 
+%% Compute accuracies per race
+RaceTrialEvents = [];
+MSpeedPadRace = [];
+FPPerSecRun = [];
+for rId = 1:(length(TrialEvents.DUR)/18)
+    KeepInd = [];
+    for tr=1:length(TrialEvents.DUR)
+        if(labels.Rk(TrialEvents.POS(tr))==rId)
+            KeepInd = [KeepInd; tr];
+        end
+    end
+    thisRaceTrialEvents.POS = TrialEvents.POS(KeepInd);
+    thisRaceTrialEvents.TYP = TrialEvents.TYP(KeepInd);
+    thisRaceTrialEvents.DUR = TrialEvents.DUR(KeepInd);
+    [TPFPPadRace{rId}, TPFPTaskRace{rId}, SpeedPadRace, SpeedTaskRace, FPPerSecRace(rId)] = cnbiproc_padacc(CommLb, thisRaceTrialEvents, PadTypeId, PadTypeLb, PadTypeInd);
+    
+    for t=1:size(TPFPPad,1)
+        AccPadRace(t,rId) = TPFPPadRace{rId}(t,1);
+    end
+    for t=1:size(TPFPTask,1)
+        AccTaskRace(t,dId) = TPFPTaskRace{rId}(t,1);
+    end
+    
+    MSpeedPadRace(rId,1) = mean(SpeedPadRace{1});
+    SSpeedPadRace(rId,1) = std2(SpeedPadRace{1});
+    MSpeedPadRace(rId,2) = mean(SpeedPadRace{2});
+    SSpeedPadRace(rId,2) = std2(SpeedPadRace{2});
+    MSpeedPadRace(rId,3) = mean(SpeedPadRace{3});
+    SSpeedPadRace(rId,3) = std2(SpeedPadRace{3});
+end
+
+[r pvalPearson] = corr([1:(length(TrialEvents.DUR)/18)]',nanmean(AccPadRace(1:3,:))','type','Pearson');
+disp(['Per run, Pearson Correlation r = ' num2str(r) ' with pval = ' num2str(pvalPearson)]);
+[rho pvalSperaman] = corr([1:(length(TrialEvents.DUR)/18)]',nanmean(AccPadRace(1:3,:))','type','Spearman');
+disp(['Per run, Spearman Correlation r = ' num2str(rho) ' with pval = ' num2str(pvalSperaman)]);
+
 %% Plotting
 fig1 = figure;
 cnbifig_set_position(fig1, 'All');
@@ -129,7 +165,22 @@ set(gca,'XTickLabel',Dl);
 xticklabel_rotate([],45,[])
 cnbifig_export(fig3, [figuredir '/' subject '.fppersec.' modality '.png'], '-png');
 
-%% Saving metadata
+
+fig4 = figure;
+cnbifig_set_position(fig4, 'All');
+plot(1:length(labels.Rl),AccPadRace(1,:),'c',1:length(labels.Rl),AccPadRace(2,:),'m',1:length(labels.Rl),AccPadRace(3,:),'y',1:length(labels.Rl),nanmean(AccPadRace(1:3,:)),'--g','MarkerSize',10,'LineWidth',3);
+legend({'Speed','Jump','Slide','Average'});
+xlabel('Race Index (chronological)','FontSize',20,'LineWidth',3);
+ylabel('Command Accuracy (%)','FontSize',20,'LineWidth',3);
+title(subject);
+axis([1 max(labels.Rk) 0 105]);
+set(gca,'FontSize',20,'LineWidth',3);
+set(gca,'XTick',unique(labels.Rk));
+%set(gca,'XTickLabel',Dl);
+%xticklabel_rotate([],45,[])
+cnbifig_export(fig4, [figuredir '/' subject '.padaccrace.' modality '.png'], '-png');
+
+cd%% Saving metadata
 
 % Grouping results
 pad.accuracy = AccPad;
