@@ -62,7 +62,7 @@ if length(y)>1  % vector input
                 label=in2{I};
             end
         end
-        h(I)=plot_hline(y(I),linetype,label);
+        h(I)=cnbiplot_hline(y(I),linetype,label);
     end
 else
     switch nargin

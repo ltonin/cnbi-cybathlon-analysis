@@ -62,7 +62,7 @@ if length(x)>1  % vector input
                 label=in2{I};
             end
         end
-        h(I)=plot_vline(x(I),linetype,label);
+        h(I)=cnbiplot_vline(x(I),linetype,label);
     end
 else
     switch nargin
