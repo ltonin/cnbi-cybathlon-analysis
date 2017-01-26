@@ -1,7 +1,11 @@
 clearvars; clc; 
 
+<<<<<<< HEAD
 subject = 'AN14VE';
 % subject = 'MA25VE';
+=======
+subject = 'MA25VE';
+>>>>>>> e6c47c19d5d51b7efd60c744470ecfa21dc7bbf9
 
 pattern     = '.mi.';
 modality    = 'race';
@@ -113,15 +117,15 @@ end
 
 %% Saving racetime results for future porposes (e.g., correlation with DP maps)
 
-race.time = RT;
-race.Rk   = Rk;
-race.Mk   = Mk;
-race.Dk   = Dk;
-race.Dl   = Dl;
-
-filename = [savepath '/' subject '.race.time.mat'];
-cnbiutil_bdisp(['[out] - Saving race time results in: ' filename]);
-save(filename, 'race');
+% race.time = RT;
+% race.Rk   = Rk;
+% race.Mk   = Mk;
+% race.Dk   = Dk;
+% race.Dl   = Dl;
+% 
+% filename = [savepath '/' subject '.race.time.mat'];
+% cnbiutil_bdisp(['[out] - Saving race time results in: ' filename]);
+% save(filename, 'race');
 
 
 

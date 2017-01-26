@@ -1,7 +1,7 @@
 clearvars; clc; 
 
-subject = 'MA25VE';
-% subject = 'AN14VE';
+% subject = 'MA25VE';
+subject = 'AN14VE';
 
 pattern     = '.mi.';
 experiment  = 'cybathlon';
@@ -124,6 +124,23 @@ for rId = 1:NumRuns
     rDk(rId) = unique(Dk(Rk == Runs(rId)));
     rMk(rId) = unique(Mk(Rk == Runs(rId)));
 end
+
+%% Saving data
+
+% Grouping results
+discriminancy.run.fisherscore  = FisherScores;
+discriminancy.run.label.Dk     = rDk;
+discriminancy.run.label.Dl     = labels.Dl;
+discriminancy.run.label.Mk     = rMk;
+discriminancy.run.combinations = combinations;
+discriminancy.freqs            = settings.spectrogram.freqgrid;
+
+savefile = [savedir '/' subject '.discriminancy.maps.mat'];
+
+cnbiutil_bdisp(['Saving discriminancy results in: ' savefile]);
+save(savefile, 'discriminancy');
+
+
 
 %% Plotting
 

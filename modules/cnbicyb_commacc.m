@@ -1,7 +1,7 @@
 clearvars; clc;
 
-% subject = 'AN14VE';
-subject = 'MA25VE';
+subject = 'AN14VE';
+% subject = 'MA25VE';
 
 pattern     = '.mi.';
 modality    = 'online';
@@ -70,8 +70,9 @@ cnbifig_export(fig1, [figuredir '/' subject '.commacc.' modality '.png'], '-png'
 %% Saving metadata
 
 % Grouping results
-command.accuracy  = CommAccSes;
-command.label     = Dl;
+command.session.accuracy  = CommAccSes;
+command.session.label     = Dl;
+command.session.tasks    = {'LeftHand', 'RightHand', 'BothFeet', 'BothHands', 'Rest'};
 
 savefile = [savedir '/' subject '.cmdaccuracy.' modality '.mat'];
 
