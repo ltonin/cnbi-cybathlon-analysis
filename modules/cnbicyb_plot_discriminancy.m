@@ -9,8 +9,11 @@ figuredir = './figures/';
 SelectedClassId = [771 773];
 SelectedClassLb = {'BothFeet', 'BothHands'};
 
+AltSelectedClassId = [770 771];
+AltSelectedClassLb = {'RightHand', 'BothFeet'};
+
 PatternLocationsId = {[4 9 14], [2 7 12 6 11 16]};
-PatternLocationsLb = {'Cz', 'CP3-CP4'}; 
+PatternLocationsLb = {'FCz-Cz-CPz', 'FC3-C3-CP3-CP4-C4-FC4'}; 
 PatternLabels = {'Middle locs', 'Lateral locs'};
 NumPatterns = length(PatternLocationsId);
 PatternCorr = zeros(NumPatterns, NumSubjects);
@@ -19,9 +22,12 @@ PatternPVal = zeros(NumPatterns, NumSubjects);
 
 
 fisherscore = [];
+altfisherscore = [];
 Mk = [];
 Dk = [];
 Sk = [];
+Dm = [];
+Dml = [];
 Dl = cell(NumSubjects, 1);
 for sId = 1:NumSubjects
     csubject = SubList{sId};
@@ -46,6 +52,22 @@ for sId = 1:NumSubjects
     Dk = cat(1, Dk, cDk);
     Dl{sId} = cdata.discriminancy.run.label.Dl;
     
+    cDmk = zeros(length(cDk), 1);
+    cDml = str2double(Dl{sId}(cDk, 5:6));
+    
+    cmonthId = 0;
+    cmonthLb = [];
+    for dId = 1:length(cDml)
+        if isequal(cmonthLb, cDml(dId)) == false
+            cmonthLb = cDml(dId);
+            cmonthId = cmonthId + 1;
+        end
+        cDmk(dId) = cmonthId;
+    end
+    
+    Dm  = cat(1, Dm, cDmk);
+    Dml = cat(1, Dml, cDml);
+    
     Sk = cat(1, Sk, sId*ones(length(cdata.discriminancy.run.label.Mk), 1));
 
     SelectedCombination = find(ismember(combinations, SelectedClassId, 'rows'));
@@ -62,6 +84,9 @@ for sId = 1:NumSubjects
         [PatternCorr(pId, sId), PatternPVal(pId, sId)] = corr((1:length(cvalues))', cvalues', 'rows', 'pairwise', 'type', 'spearman');
         
     end
+    
+    AltSelectedCombination = find(ismember(combinations, AltSelectedClassId, 'rows'));
+    altfisherscore = cat(3, altfisherscore, reshape(cfisherscore(:, :, AltSelectedCombination), [NumFreqs NumChans size(cfisherscore, 2)]));
 end
 
 Modalities   = unique(Mk);
@@ -80,30 +105,30 @@ NumCols = NumModalities;
 for sId = 1:NumSubjects
     csubject = SubList{sId};
     for mId = 1:NumModalities
-            subplot(NumRows, NumCols, mId + NumCols*(sId -1));
-            
-            cindex = Sk == sId & Mk == Modalities(mId);
-            cdata = squeeze(nanmean(nanmean(fisherscore(SelBetaFreqIds, :, cindex), 1), 3));
-            tdata = convChans(cdata);
+        subplot(NumRows, NumCols, mId + NumCols*(sId -1));
 
-            if strcmp(csubject, 'AN14VE')
-                maplimits = [0 0.4];
-            elseif strcmp(csubject, 'MA25VE')
-                maplimits = [0 0.5];
-            end
-            topoplot(tdata, chanlocs, 'headrad', 'rim', 'maplimits', maplimits);
-            axis image;
-            
-            title(ModalitiesLb{mId});
-            if mId == 1
-                h = axes('Position', get(gca, 'Position'), 'Visible', 'off');
-                set(h.YLabel, 'Visible', 'on');
-                ylabel(csubject);
-            end
+        cindex = Sk == sId & Mk == Modalities(mId);
+        cdata = squeeze(nanmean(nanmean(fisherscore(SelBetaFreqIds, :, cindex), 1), 3));
+        tdata = convChans(cdata);
+
+        if strcmp(csubject, 'AN14VE')
+            maplimits = [0 0.4];
+        elseif strcmp(csubject, 'MA25VE')
+            maplimits = [0 0.5];
+        end
+        topoplot(tdata, chanlocs, 'headrad', 'rim', 'maplimits', maplimits);
+        axis image;
+
+        title(ModalitiesLb{mId});
+        if mId == 1
+            h = axes('Position', get(gca, 'Position'), 'Visible', 'off');
+            set(h.YLabel, 'Visible', 'on');
+            ylabel(csubject);
+        end
     end
 end
 suptitle(['Discriminancy - Pattern stability - Beta Band (' SelectedClassLb{1} '-' SelectedClassLb{2} ')']);
-cnbifig_export(fig1, [figuredir '/cybathlon.journal.discriminancy.stability.png'], '-png');
+cnbifig_export(fig1, [figuredir '/cybathlon.journal.discriminancy.stability.topoplot.png'], '-png');
 
 fig2 = figure;
 fig_set_position(fig2, 'Top');
@@ -116,21 +141,28 @@ Marker = {'v', 's', 'o'};
 ax = gca;
 Colors = ax.ColorOrder;
 
-for sId = 1:2
+for sId = 1:NumSubjects
     csubject = SubList{sId};
     subplot(NumRows, NumCols, sId);
     cindex = Sk == sId;
     hold on;
-    a = zeros(2, 1);
     XThicks = 1:sum(cindex);
+    cdata = [];
     for pId = 1:length(PatternLocationsId)
         cpatterns = PatternLocationsId{pId};
-        cdata = squeeze(nanmean(nanmean(fisherscore(SelBetaFreqIds, cpatterns, cindex), 1), 2));
-        ax = plot(XThicks,  cdata, '.');
-        hl = lsline;
-        set(hl, 'LineWidth', 3);
-        set(ax, 'Visible', 'off');
+        cdata = cat(2, cdata, squeeze(nanmean(nanmean(fisherscore(SelBetaFreqIds, cpatterns, cindex), 1), 2)));
     end
+    ax = plot(XThicks,  cdata, '.');
+    hl = lsline;
+    set(hl, 'LineWidth', 3);
+    cDk = Dk(cindex);
+    cticks = XThicks(isnan(cdata(:, 1)) == 0);
+    cdates = cDk(cticks);
+    changeId = find(diff(cdates)) + 1;
+    set(gca, 'XTick', cticks(changeId));
+    set(gca, 'XTickLabel', Dl{sId}(cdates(changeId), :));
+    xticklabel_rotate([],90,[])
+    set(ax, 'Visible', 'off');
     
         
     for pId = 1:length(PatternLocationsId)
@@ -143,27 +175,16 @@ for sId = 1:2
     
     hold off;
     ylim([0 0.8]);
-    
-
-    
-    
-
 
     h = gca;
-    legend(h.Children([end-1 end-3 end-5 end-6 end-7]), [PatternLabels ModalitiesLb])
+    legend(h.Children([end-3 end-2 6 5 4]), [PatternLabels ModalitiesLb])
+
     
-        grid on;
+    grid on;
     ylabel('Discriminancy');
     xlabel('Runs');
     title(csubject);
-    
-%     % Adding x-ticks when date changes
-%     cDk = Dk(cindex);
-%     changedateId = find(diff(cDk)) + 1;
-%     set(gca, 'XTick', XThicks(changedateId));
-%     set(gca, 'XTickLabel', Dl{sId}(cDk(changedateId), :));
-%     xticklabel_rotate([],90,[])
-%     
+
     cpos = get(gca,'Position');
     for pId = 1:length(PatternLocationsId)
         apos = cpos;
@@ -175,5 +196,54 @@ for sId = 1:2
     
 end
 
-suptitle(['Discriminancy - Emerging patterns - Beta Band (' SelectedClassLb{1} '-' SelectedClassLb{2} ')']);
-cnbifig_export(fig2, [figuredir '/cybathlon.journal.discriminancy.emerging.png'], '-png');
+suptitle(['Discriminancy - Emerging patterns correlation - Beta Band (' SelectedClassLb{1} '-' SelectedClassLb{2} ')']);
+cnbifig_export(fig2, [figuredir '/cybathlon.journal.discriminancy.emerging.correlation.png'], '-png');
+
+%% Plot 3
+fig3 = figure;
+fig_set_position(fig3, 'Top');
+
+
+NumRows = NumSubjects;
+NumCols = max(Dml) - min(Dml) + 1;
+PlotLoc = min(Dml):max(Dml);
+
+Months = unique(Dml);
+NumMonths = length(Months);
+
+for sId = 1:NumSubjects
+   csubject = SubList{sId};
+   cmonths = unique(Dml(Sk == sId));
+   for dmId = 1:length(cmonths)
+        crowloc = find(PlotLoc == cmonths(dmId));
+        subplot(NumRows, NumCols, crowloc + NumCols*(sId -1));
+        cindex = Sk == sId & Dml == cmonths(dmId);
+        cdata = squeeze(nanmean(nanmean(fisherscore(SelBetaFreqIds, :, cindex), 1), 3));
+        if sum(isnan(cdata) > 0)
+            cdata = squeeze(nanmean(nanmean(altfisherscore(SelBetaFreqIds, :, cindex), 1), 3));
+        end
+        
+        tdata = convChans(cdata);
+
+        if strcmp(csubject, 'AN14VE')
+            maplimits = [0 0.5];
+        elseif strcmp(csubject, 'MA25VE')
+            maplimits = [0 0.5];
+        end
+        topoplot(tdata, chanlocs, 'headrad', 'rim', 'maplimits', maplimits);
+        
+        [~, cmonthname] = month(num2str(unique(Dml(Dml == cmonths(dmId)))), 'mm');
+        title(cmonthname);       
+        
+   end
+           
+    u = subplot(NumRows, NumCols, 1 + NumCols*(sId -1));
+    h = axes('Position', get(gca, 'Position'), 'Visible', 'off');
+    set(u, 'Visible', 'off');
+    set(h.YLabel, 'Visible', 'on');
+    ylabel(csubject);
+   
+end
+
+suptitle(['Discriminancy - Emerging patterns topoplot - Beta Band (' SelectedClassLb{1} '-' SelectedClassLb{2} ')'])
+cnbifig_export(fig3, [figuredir '/cybathlon.journal.discriminancy.emerging.topoplot.png'], '-png');

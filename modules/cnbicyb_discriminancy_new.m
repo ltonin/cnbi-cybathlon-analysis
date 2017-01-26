@@ -1,7 +1,7 @@
 clearvars; clc; 
 
-% subject = 'MA25VE';
-subject = 'AN14VE';
+subject = 'MA25VE';
+% subject = 'AN14VE';
 
 pattern     = '.mi.';
 experiment  = 'cybathlon';
@@ -101,7 +101,7 @@ GenericCondition = ArtifactFree;
 
 %% Generate selected pairs
 
-SelectedTasks = [771 773 783];
+SelectedTasks = [770 771 773 783];
 
 combinations = nchoosek(SelectedTasks, 2);
 NumCombinations = size(combinations, 1);
@@ -199,7 +199,7 @@ NumCols = NumCombinations;
 
 for mId = 1:tNumMods
     for cId = 1:NumCombinations
-        subplot(NumRows, NumCols, mId + NumCols*(cId -1));
+        subplot(NumRows, NumCols, cId + NumCols*(mId -1));
         
         cdata = reshape(nanmean(FisherScores(:, tMk == tMods(mId), cId), 2), [NumFreqs NumChans]);
         tdata = convChans(mean(cdata(SelBetaFreqIds, :), 1));
@@ -210,12 +210,20 @@ for mId = 1:tNumMods
         end
         topoplot(tdata, chanlocs, 'headrad', 'rim', 'maplimits', [maplimits]);
         
-        if mId == tNumMods
-            colorbar('location', 'EastOutside');
-        end
+        
+
+        
         axis image;
         [~, comblb] = intersect(TaskTypeId, combinations(cId, :));
-        title([tModlb{mId} ' - ' cell2mat(TaskTypeLb(comblb))]);
+        title([cell2mat(TaskTypeLb(comblb))]);
+        if cId == 1
+            h = axes('Position', get(gca, 'Position'), 'Visible', 'off');
+            set(h.YLabel, 'Visible', 'on');
+            ylabel(tModlb{mId});
+        end
+        if cId == NumCombinations
+            colorbar('location', 'EastOutside');
+        end
     end
 end
 
