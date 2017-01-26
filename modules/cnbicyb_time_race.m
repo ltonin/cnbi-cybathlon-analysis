@@ -1,14 +1,19 @@
 clearvars; clc; 
 
+<<<<<<< HEAD
+subject = 'AN14VE';
+% subject = 'MA25VE';
+=======
 subject = 'MA25VE';
+>>>>>>> e6c47c19d5d51b7efd60c744470ecfa21dc7bbf9
 
 pattern     = '.mi.';
 modality    = 'race';
 
 experiment  = 'cybathlon';
 %datapath    = ['/mnt/data/Research/' experiment '/' subject '/' subject '_racemat/'];
-datapath    = '~/Desktop/tst/MA25VE/MA25VE_racemat/';
-%datapath    = '~/Desktop/tst/AN14VE/AN14VE_racemat/';
+%datapath    = '~/Desktop/tst/MA25VE/MA25VE_racemat/';
+datapath    = '~/Desktop/tst/AN14VE/AN14VE_racemat/';
 figuredir  = './figures/';
 savedir  =  '/analysis/';
 
@@ -92,6 +97,12 @@ for fId = 1:numfiles
     else
         error('There is no race time in modality ~= 2');
     end
+    if(isnan(cdata.Race.data))
+        HasYellow(fId) = NaN;
+    else
+        HasYellow(fId) = sum(ismember(cdata.Race.EVENT.TYP,768));
+    end
+    
 end
 
 % Reject races
