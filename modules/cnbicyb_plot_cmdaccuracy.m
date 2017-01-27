@@ -6,6 +6,9 @@ NumSubjects = length(SubList);
 datapath  = [pwd '/analysis/'];
 figuredir = './figures/';
 
+fig1 = figure;
+fig_set_position(fig1, 'Top');
+
 for sId = 1:NumSubjects
     csubject = SubList{sId};
     cfileonline = [datapath '/' csubject '.cmdaccuracy.online.mat'];
@@ -63,6 +66,7 @@ for sId = 1:NumSubjects
     plot(DThick, nanmean(stAcc), 'k', 'LineWidth', 2);
     hold off;
     legend(tTsk, 'location', 'best');
+    grid on;
 %     
 %     [~, ~, oindex] = intersect(oTsk, totTasks);
 %     [~, ~, rindex] = intersect(rTsk, totTasks);
