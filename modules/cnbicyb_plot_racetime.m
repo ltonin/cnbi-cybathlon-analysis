@@ -57,7 +57,21 @@ for sId = 1:NumSubjects
     % Highlight record
     [crecord, crunrecord] = min(crt);
     hrecord = plot(crunrecord, crecord, 'sr', 'LineWidth', 2, 'MarkerSize', 15);
-    legend([chandles; hrecord], [cPl; 'Record: ' num2str(crecord, '%2.1f') ' s']);
+   
+    
+    % Highlight qualifier and final
+    cqualifierId =  find(cRk == max(cRuns) - 1);
+    cqualifier   = crt(cqualifierId);
+    cfinalId     = find(cRk == max(cRuns));
+    cfinal       = crt(cfinalId);
+    hqualifier   = plot(cqualifierId, cqualifier, '^', 'Color', 'g', 'LineWidth', 2, 'MarkerSize', 15);
+    hfinal       = plot(cfinalId, cfinal, '^', 'Color', 'b', 'LineWidth', 2, 'MarkerSize', 15);
+    
+    % Legend
+    [~, hobjlegend] = legend([chandles; hrecord; hqualifier; hfinal], [cPl; 'Record: ' num2str(crecord, '%2.1f') ' s'; ...
+                     'Qualifier: ' num2str(cqualifier, '%2.1f') ' s'; 'Final: ' num2str(cfinal, '%2.1f') ' s';]);
+    set(hobjlegend(end-5:end), 'MarkerSize', 8)
+    
     
     hold off;
     grid on;
@@ -70,7 +84,8 @@ for sId = 1:NumSubjects
     set(gca, 'XTick', changedateId);
     set(gca, 'XTickLabel', cDl(cDk(changedateId), :));
     xticklabel_rotate([],90,[])
-    xlabel('Race');
+    hxlabel = xlabel('Session');
+    set(hxlabel, 'Position', get(hxlabel, 'Position') - [0 0.02 0])
     ylabel('Time [s]');
     title(csubject);
     
@@ -81,7 +96,7 @@ for sId = 1:NumSubjects
     %cpos(1) = cpos(1) + cpos(3) - 0.1;
     cpos(2) = cpos(2) - 0.1;
     textcolor = 'k';
-    annotation('textbox', cpos, 'String', ['rho=' num2str(ccorr, '%3.2f') ', p=' num2str(cpval, '%3.3f')], 'LineStyle', 'none', 'Color', textcolor, 'FontWeight', 'bold')
+    annotation('textbox', cpos, 'String', ['r=' num2str(ccorr, '%3.2f') ', p=' num2str(cpval, '%3.3f')], 'LineStyle', 'none', 'Color', textcolor, 'FontWeight', 'bold')
     
     % Add max and min race time
     cnbiplot_hline(MinRaceTime, '--k', ['Min race time (' num2str(MinRaceTime) ' s)']);
