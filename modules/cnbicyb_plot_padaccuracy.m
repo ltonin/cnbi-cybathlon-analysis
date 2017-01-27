@@ -42,7 +42,7 @@ for sId = 1:NumSubjects
        caccuracyrun(rId) = mean(cvaluesrun);
     end
     
-    [ccorr, cpval] = corr(cruns, caccuracyrun);
+    [ccorr, cpval] = corr(cruns, caccuracyrun, 'rows', 'pairwise');
     cnbiutil_bdisp(['Correlation (accuracy vs. run index) for ' csubject ':']);
     disp(['r= ' num2str(ccorr) ', pval= ' num2str(cpval, '%3.3e')]);
     
