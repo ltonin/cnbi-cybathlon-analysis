@@ -7,14 +7,14 @@ datapath  = [pwd '/analysis/'];
 figuredir = './figures/';
 
 SelectedClassId = [771 773];
-SelectedClassLb = {'BothFeet', 'BothHands'};
+SelectedClassLb = {'Both feet', 'Both hands'};
 
 AltSelectedClassId = [770 771];
 AltSelectedClassLb = {'RightHand', 'BothFeet'};
 
 PatternLocationsId = {[4 9 14], [2 7 12 6 11 16]};
 PatternLocationsLb = {'FCz-Cz-CPz', 'FC3-C3-CP3-CP4-C4-FC4'}; 
-PatternLabels = {'Middle locs', 'Lateral locs'};
+PatternLabels = {'Medial locs', 'Lateral locs'};
 NumPatterns = length(PatternLocationsId);
 PatternCorr = zeros(NumPatterns, NumSubjects);
 PatternPVal = zeros(NumPatterns, NumSubjects);
@@ -70,23 +70,45 @@ for sId = 1:NumSubjects
     
     Sk = cat(1, Sk, sId*ones(length(cdata.discriminancy.run.label.Mk), 1));
 
-    SelectedCombination = find(ismember(combinations, SelectedClassId, 'rows'));
+    SelectedCombination    = find(ismember(combinations, SelectedClassId, 'rows'));
+    AltSelectedCombination = find(ismember(combinations, AltSelectedClassId, 'rows'));
     
     BetaFreqs = 22:2:32;
     [~, SelBetaFreqIds] = intersect(FreqGrid, BetaFreqs);
     
+    % Get fisherscore for the main combination (both hand vs. both feet)
+    sfisherscore = reshape(cfisherscore(:, :, SelectedCombination), [NumFreqs NumChans size(cfisherscore, 2)]);
     
-
-    fisherscore = cat(3, fisherscore, reshape(cfisherscore(:, :, SelectedCombination), [NumFreqs NumChans size(cfisherscore, 2)]));
+    % Get fisherscore for the alternative combination (right hand vs. both feet)
+    afisherscore = reshape(cfisherscore(:, :, AltSelectedCombination), [NumFreqs NumChans size(cfisherscore, 2)]);
+    
+    % If fisherscore for the main combination is nan, then use the
+    % alternative combination
+    ffisherscore = sfisherscore;
+    for vId = 1:size(ffisherscore, 3)
+        if sum(sum(isnan(ffisherscore(:, :, vId)))) > 0
+            ffisherscore(:, :, vId) = afisherscore(:, :, vId);
+        end
+    end
+            
+    
+    fisherscore = cat(3, fisherscore, ffisherscore);
     cindex = Sk == sId;
     for pId = 1:length(PatternLocationsId)
         cvalues = squeeze(nanmean(nanmean(fisherscore(SelBetaFreqIds, PatternLocationsId{pId}, cindex), 1), 2))';
-        [PatternCorr(pId, sId), PatternPVal(pId, sId)] = corr((1:length(cvalues))', cvalues', 'rows', 'pairwise', 'type', 'spearman');
-        
+        [PatternCorr(pId, sId), PatternPVal(pId, sId)] = corr((1:length(cvalues))', cvalues', 'rows', 'pairwise', 'type', 'pearson');
     end
     
-    AltSelectedCombination = find(ismember(combinations, AltSelectedClassId, 'rows'));
-    altfisherscore = cat(3, altfisherscore, reshape(cfisherscore(:, :, AltSelectedCombination), [NumFreqs NumChans size(cfisherscore, 2)]));
+%     AltSelectedCombination = find(ismember(combinations, AltSelectedClassId, 'rows'));
+%     altfisherscore = cat(3, altfisherscore, );
+end
+
+for sId = 1:NumSubjects
+    csubject = SubList{sId};
+    cnbiutil_bdisp(['Correlation for ' csubject ':']);
+    for pId = 1:length(PatternLabels)
+        disp([PatternLabels{pId} ': r= ' num2str(PatternCorr(pId, sId)) ', pval= ' num2str(PatternPVal(pId, sId), '%3.3e')]);
+    end
 end
 
 Modalities   = unique(Mk);
@@ -127,7 +149,7 @@ for sId = 1:NumSubjects
         end
     end
 end
-suptitle(['Discriminancy - Pattern stability - Beta Band (' SelectedClassLb{1} '-' SelectedClassLb{2} ')']);
+suptitle(['Discriminancy - Modality - Beta Band - ' SelectedClassLb{1} '/' SelectedClassLb{2}]);
 cnbifig_export(fig1, [figuredir '/cybathlon.journal.discriminancy.stability.topoplot.png'], '-png');
 
 fig2 = figure;
@@ -152,15 +174,19 @@ for sId = 1:NumSubjects
         cpatterns = PatternLocationsId{pId};
         cdata = cat(2, cdata, squeeze(nanmean(nanmean(fisherscore(SelBetaFreqIds, cpatterns, cindex), 1), 2)));
     end
+    
     ax = plot(XThicks,  cdata, '.');
     hl = lsline;
     set(hl, 'LineWidth', 3);
+    xlim([XThicks(1) XThicks(end) + 1]);
     cDk = Dk(cindex);
     cticks = XThicks(isnan(cdata(:, 1)) == 0);
     cdates = cDk(cticks);
     changeId = find(diff(cdates)) + 1;
     set(gca, 'XTick', cticks(changeId));
-    set(gca, 'XTickLabel', Dl{sId}(cdates(changeId), :));
+    xlabelfontsize = 10;
+    set(gca, 'XTickLabel', [repmat(['\fontsize{' num2str(xlabelfontsize) '} '], size(Dl{sId}(cdates(changeId), :), 1), 1) Dl{sId}(cdates(changeId), :)]);
+    
     xticklabel_rotate([],90,[])
     set(ax, 'Visible', 'off');
     
@@ -174,15 +200,20 @@ for sId = 1:NumSubjects
     end
     
     hold off;
+    
     ylim([0 0.8]);
 
     h = gca;
-    legend(h.Children([end-3 end-2 6 5 4]), [PatternLabels ModalitiesLb])
-
+    [~, hobjl] = legend(h.Children([end-3 end-2 6 5 4]), [PatternLabels ModalitiesLb]);
+    set(hobjl(end), 'MarkerFaceColor', 'none');   set(hobjl(end),   'MarkerEdgeColor', 'k')
+    set(hobjl(end-2), 'MarkerFaceColor', 'none'); set(hobjl(end-2), 'MarkerEdgeColor', 'k')
+    set(hobjl(end-4), 'MarkerFaceColor', 'none'); set(hobjl(end-4), 'MarkerEdgeColor', 'k')
+    
     
     grid on;
     ylabel('Discriminancy');
-    xlabel('Runs');
+    hxlabel = xlabel('Session');
+    set(hxlabel, 'Position', get(hxlabel, 'Position') - [0 0.02 0])
     title(csubject);
 
     cpos = get(gca,'Position');
@@ -190,13 +221,13 @@ for sId = 1:NumSubjects
         apos = cpos;
         apos(2) = (cpos(2) - 0.05) - (pId-1)*0.035;
         textcolor = 'k';
-        annotation('textbox', apos, 'String', ['rho=' num2str(PatternCorr(pId, sId), '%3.2f') ', p=' num2str(PatternPVal(pId, sId), '%3.3f')], 'LineStyle', 'none', 'Color', Colors(pId, :), 'FontWeight', 'bold')
+        annotation('textbox', apos, 'String', ['r=' num2str(PatternCorr(pId, sId), '%3.2f') ', p=' num2str(PatternPVal(pId, sId), '%3.3f')], 'LineStyle', 'none', 'Color', Colors(pId, :), 'FontWeight', 'bold')
     end
     
     
 end
 
-suptitle(['Discriminancy - Emerging patterns correlation - Beta Band (' SelectedClassLb{1} '-' SelectedClassLb{2} ')']);
+suptitle(['Discriminancy - Emerging patterns - correlation - Beta Band - ' SelectedClassLb{1} '/' SelectedClassLb{2}]);
 cnbifig_export(fig2, [figuredir '/cybathlon.journal.discriminancy.emerging.correlation.png'], '-png');
 
 %% Plot 3
@@ -219,9 +250,9 @@ for sId = 1:NumSubjects
         subplot(NumRows, NumCols, crowloc + NumCols*(sId -1));
         cindex = Sk == sId & Dml == cmonths(dmId);
         cdata = squeeze(nanmean(nanmean(fisherscore(SelBetaFreqIds, :, cindex), 1), 3));
-        if sum(isnan(cdata) > 0)
-            cdata = squeeze(nanmean(nanmean(altfisherscore(SelBetaFreqIds, :, cindex), 1), 3));
-        end
+%         if sum(isnan(cdata) > 0)
+%             cdata = squeeze(nanmean(nanmean(altfisherscore(SelBetaFreqIds, :, cindex), 1), 3));
+%         end
         
         tdata = convChans(cdata);
 
@@ -245,5 +276,5 @@ for sId = 1:NumSubjects
    
 end
 
-suptitle(['Discriminancy - Emerging patterns topoplot - Beta Band (' SelectedClassLb{1} '-' SelectedClassLb{2} ')'])
+suptitle(['Discriminancy - Emerging patterns - topoplot - Beta Band - ' SelectedClassLb{1} '/' SelectedClassLb{2}])
 cnbifig_export(fig3, [figuredir '/cybathlon.journal.discriminancy.emerging.topoplot.png'], '-png');
