@@ -1,7 +1,7 @@
 clearvars; clc; 
 
 subject = 'AN14VE';
-%subject = 'MA25VE';
+% subject = 'MA25VE';
 
 pattern     = '.mi.';
 modality    = 'race';
@@ -84,6 +84,8 @@ end
 RaceTrialEvents = [];
 MSpeedPadRace = [];
 FPPerSecRun = [];
+RkSess = zeros(length(TrialEvents.DUR)/18, 1);
+DkSess = zeros(length(TrialEvents.DUR)/18, 1);
 for rId = 1:(length(TrialEvents.DUR)/18)
     KeepInd = [];
     for tr=1:length(TrialEvents.DUR)
@@ -109,6 +111,10 @@ for rId = 1:(length(TrialEvents.DUR)/18)
     SSpeedPadRace(rId,2) = std2(SpeedPadRace{2});
     MSpeedPadRace(rId,3) = mean(SpeedPadRace{3});
     SSpeedPadRace(rId,3) = std2(SpeedPadRace{3});
+    
+    RkSess(rId) = rId;
+    DkSess(rId) = unique(labels.Dk(labels.Rk == rId));
+    
 end
 
 [r pvalPearson] = corr([1:(length(TrialEvents.DUR)/18)]',nanmean(AccPadRace(1:3,:))','type','Pearson');
@@ -180,12 +186,16 @@ set(gca,'XTick',unique(labels.Rk));
 %xticklabel_rotate([],45,[])
 cnbifig_export(fig4, [figuredir '/' subject '.padaccrace.' modality '.png'], '-png');
 
-cd%% Saving metadata
+%% Saving metadata
 
 % Grouping results
-pad.accuracy = AccPad;
-pad.speed    = MSpeedPadSes;
-pad.label    = Dl;
+pad.accuracy.run.values     = AccPadRace;
+pad.accuracy.run.names      = {'Speed','Jump','Slide','Rest'};
+pad.accuracy.session.values = AccPad;
+pad.speed.session.values    = MSpeedPadSes;
+pad.label.session.Dl        = Dl;
+pad.label.run.Rk            = RkSess;
+pad.label.run.Dk            = DkSess;
 
 savefile = [savedir '/' subject '.padaccuracy.' modality '.mat'];
 
