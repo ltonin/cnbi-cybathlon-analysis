@@ -150,7 +150,7 @@ for sId = 1:NumSubjects
     end
 end
 suptitle(['Discriminancy - Modality - Beta Band - ' SelectedClassLb{1} '/' SelectedClassLb{2}]);
-cnbifig_export(fig1, [figuredir '/cybathlon.journal.discriminancy.stability.topoplot.png'], '-png');
+cnbifig_export(fig1, [figuredir '/cybathlon.journal.discriminancy.modality.topoplot.png'], '-png');
 
 fig2 = figure;
 fig_set_position(fig2, 'Top');
