@@ -66,13 +66,13 @@ text(0.6,MinOnPad + 0.5,'MinTime')
 line([6.85 11],[MinOnRest MinOnRest], 'LineStyle', dotstyle, 'Color', colorgrey);
 text(6.9,MinOnRest + 0.5,'MinTime')
 
-legend(h(1:2:end), 'Speed', 'Jump', 'Slide', 'Rest')
+legend(h(1:2:end), 'Spin', 'Jump', 'Slide', 'Rest/Idle')
 ylim([1 20]);
 ylabel('Time [s]');
-xlabel('Pad/Pilot');
-title('Action pads');
+xlabel('PadType/Pilot');
+title('Time on pads');
 
 
-suptitle('Time distribution on pads');
+%suptitle('Time on pads');
 
 cnbifig_export(fig1, [figuredir '/cybathlon.journal.padtime.png'], '-png');
