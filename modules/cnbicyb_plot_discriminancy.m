@@ -105,7 +105,7 @@ end
 
 for sId = 1:NumSubjects
     csubject = SubList{sId};
-    cnbiutil_bdisp(['Correlation for ' csubject ':']);
+    cnbiutil_bdisp(['Correlation (discriminancy vs. run index) for ' csubject ':']);
     for pId = 1:length(PatternLabels)
         disp([PatternLabels{pId} ': r= ' num2str(PatternCorr(pId, sId)) ', pval= ' num2str(PatternPVal(pId, sId), '%3.3e')]);
     end

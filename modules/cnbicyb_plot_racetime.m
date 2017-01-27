@@ -91,7 +91,10 @@ for sId = 1:NumSubjects
     
     % Compute correlation and add annotation
     [ccorr, cpval] = corr(cRuns, crt);
-
+    cnbiutil_bdisp(['Correlation (racetime vs. run index) for ' csubject ':']);
+    disp(['r= ' num2str(ccorr) ', pval= ' num2str(cpval, '%3.3e')]);
+    
+    
     cpos = get(gca,'Position');
     %cpos(1) = cpos(1) + cpos(3) - 0.1;
     cpos(2) = cpos(2) - 0.1;

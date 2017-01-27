@@ -43,6 +43,10 @@ for sId = 1:NumSubjects
     end
     
     [ccorr, cpval] = corr(cruns, caccuracyrun);
+    cnbiutil_bdisp(['Correlation (accuracy vs. run index) for ' csubject ':']);
+    disp(['r= ' num2str(ccorr) ', pval= ' num2str(cpval, '%3.3e')]);
+    
+    
     
     subplot(NumRows, NumCols, sId);
     
