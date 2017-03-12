@@ -19,7 +19,7 @@ NumPatterns = length(PatternLocationsId);
 PatternCorr = zeros(NumPatterns, NumSubjects);
 PatternPVal = zeros(NumPatterns, NumSubjects);
 
-
+CompetitionDay = '20161008';
 
 fisherscore = [];
 altfisherscore = [];
@@ -29,6 +29,7 @@ Sk = [];
 Dm = [];
 Dml = [];
 Dl = cell(NumSubjects, 1);
+Cyk = [];
 for sId = 1:NumSubjects
     csubject = SubList{sId};
     cfilepath = [datapath '/' csubject '.discriminancy.maps.mat'];
@@ -51,6 +52,11 @@ for sId = 1:NumSubjects
     cDk = cdata.discriminancy.run.label.Dk;
     Dk = cat(1, Dk, cDk);
     Dl{sId} = cdata.discriminancy.run.label.Dl;
+    
+    % Competition day
+    cCyId = find(ismember(cdata.discriminancy.run.label.Dl, CompetitionDay, 'rows'));
+    cCyk = cDk == cCyId;
+    Cyk = cat(1, Cyk, cCyk); 
     
     cDmk = zeros(length(cDk), 1);
     cDml = str2double(Dl{sId}(cDk, 5:6));
@@ -236,7 +242,7 @@ fig_set_position(fig3, 'Top');
 
 
 NumRows = NumSubjects;
-NumCols = max(Dml) - min(Dml) + 1;
+NumCols = max(Dml) - min(Dml) + 1 + 1;
 PlotLoc = min(Dml):max(Dml);
 
 Months = unique(Dml);
@@ -267,13 +273,28 @@ for sId = 1:NumSubjects
         title(cmonthname);       
         
    end
-           
+    
+    % Competition day
+    subplot(NumRows, NumCols, NumCols + NumCols*(sId -1));
+    cindex = Sk == sId & Cyk == true;
+    cdata = squeeze(nanmean(nanmean(fisherscore(SelBetaFreqIds, :, cindex), 1), 3));
+    tdata = convChans(cdata);
+
+    if strcmp(csubject, 'AN14VE')
+        maplimits = [0 0.5];
+    elseif strcmp(csubject, 'MA25VE')
+        maplimits = [0 0.5];
+    end
+    topoplot(tdata, chanlocs, 'headrad', 'rim', 'maplimits', maplimits);
+    title('Competition');
+   
     u = subplot(NumRows, NumCols, 1 + NumCols*(sId -1));
     h = axes('Position', get(gca, 'Position'), 'Visible', 'off');
     set(u, 'Visible', 'off');
     set(h.YLabel, 'Visible', 'on');
     ylabel(csubject);
    
+    
 end
 
 suptitle(['Discriminancy - Emerging patterns - topoplot - Beta Band - ' SelectedClassLb{1} '/' SelectedClassLb{2}])
