@@ -1,11 +1,9 @@
 clearvars; clc; 
 
-<<<<<<< HEAD
+
 subject = 'AN14VE';
 % subject = 'MA25VE';
-=======
-subject = 'MA25VE';
->>>>>>> e6c47c19d5d51b7efd60c744470ecfa21dc7bbf9
+
 
 pattern     = '.mi.';
 modality    = 'race';
