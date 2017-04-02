@@ -1,4 +1,8 @@
-function [TOPPad TOPTask] = cnbiproc_timeonpad(padevents, PadTypeId, PadTypeLb)
+function [TOPPad TOPTask SesInd] = cnbiproc_timeonpad(padevents, PadTypeId, PadTypeLb, Dk)
+
+if(nargin < 4)
+    Dk = nan(1,padevents.POS(end)+padevents.DUR(end)+100); % Just a long useless vector with NaNs
+end
 
 SPadT = {'Speed','Jump','Slide','Rest'};
 
@@ -22,10 +26,14 @@ startendInd = union(startInd, endInd);
 
 for p=1:3
     TOPPad{p} = padevents.DUR(ismember(padevents.TYP,PadTypeId(strcmp(PadTypeLb,SPadT{p}))))*0.0625;
+    SesInd{p} = Dk(padevents.POS(ismember(padevents.TYP,PadTypeId(strcmp(PadTypeLb,SPadT{p})))));
 end
 TOPPad{4} = padevents.DUR(setdiff(find(padevents.TYP==783),startendInd))*0.0625;
+SesInd{4} = Dk(padevents.POS(setdiff(find(padevents.TYP==783),startendInd)));
 TOPPad{5} = padevents.DUR(startInd)*0.0625;
+SesInd{5} = Dk(padevents.POS(startInd));
 TOPPad{6} = padevents.DUR(endInd)*0.0625;
+SesInd{6} = Dk(padevents.POS(endInd));
 
 % Normally I should separate start/end from rest also here, but....screw it
 for t=1:length(PadTypeId)

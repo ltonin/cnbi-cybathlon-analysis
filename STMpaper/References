@@ -1,0 +1,54 @@
+1) Brain oscillations control hand orthosis in a tetraplegic 2000
+5 months, 1 subject SCI, unkown sessions but twice per week, learning claimed but not shown
+
+2) Initial on-line evaluations of the LF-ASD brain-computer interface with able-bodied and spinal-cord subjects using imagined voluntary motor potentials.
+2 sessions, 2 subjects SCI, no learning
+
+3) ‘Thought’ – control of functional electrical stimulation to restore hand grasp in a patient with tetraplegia
+"Several months", 1 subject SCI, learning claimed not shown
+
+4) Control of a two-dimensional movement signal by a noninvasive brain-computer interface in humans
+two disabled users SCI, 68 and 25 sessions (plus more in previous studies), learning claimed but not shown, only last 3 sessions for results
+
+5) Brain-actuated interaction (Jose's speller + robot): 
+not longitudinal (5 sessions?), learning claimed not shown
+
+6) EEG-based neuroprosthesis control: a step towards clinical practice.
+1 SCI patient, only 3 days, learnign shown with accuracy, not features
+
+7) Towards a user-friendly brain-computer interface: initial tests in ALS and PLS patients
+6 patients, 1-2 sessions, no learning claimed, actually the oppsoite (zero training)
+
+8) Self-Paced (Asynchronous) BCI Control of a Wheelchair in Virtual Environments: A Case Study with a Tetraplegic
+not longituidnal, single day, 1 SCI, no learning claimed or shown
+
+9) Patients with ALS can use sensorimotor rhythms to operate a brain-computer interface
+20 sessions, accuracy increase shown, 4 ALS
+
+10) Emulation of computer mouse control with a noninvasive brain–computer interface
+Two disabled SCI, 14-38 sessions, learning claimed but not really shown, again like in 2004 paper results only on last 3 sessions
+
+11) Brain–computer interface controlled gaming: Evaluation of usability by severely motor restricted end-users.
+4 patients, 5 sessions, results not great, learning claimed on the grounds of accuracy
+
+12) Motor Imagery for Severely Motor-Impaired Patients: Evidence for Brain-Computer Interfacing as Superior Control Solution
+6 sessions, 4 patients, show features and accuracy over sessions but not so much learning present, theu are Berlin and boost about the ML methods instead
+
+13) A Co-Adaptive Brain-Computer Interface for End Users with Severe Motor Impairment
+22 (!!!) patients, but 1 session, no learning could be shown but interesting that they discuss vs our paper 2013 (Robert)
+
+14) Functional Rehabilitation of the Paralyzed Upper Extremity After Spinal Cord Injury by Noninvasive Hybrid Neuroprostheses
+1 patient, few sessions (not said), but it points to studies with users (no application)
+
+15) Discrimination of Motor Imagery-Induced EEG Patterns in Patients with Complete Spinal Cord Injury
+No application, 8 SCI patients + 7 healthy, shows that SCI are worse, perfect to cite, no learning shown (single day)
+
+16) Changes in movement-related β-band EEG signals in human spinal cord injury
+Same here, there is also correlation with ASIA, showing the more the impairment the worse the patterns, no learning shown
+
+17) Noninvasive Electroencephalogram Based Control of a Robotic Arm for Reach and Grasp Tasks
+This is with healthy!!! It should not be included nornmally. I can show it to say that they also do not show better modulation of features (only application performance over time)
+
+18) Vidaurre C, Sannelli C, Müller K-R and Blankertz B 2011 Machine-learning-based coadaptive calibration for brain–computer interfaces Neur. Comput. 23 791–816
+I put also this to show that whnever they show some discriminancy it is for very few sessions and quite questionable on the impact
+ 

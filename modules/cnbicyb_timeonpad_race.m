@@ -1,7 +1,7 @@
 clearvars; clc; 
 
-subject = 'AN14VE';
-%subject = 'MA25VE';
+%subject = 'AN14VE';
+subject = 'MA25VE';
 
 pattern     = '.mi.';
 modality    = 'race';
@@ -35,7 +35,7 @@ Dl = labels.Dl;
 Mk = labels.Mk;
 
 %% Compute the overall time-on-pad distributions
-[TOPPad TOPTask] = cnbiproc_timeonpad(events.extra.pad, PadTypeId, PadTypeLb);
+[TOPPad TOPTask TOPPadSesInd] = cnbiproc_timeonpad(events.extra.pad, PadTypeId, PadTypeLb, Dk);
 
 %% Compute time-on-pad per day
 
