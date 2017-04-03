@@ -1,7 +1,7 @@
-clearvars; clc; 
-
+%clearvars; clc; 
+%
 % subject = 'MA25VE';
-subject = 'AN14VE';
+%subject = 'AN14VE';
 
 pattern     = '.mi.';
 modality    = 'race';

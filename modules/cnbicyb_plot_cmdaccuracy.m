@@ -7,7 +7,7 @@ datapath  = [pwd '/analysis/'];
 figuredir = './figures/';
 
 fig1 = figure;
-fig_set_position(fig1, 'Top');
+%fig_set_position(fig1, 'Top');
 
 for sId = 1:NumSubjects
     csubject = SubList{sId};

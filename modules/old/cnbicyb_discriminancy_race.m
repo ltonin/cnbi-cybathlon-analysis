@@ -3,6 +3,8 @@
 % subject = 'MA25VE';
 % %subject = 'AN14VE';
 
+AnalysisType = 'all';
+
 pattern     = '.mi.';
 modality    = 'race';
 

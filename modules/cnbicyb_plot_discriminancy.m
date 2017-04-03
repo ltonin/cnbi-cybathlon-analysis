@@ -124,7 +124,7 @@ ModalitiesLb = {'Offline', 'Online', 'Race'};
  %% Plotting
 
 fig1 = figure;
-fig_set_position(fig1, 'Top');
+%fig_set_position(fig1, 'Top');
 load('chanlocs64.mat');
 
 NumRows = NumSubjects;
@@ -159,7 +159,7 @@ suptitle(['Discriminancy - Modality - Beta Band - ' SelectedClassLb{1} '/' Selec
 cnbifig_export(fig1, [figuredir '/cybathlon.journal.discriminancy.modality.topoplot.png'], '-png');
 
 fig2 = figure;
-fig_set_position(fig2, 'Top');
+%fig_set_position(fig2, 'Top');
 
 NumRows = 1;
 NumCols = NumSubjects;
@@ -238,7 +238,7 @@ cnbifig_export(fig2, [figuredir '/cybathlon.journal.discriminancy.emerging.corre
 
 %% Plot 3
 fig3 = figure;
-fig_set_position(fig3, 'Top');
+%fig_set_position(fig3, 'Top');
 
 
 NumRows = NumSubjects;

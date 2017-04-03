@@ -12,7 +12,7 @@ NumRows = 1;
 NumCols = NumSubjects;
 
 fig1 = figure;
-fig_set_position(fig1, 'Top');
+%fig_set_position(fig1, 'Top');
 
 for sId = 1:NumSubjects
     

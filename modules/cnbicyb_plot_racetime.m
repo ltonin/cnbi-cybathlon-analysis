@@ -51,7 +51,7 @@ for sId = 1:NumSubjects
         cindex = cPk == cProtocols(pId);
         chandles(pId) = plot(cRuns(cindex), crt(cindex), '.', 'Color', Colors(cProtocols(pId), :), 'LineWidth', 1, 'MarkerSize', 20);
         cnames = unique(cdata.time.run.label.Pl(cindex));
-        cPl{pId} = ['protocol' num2str(cProtocols(pId) - 2)];
+        cPl{pId} = ['paradigm' num2str(cProtocols(pId) - 2)];
     end
     
     % Highlight record
@@ -86,7 +86,7 @@ for sId = 1:NumSubjects
     xticklabel_rotate([],90,[])
     hxlabel = xlabel('Session');
     set(hxlabel, 'Position', get(hxlabel, 'Position') - [0 0.02 0])
-    ylabel('Time [s]');
+    ylabel('Time [sec]');
     title(csubject);
     
     % Compute correlation and add annotation

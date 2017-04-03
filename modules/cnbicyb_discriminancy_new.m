@@ -1,7 +1,7 @@
 clearvars; clc; 
 
-subject = 'MA25VE';
-% subject = 'AN14VE';
+% subject = 'MA25VE';
+subject = 'AN14VE';
 
 pattern     = '.mi.';
 experiment  = 'cybathlon';
@@ -145,7 +145,7 @@ save(savefile, 'discriminancy');
 %% Plotting
 
 fig1 = figure;
-fig_set_position(fig1, 'All');
+%fig_set_position(fig1, 'All');
 
 SelFreqs = 4:2:32;
 [FreqGrid, SelFreqIds] = intersect(settings.spectrogram.freqgrid, SelFreqs);
@@ -183,7 +183,7 @@ cnbifig_export(fig1, [figuredir '/' subject '.discriminancy.maps.overall.png'], 
 
 
 fig2 = figure;
-fig_set_position(fig2, 'All');
+%fig_set_position(fig2, 'All');
 load('chanlocs64.mat');
 BetaFreqs = 22:2:32;
 [~, SelBetaFreqIds] = intersect(settings.spectrogram.freqgrid, BetaFreqs);
