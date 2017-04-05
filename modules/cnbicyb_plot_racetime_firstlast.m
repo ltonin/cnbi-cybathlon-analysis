@@ -56,3 +56,4 @@ end
 
 suptitle('Race Time')
 cnbifig_export(fig1, [figuredir '/cybathlon.journal.racetimefirstlast.png'], '-png');
+cnbifig_export(fig1, [figuredir '/cybathlon.journal.racetimefirstlast.pdf'], '-pdf');

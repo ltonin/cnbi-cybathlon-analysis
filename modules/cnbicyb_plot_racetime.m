@@ -7,7 +7,7 @@ datapath  = [pwd '/analysis/'];
 figuredir = './figures/';
 
 MinRaceTime = 54;
-MaxRaceTime = 327;
+MaxRaceTime = 240;
 
 fig1 = figure;
 cnbifig_set_position(fig1, 'All');
@@ -104,8 +104,10 @@ for sId = 1:NumSubjects
     % Add max and min race time
     cnbiplot_hline(MinRaceTime, '--k', ['Min race time (' num2str(MinRaceTime) ' s)']);
     cnbiplot_hline(MaxRaceTime, '--k', ['Max race time (' num2str(MaxRaceTime) ' s)']);
+    ylim([MinRaceTime-10 MaxRaceTime + 10]);
 end
 
 suptitle('Race Time')
 
 cnbifig_export(fig1, [figuredir '/cybathlon.journal.racetime.png'], '-png');
+cnbifig_export(fig1, [figuredir '/cybathlon.journal.racetime.pdf'], '-pdf');
