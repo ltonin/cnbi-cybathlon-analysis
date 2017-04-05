@@ -197,13 +197,31 @@ for sId = 1:NumSubjects
     xticklabel_rotate([],90,[])
     set(ax, 'Visible', 'off');
     
-        
+    MeanVec{sId} = [];
+    StdVec{sId} = [];
+    NVec{sId} = [];
+    pVal{sId} = [];
     for pId = 1:length(PatternLocationsId)
         cpatterns = PatternLocationsId{pId};
+        odata = [];
+        oDk = [];
         for mId = 1:NumModalities
             cdata = squeeze(nanmean(nanmean(fisherscore(SelBetaFreqIds, cpatterns, cindex & Mk == Modalities(mId)), 1), 2));
             plot(XThicks(Mk(cindex) == Modalities(mId)), cdata, 'LineStyle', 'none', 'Marker', Marker{mId}, 'MarkerEdgeColor', Colors(pId, :), 'MarkerFaceColor', Colors(pId, :), 'MarkerSize', 4);
+            odata = [odata; cdata];
+            oDk = [oDk; Dk(cindex & Mk == Modalities(mId))];
         end
+        % Put them in chronological order
+        [oDk, sortIndoDk] = sort(oDk,'ascend');
+        odata = odata(sortIndoDk);
+        oDays = length(unique(oDk));
+        
+        % Save pre-post (first and last four sessions for later use)
+        MeanVec{sId} = [MeanVec{sId} [nanmean(odata(find(ismember(oDk,[1:4])))) ; nanmean(odata(find(ismember(oDk,[max(oDays)-3:max(oDays)]))))]];
+        StdVec{sId} = [StdVec{sId} [nanstd(odata(find(ismember(oDk,[1:4])))) ; nanstd(odata(find(ismember(oDk,[max(oDays)-3:max(oDays)]))))]];
+        NVec{sId} = [NVec{sId} [size(odata(find(ismember(oDk,[1:4]))),1) ; size(odata(find(ismember(oDk,[max(oDays)-3:max(oDays)]))),1)]];
+        pVal{sId} = [pVal{sId} ranksum(odata(find(ismember(oDk,[1:4]))), odata(find(ismember(oDk,[max(oDays)-3:max(oDays)]))))];
+
     end
     
     hold off;
@@ -237,8 +255,52 @@ end
 suptitle(['Discriminancy - Emerging patterns - correlation - Beta Band - ' SelectedClassLb{1} '/' SelectedClassLb{2}]);
 cnbifig_export(fig2, [figuredir '/cybathlon.journal.discriminancy.emerging.correlation.png'], '-png');
 
+
 %% Plot 3
 fig3 = figure;
+cnbifig_set_position(fig3, 'Top');
+
+for sId = 1:NumSubjects
+    csubject = SubList{sId};
+    subplot(NumRows, NumCols, sId);
+    hold on;
+    offset = 0.2;
+    cellsigstart = {};
+    for b=1:2 % Location condition (medial, lateral)
+        hBar(b,:) = bar([b-offset b+offset],MeanVec{sId}(:,b),'LineWidth',2,'FaceColor',Colors(b,:));
+    end
+    % The separate for loops is for the legend to show correctly
+    for b=1:2
+        hEBar(b,:) = errorbar([b-offset b+offset],MeanVec{sId}(:,b),zeros(1,2),StdVec{sId}(:,b),'.','LineWidth',2,'Color',Colors(b,:));
+        cellsigstart{b} = [b-offset,b+offset];
+    end
+    H = sigstar(cellsigstart,pVal{sId}); 
+    hold off;
+    
+    grid on;    
+    ylim([0 0.6]);
+    xlim([0.5 2.5]);
+   
+    set(gca, 'XTick', cell2mat(cellsigstart)-0.01);
+    set(gca, 'XTickLabel', repmat({'First 4 sessions','Last 4 sessions'},1,2));
+    xticklabel_rotate([],90,[]);
+    %hxlabel = xlabel('Session');
+    %set(hxlabel, 'Position', get(hxlabel, 'Position') - [0 0.02 0])
+    ylabel('Discriminancy');
+    title(csubject);
+    
+    legend(PatternLabels, 'location', 'SouthEast');    
+    
+end
+
+    
+
+
+
+
+
+%% Plot 4
+fig4 = figure;
 %fig_set_position(fig3, 'Top');
 
 

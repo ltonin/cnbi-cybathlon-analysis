@@ -65,7 +65,7 @@ for sId = 1:NumSubjects
     for b=1:4
         hBar(b,:) = bar([b-offset b+offset],MeanVec(:,b),'LineWidth',2,'FaceColor',PadColors{b});
     end
-    % The separete for loops is for the legend to show correctly
+    % The separate for loops is for the legend to show correctly
     for b=1:4
         hEBar(b,:) = errorbar([b-offset b+offset],MeanVec(:,b),zeros(1,2),StdVec(:,b),'.','LineWidth',2,'Color',PadColors{b});
         p(b) = ranksum(caccuracyrun(find(ismember(cDk,[1:4])),b), caccuracyrun(find(ismember(cDk,[max(cDays)-3:max(cDays)])),b));
