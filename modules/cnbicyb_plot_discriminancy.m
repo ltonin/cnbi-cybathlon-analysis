@@ -59,7 +59,8 @@ for sId = 1:NumSubjects
     Cyk = cat(1, Cyk, cCyk); 
     
     cDmk = zeros(length(cDk), 1);
-    cDml = str2double(Dl{sId}(cDk, 5:6));
+    %cDml = str2double(Dl{sId}(cDk, 5:6));
+    cDml = str2num(Dl{sId}(cDk, 5:6));
     
     cmonthId = 0;
     cmonthLb = [];

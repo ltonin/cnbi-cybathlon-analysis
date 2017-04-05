@@ -1,7 +1,7 @@
 clearvars; clc; 
 
-%subject = 'AN14VE';
-subject = 'MA25VE';
+subject = 'AN14VE';
+%subject = 'MA25VE';
 
 pattern     = '.mi.';
 modality    = 'race';
@@ -35,7 +35,7 @@ Dl = labels.Dl;
 Mk = labels.Mk;
 
 %% Compute the overall time-on-pad distributions
-[TOPPad TOPTask TOPPadSesInd] = cnbiproc_timeonpad(events.extra.pad, PadTypeId, PadTypeLb, Dk);
+[TOPPad TOPTask TOPPadSesInd topall] = cnbiproc_timeonpad(events.extra.pad, PadTypeId, PadTypeLb, Dk);
 
 %% Compute time-on-pad per day
 
@@ -132,6 +132,7 @@ cnbifig_export(fig3, [figuredir '/' subject '.racetimesessionmedian.' modality '
 timeonpad.values    = plotpad;
 timeonpad.label.pad = plotlbl;
 timeonpad.label.padlb = {'Speed','Jump','Slide','Rest','Start','End'};
+timeonpad.topall = topall;
 
 savefile = [savedir '/' subject '.timeonpad.' modality '.mat'];
 

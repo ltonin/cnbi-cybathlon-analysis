@@ -1,6 +1,6 @@
 % clearvars; clc; 
 % 
-% subject = 'MA25VE';
+subject = 'AN14VE';
 
 pattern     = '.mi.';
 modality    = 'race';
@@ -174,6 +174,8 @@ suptitle([subject ' - Accuracy/Rejection (' modality ')']);
 singlesample.accuracy  = DayAccuracy;
 singlesample.rejection = DayRejection;
 singlesample.label     = labels.Dl;
+singlesample.ClassifierIdx = labels.Xk(events.extra.race.POS);
+singlesample.Classifiers = classifiers;
 
 savefile = [savedir '/' subject '.metadata.mat'];
 if exist(savefile, 'file')

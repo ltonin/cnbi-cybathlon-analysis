@@ -1,4 +1,4 @@
-function [TOPPad TOPTask SesInd] = cnbiproc_timeonpad(padevents, PadTypeId, PadTypeLb, Dk)
+function [TOPPad TOPTask SesInd topall] = cnbiproc_timeonpad(padevents, PadTypeId, PadTypeLb, Dk)
 
 if(nargin < 4)
     Dk = nan(1,padevents.POS(end)+padevents.DUR(end)+100); % Just a long useless vector with NaNs
@@ -39,3 +39,16 @@ SesInd{6} = Dk(padevents.POS(endInd));
 for t=1:length(PadTypeId)
     TOPTask{p} = padevents.DUR(padevents.TYP==PadTypeId(t))*0.0625;
 end
+
+% Return them also in order
+TOPPadAll = padevents.DUR*0.0625;
+TOPPadAllLb = padevents.TYP;
+
+TOPPadAllLb(find(ismember(TOPPadAllLb,PadTypeId(strcmp('Speed',PadTypeLb)))))=1;
+TOPPadAllLb(find(ismember(TOPPadAllLb,PadTypeId(strcmp('Jump',PadTypeLb)))))=2;
+TOPPadAllLb(find(ismember(TOPPadAllLb,PadTypeId(strcmp('Slide',PadTypeLb)))))=3;
+TOPPadAllLb(find(ismember(TOPPadAllLb,PadTypeId(strcmp('Rest',PadTypeLb)))))=4;
+TOPPadAllLb(startInd)=5;
+TOPPadAllLb(endInd)=6;
+topall.values = TOPPadAll;
+topall.labels = TOPPadAllLb;
