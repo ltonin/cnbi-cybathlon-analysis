@@ -1,7 +1,7 @@
 clearvars; clc; 
 
-subject = 'AN14VE';
-%subject = 'MA25VE';
+%subject = 'AN14VE';
+subject = 'MA25VE';
 
 pattern     = '.mi.';
 modality    = 'race';
@@ -127,12 +127,14 @@ xticklabel_rotate([],45,[])
 cnbifig_export(fig3, [figuredir '/' subject '.racetimesessionmedian.' modality '.png'], '-png');
 
 %% Saving metadata
-
+cDk = Dk(events.POS)
 % Grouping results
 timeonpad.values    = plotpad;
 timeonpad.label.pad = plotlbl;
 timeonpad.label.padlb = {'Speed','Jump','Slide','Rest','Start','End'};
 timeonpad.topall = topall;
+timeonpad.Dk = Dk(events.extra.pad.POS);
+timeonpad.Dl = Dl;
 
 savefile = [savedir '/' subject '.timeonpad.' modality '.mat'];
 
