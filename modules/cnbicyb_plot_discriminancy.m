@@ -125,7 +125,7 @@ ModalitiesLb = {'Offline', 'Online', 'Race'};
  %% Plotting
 
 fig1 = figure;
-%fig_set_position(fig1, 'Top');
+cnbifig_set_position(fig1, 'All');
 load('chanlocs64.mat');
 
 NumRows = NumSubjects;
@@ -158,9 +158,10 @@ for sId = 1:NumSubjects
 end
 suptitle(['Discriminancy - Modality - Beta Band - ' SelectedClassLb{1} '/' SelectedClassLb{2}]);
 cnbifig_export(fig1, [figuredir '/cybathlon.journal.discriminancy.modality.topoplot.png'], '-png');
+cnbifig_export(fig1, [figuredir '/cybathlon.journal.discriminancy.modality.topoplot.pdf'], '-pdf');
 
 fig2 = figure;
-%fig_set_position(fig2, 'Top');
+cnbifig_set_position(fig2, 'Top');
 
 NumRows = 1;
 NumCols = NumSubjects;
@@ -254,6 +255,7 @@ end
 
 suptitle(['Discriminancy - Emerging patterns - correlation - Beta Band - ' SelectedClassLb{1} '/' SelectedClassLb{2}]);
 cnbifig_export(fig2, [figuredir '/cybathlon.journal.discriminancy.emerging.correlation.png'], '-png');
+cnbifig_export(fig2, [figuredir '/cybathlon.journal.discriminancy.emerging.correlation.pdf'], '-pdf');
 
 
 %% Plot 3
@@ -293,7 +295,8 @@ for sId = 1:NumSubjects
     
 end
 
-    
+cnbifig_export(fig3, [figuredir '/cybathlon.journal.discriminancy.emerging.firstlast.png'], '-png');
+cnbifig_export(fig3, [figuredir '/cybathlon.journal.discriminancy.emerging.firstlast.pdf'], '-pdf');
 
 
 
@@ -301,7 +304,7 @@ end
 
 %% Plot 4
 fig4 = figure;
-%fig_set_position(fig3, 'Top');
+cnbifig_set_position(fig4, 'All');
 
 
 NumRows = NumSubjects;
@@ -361,4 +364,5 @@ for sId = 1:NumSubjects
 end
 
 suptitle(['Discriminancy - Emerging patterns - topoplot - Beta Band - ' SelectedClassLb{1} '/' SelectedClassLb{2}])
-cnbifig_export(fig3, [figuredir '/cybathlon.journal.discriminancy.emerging.topoplot.png'], '-png');
+cnbifig_export(fig4, [figuredir '/cybathlon.journal.discriminancy.emerging.topoplot.png'], '-png');
+cnbifig_export(fig4, [figuredir '/cybathlon.journal.discriminancy.emerging.topoplot.pdf'], '-pdf');

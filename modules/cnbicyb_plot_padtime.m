@@ -89,3 +89,4 @@ title('Time on pads');
 %suptitle('Time on pads');
 
 cnbifig_export(fig1, [figuredir '/cybathlon.journal.padtime.png'], '-png');
+cnbifig_export(fig1, [figuredir '/cybathlon.journal.padtime.pdf'], '-pdf');

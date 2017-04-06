@@ -22,7 +22,7 @@
    inkscape:export-ydpi="599.96002"><metadata
      id="metadata8"><rdf:RDF><cc:Work
          rdf:about=""><dc:format>image/svg+xml</dc:format><dc:type
-           rdf:resource="http://purl.org/dc/dcmitype/StillImage" /><dc:title></dc:title></cc:Work></rdf:RDF></metadata><defs
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" /><dc:title /></cc:Work></rdf:RDF></metadata><defs
      id="defs6"><clipPath
        clipPathUnits="userSpaceOnUse"
        id="clipPath18"><path
@@ -51,9 +51,9 @@
      fit-margin-right="20"
      fit-margin-bottom="20"
      inkscape:zoom="0.89749082"
-     inkscape:cx="475.22346"
-     inkscape:cy="266.66182"
-     inkscape:window-x="45"
+     inkscape:cx="603.30698"
+     inkscape:cy="266.57138"
+     inkscape:window-x="1725"
      inkscape:window-y="24"
      inkscape:window-maximized="1"
      inkscape:current-layer="g10" /><g
@@ -130,28 +130,28 @@
 </g><text
        xml:space="preserve"
        style="font-style:normal;font-weight:normal;font-size:32px;line-height:125%;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-       x="82.487007"
-       y="18.814564"
+       x="83.320526"
+       y="23.541643"
        id="text7969"
        sodipodi:linespacing="125%"
        transform="matrix(0.17364818,0.98480775,0.98480775,-0.17364818,0,0)"><tspan
          sodipodi:role="line"
          id="tspan7971"
-         x="82.487007"
-         y="18.814564"
+         x="83.320526"
+         y="23.541643"
          style="font-size:10px">2016.05.02</tspan></text>
 <text
        xml:space="preserve"
        style="font-style:normal;font-weight:normal;font-size:32px;line-height:125%;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-       x="83.884789"
-       y="28.431013"
+       x="84.718307"
+       y="33.158092"
        id="text7969-3"
        sodipodi:linespacing="125%"
        transform="matrix(0.17364818,0.98480775,0.98480775,-0.17364818,0,0)"><tspan
          sodipodi:role="line"
          id="tspan7971-6"
-         x="83.884789"
-         y="28.431013"
+         x="84.718307"
+         y="33.158092"
          style="font-size:10px">2016.05.09</tspan></text>
 <text
        xml:space="preserve"
@@ -2197,4 +2197,30 @@
          x="364.64236"
          y="-514.89178"
          style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:18px;font-family:sans-serif;-inkscape-font-specification:'sans-serif Bold'">Race time</tspan></text>
+<text
+       xml:space="preserve"
+       style="font-style:normal;font-weight:normal;font-size:32px;line-height:125%;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       x="81.272644"
+       y="13.616746"
+       id="text7969-7"
+       sodipodi:linespacing="125%"
+       transform="matrix(0.17364818,0.98480775,0.98480775,-0.17364818,0,0)"><tspan
+         sodipodi:role="line"
+         id="tspan7971-8"
+         x="81.272644"
+         y="13.616746"
+         style="font-size:10px">2016.04.29</tspan></text>
+<text
+       xml:space="preserve"
+       style="font-style:normal;font-weight:normal;font-size:32px;line-height:125%;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       x="149.68402"
+       y="401.70767"
+       id="text7969-7-4"
+       sodipodi:linespacing="125%"
+       transform="matrix(0.17364818,0.98480775,0.98480775,-0.17364818,0,0)"><tspan
+         sodipodi:role="line"
+         id="tspan7971-8-5"
+         x="149.68402"
+         y="401.70767"
+         style="font-size:10px">2016.08.18</tspan></text>
 </g></svg>

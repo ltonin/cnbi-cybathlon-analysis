@@ -93,4 +93,5 @@ for sId = 1:NumSubjects
 end
 
 suptitle('Command accuracy');
-cnbifig_export(fig1, [figuredir '/cybathlon.journal.accuracy.pad.png'], '-png');
+cnbifig_export(fig1, [figuredir '/cybathlon.journal.accuracy.firstlast.pad.png'], '-png');
+cnbifig_export(fig1, [figuredir '/cybathlon.journal.accuracy.firstlast.pad.pdf'], '-pdf');
