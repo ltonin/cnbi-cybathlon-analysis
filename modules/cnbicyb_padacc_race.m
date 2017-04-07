@@ -1,7 +1,7 @@
 clearvars; clc; 
 
-subject = 'AN14VE';
-%subject = 'MA25VE';
+%subject = 'AN14VE';
+subject = 'MA25VE';
 
 pattern     = '.mi.';
 modality    = 'race';
@@ -196,6 +196,7 @@ pad.speed.session.values    = MSpeedPadSes;
 pad.label.session.Dl        = Dl;
 pad.label.run.Rk            = RkSess;
 pad.label.run.Dk            = DkSess;
+pad.label.run.Pk            = events.extra.protocol.TYP;
 
 savefile = [savedir '/' subject '.padaccuracy.' modality '.mat'];
 

@@ -42,6 +42,7 @@ for sId = 1:NumSubjects
     % Time on pad
     ctopa = cdatatop.timeonpad.topall.values;
     ctoplbl = cdatatop.timeonpad.topall.labels;
+    ctop=[];
     for rId=1:(length(ctopa)/18)
         for ctype=1:4
             tmplbl = ctoplbl((rId-1)*18+1:rId*18);
@@ -107,7 +108,7 @@ for sId = 1:NumSubjects
             Num(ss,:) = [size(crtF{ss},1) size(cpaAllF{ss},2) size(cfsMedialF{ss},2)];
             
             if(Num(ss,1) > Num(ss,2))
-                % There is one qeird session for Eric which has onemore
+                % There is one weird session for Eric which has onemore
                 % race time more, without padacc and fs..., the second is manually deleted
                 % so I should delete also here
                 crtF{ss}(2)=[];
@@ -165,4 +166,7 @@ for sId = 1:NumSubjects
     disp(['Jump TOP vs Medial Fisher Score: r=' num2str(r) ', p=' num2str(p)]);
     [r p] = corr(ctopAllC(~isnan(cfsAllC)),cfsAllC(~isnan(cfsAllC)));
     disp(['Overall TOP vs Overall Fisher Score: r=' num2str(r) ', p=' num2str(p)]);
+    
+    [r p] = corr(ctopAllC,crtC);
+    disp(['Overall TOP vs RT: r=' num2str(r) ', p=' num2str(p)]);
 end
