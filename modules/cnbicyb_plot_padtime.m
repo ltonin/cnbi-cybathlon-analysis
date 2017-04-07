@@ -12,6 +12,9 @@ NoCmdOnPad = 11;
 MinOnRest = 5.5;
 
 
+
+CommTyp = {'Spin', 'Jump', 'Slide', 'Rest/Idle'};
+
 ax = gca;
 Colors = ax.ColorOrder;
 close all;
@@ -26,10 +29,21 @@ for sId = 1:NumSubjects
     cfilepath = [datapath '/' csubject '.timeonpad.race.mat'];
     
     cdata = load(cfilepath);
+
+    cDays = length(cdata.timeonpad.Dl);
     
     TP  = cat(1, TP, cdata.timeonpad.values');
     TPk = cat(1, TPk, cdata.timeonpad.label.pad');
     Sk  = cat(1, Sk, sId*ones(length(cdata.timeonpad.values), 1));
+    
+    disp(['Subject: ' csubject]);
+    for t=1:4
+        First = median(cdata.timeonpad.topall.values(intersect(find(ismember(cdata.timeonpad.Dk,[1:4])),find(cdata.timeonpad.topall.labels==t))));
+        Last = median(cdata.timeonpad.topall.values(intersect(find(ismember(cdata.timeonpad.Dk,[cDays-3:cDays])),find(cdata.timeonpad.topall.labels==t))));
+        disp([CommTyp{t} ': Medians from ' num2str(First) ' to ' num2str(Last)]);
+    end
+    
+    disp('a')
 end
 
 
@@ -71,7 +85,6 @@ ylim([1 20]);
 ylabel('Time [s]');
 xlabel('PadType/Pilot');
 title('Time on pads');
-
 
 %suptitle('Time on pads');
 

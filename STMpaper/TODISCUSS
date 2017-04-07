@@ -1,0 +1,6 @@
+1) Eric's final race problems
+2) Say Numa did more online than race, Eric the opposite, another argument in favour of incremental learning
+3) Stablity vs performance
+4) Infrequent BCI retraining, only two classifiers per subject -> shift importance to subject learning
+5) Stress that tiem matters in BCI training
+6) Mention that the discriminancy increase is where we selected the features, i.e., it was real operand learning
