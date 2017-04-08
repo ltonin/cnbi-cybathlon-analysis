@@ -34,7 +34,7 @@ for sId = 1:NumSubjects
     % Race time, paradigm 3 vs 4
     MeanVecRT = [mean(cdatatimerace.time.run.values(cdatatimerace.time.run.label.Pk==5)) ; mean(cdatatimerace.time.run.values(cdatatimerace.time.run.label.Pk==6))];
     StdVecRT = [std(cdatatimerace.time.run.values(cdatatimerace.time.run.label.Pk==5)) ; std(cdatatimerace.time.run.values(cdatatimerace.time.run.label.Pk==6))];
-    NVecRT = [size(cdatatimerace.time.run.values(cdatatimerace.time.run.label.Pk==5),2) ; size(cdatatimerace.time.run.values(cdatatimerace.time.run.label.Pk==6),2)];
+    NVecRT = [size(cdatatimerace.time.run.values(cdatatimerace.time.run.label.Pk==5),1) ; size(cdatatimerace.time.run.values(cdatatimerace.time.run.label.Pk==6),1)];
     pValRT = ranksum(cdatatimerace.time.run.values(cdatatimerace.time.run.label.Pk==5), cdatatimerace.time.run.values(cdatatimerace.time.run.label.Pk==6));    
     
     % Pad accuracy of slide, paradigm 3 vs 4
@@ -152,7 +152,7 @@ for sId = 1:NumSubjects
     
     cellsigstart{1} = [1-offset,1+offset];
     
-    H = sigstar(cellsigstart,pValRT); 
+    H = sigstar(cellsigstart,pValRT);
     hold off;
     
     ylim([110 155]);

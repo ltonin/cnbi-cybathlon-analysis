@@ -7,3 +7,5 @@
 7) Incremental training credited with effectiveness
 8) Correlation discirmnancy vs top are not bigger becase this furhter depends on parmaeterization of the BCI
 9) Increase in Comm Acc might all be control paradigm, but increase of Spin and Jimp cannot be explained by that and must be due to mutual learning
+10) Trade-off IC/INC through parameterization
+11) Features selected where learning is shown
