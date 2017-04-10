@@ -17,7 +17,7 @@ PadColors = {Colors(6, :), Colors(4, :), Colors(3, :), 'k', 'k', 'k'};
 ParadigmColors = {Colors(5, :), Colors(6, :)};
 
 fig1 = figure;
-cnbifig_set_position(fig1, 'Top');
+cnbifig_set_position(fig1, 'All');
 
 for sId = 1:NumSubjects
     
