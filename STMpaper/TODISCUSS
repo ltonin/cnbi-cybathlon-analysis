@@ -1,11 +1,12 @@
-1) Eric's final race problems
-2) Say Numa did more online than race, Eric the opposite, another argument in favour of incremental learning
-3) Stablity vs performance
-4) Infrequent BCI retraining, only two classifiers per subject -> shift importance to subject learning
-5) Stress that time matters in BCI training
-6) Mention that the discriminancy increase is where we selected the features, i.e., it was real operand learning
-7) Incremental training credited with effectiveness
-8) Correlation discirmnancy vs top are not bigger becase this furhter depends on parmaeterization of the BCI
-9) Increase in Comm Acc might all be control paradigm, but increase of Spin and Jimp cannot be explained by that and must be due to mutual learning
-10) Trade-off IC/INC through parameterization
-11) Features selected where learning is shown
+1) OK Eric's final race problems
+2) OK Say Numa did more online than race, Eric the opposite, another argument in favour of incremental learning
+3) OK Stablity vs performance
+4) OK Infrequent BCI retraining, only two classifiers per subject -> shift importance to subject learning
+5) OK Stress that time matters in BCI training
+6) OK Mention that the discriminancy increase is where we selected the features, i.e., it was real operand learning
+7) OK Incremental training credited with effectiveness
+8) OK (more or less, I mention paraameterization, it is enough) Correlation discirmnancy vs top are not bigger becase this furhter depends on parmaeterization of the BCI
+9) OK Increase in Comm Acc might all be control paradigm, but increase of Spin and Jimp cannot be explained by that and must be due to mutual learning
+10) OK Trade-off IC/INC through parameterization
+11) OK Features selected where learning is shown 
+12) OK Maybe admit that also the modulation intiially is important
