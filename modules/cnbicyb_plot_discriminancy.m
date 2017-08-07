@@ -6,10 +6,10 @@ NumSubjects = length(SubList);
 datapath  = [pwd '/analysis/'];
 figuredir = './figures/';
 
-SelectedClassId = [771 773];
+SelectedClassId = [771 783];
 SelectedClassLb = {'Both feet', 'Both hands'};
 
-AltSelectedClassId = [770 771];
+AltSelectedClassId = [771 783];
 AltSelectedClassLb = {'RightHand', 'BothFeet'};
 
 PatternLocationsId = {[4 9 14], [2 7 12 6 11 16]};
