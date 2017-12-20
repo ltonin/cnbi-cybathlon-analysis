@@ -1,7 +1,7 @@
 clearvars; clc; 
 
 subject = 'MA25VE';
-%subject = 'AN14VE';
+% subject = 'AN14VE';
 
 pattern     = '.mi.';
 experiment  = 'cybathlon';
@@ -41,6 +41,10 @@ NumRuns = length(Runs);
 Mk         = labels.Mk;
 Modalities = unique(Mk);
 NumMods    = length(Modalities);
+
+Pk          = labels.Pk;
+Paradigms   = unique(Pk);
+NumParadigms = length(Paradigms);
 
 %% Get general events
 [TrialLb, TrialEvents] = cnbiproc_get_event([771 773 783 781 786], NumSamples, events.POS, events.TYP, events.DUR);
@@ -112,6 +116,7 @@ cnbiutil_bdisp('[proc] - Compute discriminancy per run');
 FisherScores = nan(NumFreqs*NumChans, NumRuns, NumCombinations);
 rDk = zeros(NumRuns, 1);
 rMk = zeros(NumRuns, 1);
+rPk = zeros(NumRuns, 1);
 for rId = 1:NumRuns
     for cId = 1:NumCombinations
         ctasks = combinations(cId, :);
@@ -123,6 +128,7 @@ for rId = 1:NumRuns
     end
     rDk(rId) = unique(Dk(Rk == Runs(rId)));
     rMk(rId) = unique(Mk(Rk == Runs(rId)));
+    rPk(rId) = unique(Pk(Rk == Runs(rId)));
 end
 
 %% Saving data
@@ -132,6 +138,8 @@ discriminancy.run.fisherscore  = FisherScores;
 discriminancy.run.label.Dk     = rDk;
 discriminancy.run.label.Dl     = labels.Dl;
 discriminancy.run.label.Mk     = rMk;
+discriminancy.run.label.Pk     = rPk;
+discriminancy.run.label.Pl     = labels.Pl;
 discriminancy.run.combinations = combinations;
 discriminancy.freqs            = settings.spectrogram.freqgrid;
 

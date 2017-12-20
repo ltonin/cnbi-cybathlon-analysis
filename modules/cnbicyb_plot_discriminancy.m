@@ -6,10 +6,10 @@ NumSubjects = length(SubList);
 datapath  = [pwd '/analysis/'];
 figuredir = './figures/';
 
-SelectedClassId = [771 783];
+SelectedClassId = [771 773];
 SelectedClassLb = {'Both feet', 'Both hands'};
 
-AltSelectedClassId = [771 783];
+AltSelectedClassId = [770 771];
 AltSelectedClassLb = {'RightHand', 'BothFeet'};
 
 PatternLocationsId = {[4 9 14], [2 7 12 6 11 16]};
@@ -30,6 +30,8 @@ Dm = [];
 Dml = [];
 Dl = cell(NumSubjects, 1);
 Cyk = [];
+Pk = [];
+Pl = [];
 for sId = 1:NumSubjects
     csubject = SubList{sId};
     cfilepath = [datapath '/' csubject '.discriminancy.maps.mat'];
@@ -61,6 +63,10 @@ for sId = 1:NumSubjects
     cDmk = zeros(length(cDk), 1);
     %cDml = str2double(Dl{sId}(cDk, 5:6));
     cDml = str2num(Dl{sId}(cDk, 5:6));
+    
+    cPk = cdata.discriminancy.run.label.Pk;
+    Pk = cat(1, Pk, cPk);
+    Pl{sId} = cdata.discriminancy.run.label.Pl;
     
     cmonthId = 0;
     cmonthLb = [];
@@ -257,6 +263,153 @@ suptitle(['Discriminancy - Emerging patterns - correlation - Beta Band - ' Selec
 cnbifig_export(fig2, [figuredir '/cybathlon.journal.discriminancy.emerging.correlation.png'], '-png');
 cnbifig_export(fig2, [figuredir '/cybathlon.journal.discriminancy.emerging.correlation.pdf'], '-pdf');
 
+%% Plot 2bis
+fig2b = figure;
+cnbifig_set_position(fig2b, 'Top');
+
+
+ax = gca;
+Colors = ax.ColorOrder;
+RaceModality = 2;
+
+csubject = 'AN14VE';
+csubjectId = cell2mat(strfind(SubList, csubject));
+
+cColors = {'b', 'r'};
+SelParadigmId = [3 5 6];
+
+if isempty(csubjectId)
+    warning([csubject ' not found']);
+else
+    
+    cindex = Sk == csubjectId & Mk == RaceModality;
+    
+    hold on;
+    XThicks = 1:sum(cindex);
+    cdata = [];
+    MeanF = zeros(1, length(SelParadigmId), length(PatternLocationsId));
+    StdF = zeros(2, length(SelParadigmId), length(PatternLocationsId));
+    for pId = 1:length(PatternLocationsId)
+        
+        subplot(1, 3, pId);
+        cpatterns = PatternLocationsId{pId};
+        cdata = squeeze(nanmean(nanmean(fisherscore(SelBetaFreqIds, cpatterns, cindex), 1), 2));
+        
+        
+        
+        hold on;
+        for i = 1:length(SelParadigmId)
+            ccthick = Pk(cindex) == SelParadigmId(i);
+            ax = plot(XThicks(ccthick),  cdata(ccthick), '.', 'Color', Colors(SelParadigmId(i), :));
+            [tmpcorr, tmppval] = corr(XThicks(ccthick)', cdata(ccthick) , 'rows', 'pairwise', 'type', 'pearson');
+            disp([PatternLabels{pId} '- Paradigm' num2str(i) ': r= ' num2str(tmpcorr) ', pval= ' num2str(tmppval)]);
+            
+            ccindex = Pk(cindex) == SelParadigmId(i);
+            cvalues = cdata(ccindex);
+            MeanF(1, i, pId) = nanmean(cvalues(1:4));
+            StdF(1, i, pId) = nanstd(cvalues(1:4));
+            MeanF(2, i, pId) = nanmean(cvalues(end-3:end));
+            StdF(2, i, pId) = nanstd(cvalues(end-3:end));
+        end
+        hold off;
+        hl = lsline;
+        set(hl, 'LineWidth', 3);
+        xlim([XThicks(1) XThicks(end) + 1]);
+    
+        grid on;
+        
+        cDk = Dk(cindex);
+        cticks = XThicks(isnan(cdata(:, 1)) == 0);
+        cdates = cDk(cticks);
+        changeId = find(diff(cdates)) + 1;
+        set(gca, 'XTick', cticks(changeId));
+        xlabelfontsize = 10;
+        set(gca, 'XTickLabel', [repmat(['\fontsize{' num2str(xlabelfontsize) '} '], size(Dl{csubjectId}(cdates(changeId), :), 1), 1) Dl{csubjectId}(cdates(changeId), :)]);
+
+        xticklabel_rotate([],90,[])
+        ylim([0 0.8]);
+        title(PatternLabels{pId});
+    end
+    
+    subplot(1, 3, 3)
+    bar(cat(2, MeanF(:, :, 1), MeanF(:, :, 2))');
+    plot_vline(3.5, 'k');
+    ylim([0 0.4]);
+    title('Average discriminancy');
+    legend('First runs', 'Last runs');
+    xlabel('Paradigm/Locations');
+    grid on;
+    set(gca, 'XTickLabel', [1 2 3 1 2 3]);
+    
+%     cDk = Dk(cindex);
+%     cticks = XThicks(isnan(cdata(:, 1)) == 0);
+%     cdates = cDk(cticks);
+%     changeId = find(diff(cdates)) + 1;
+%     set(gca, 'XTick', cticks(changeId));
+%     xlabelfontsize = 10;
+%     set(gca, 'XTickLabel', [repmat(['\fontsize{' num2str(xlabelfontsize) '} '], size(Dl{csubjectId}(cdates(changeId), :), 1), 1) Dl{csubjectId}(cdates(changeId), :)]);
+%     
+%     xticklabel_rotate([],90,[])
+%     set(ax, 'Visible', 'off');
+    
+%     MeanVec{sId} = [];
+%     StdVec{sId} = [];
+%     NVec{sId} = [];
+%     pVal{sId} = [];
+%     for pId = 1:length(PatternLocationsId)
+%         cpatterns = PatternLocationsId{pId};
+%         odata = [];
+%         oDk = [];
+%         
+%         cdata = squeeze(nanmean(nanmean(fisherscore(SelBetaFreqIds, cpatterns, cindex & Mk == RaceModality), 1), 2));
+%         plot(XThicks(Mk(cindex) == RaceModality), cdata, 'LineStyle', 'none', 'Marker', Marker{mId}, 'MarkerEdgeColor', Colors(pId, :), 'MarkerFaceColor', Colors(pId, :), 'MarkerSize', 4);
+%         odata = [odata; cdata];
+%         oDk = [oDk; Dk(cindex & Mk == RaceModality)];
+%         
+%         % Put them in chronological order
+%         [oDk, sortIndoDk] = sort(oDk,'ascend');
+%         odata = odata(sortIndoDk);
+%         oDays = length(unique(oDk));
+%         
+%         % Save pre-post (first and last four sessions for later use)
+%         MeanVec{sId} = [MeanVec{sId} [nanmean(odata(find(ismember(oDk,[1:4])))) ; nanmean(odata(find(ismember(oDk,[max(oDays)-3:max(oDays)]))))]];
+%         StdVec{sId} = [StdVec{sId} [nanstd(odata(find(ismember(oDk,[1:4])))) ; nanstd(odata(find(ismember(oDk,[max(oDays)-3:max(oDays)]))))]];
+%         NVec{sId} = [NVec{sId} [size(odata(find(ismember(oDk,[1:4]))),1) ; size(odata(find(ismember(oDk,[max(oDays)-3:max(oDays)]))),1)]];
+%         pVal{sId} = [pVal{sId} ranksum(odata(find(ismember(oDk,[1:4]))), odata(find(ismember(oDk,[max(oDays)-3:max(oDays)]))))];
+% 
+%     end
+    
+
+    
+    
+
+%     h = gca;
+%     [~, hobjl] = legend(h.Children([end-3 end-2 6 5 4]), [PatternLabels 'Race']);
+%     set(hobjl(end), 'MarkerFaceColor', 'none');   set(hobjl(end),   'MarkerEdgeColor', 'k')
+%     set(hobjl(end-2), 'MarkerFaceColor', 'none'); set(hobjl(end-2), 'MarkerEdgeColor', 'k')
+%     set(hobjl(end-4), 'MarkerFaceColor', 'none'); set(hobjl(end-4), 'MarkerEdgeColor', 'k')
+%     
+%     
+
+%     ylabel('Discriminancy');
+%     hxlabel = xlabel('Session');
+%     set(hxlabel, 'Position', get(hxlabel, 'Position') - [0 0.02 0])
+%     title(csubject);
+% 
+%     cpos = get(gca,'Position');
+%     for pId = 1:length(PatternLocationsId)
+%         apos = cpos;
+%         apos(2) = (cpos(2) - 0.05) - (pId-1)*0.035;
+%         textcolor = 'k';
+%         annotation('textbox', apos, 'String', ['r=' num2str(PatternCorr(pId, sId), '%3.2f') ', p=' num2str(PatternPVal(pId, sId), '%3.3f')], 'LineStyle', 'none', 'Color', Colors(pId, :), 'FontWeight', 'bold')
+%     end
+    
+    
+end
+
+suptitle('P1 - Discriminancy per control paradigm');
+cnbifig_export(fig2b, [figuredir '/cybathlon.journal.discriminancy.paradigm.png'], '-png');
+cnbifig_export(fig2b, [figuredir '/cybathlon.journal.discriminancy.paradigm.pdf'], '-pdf');
 
 %% Plot 3
 fig3 = figure;
