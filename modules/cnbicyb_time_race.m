@@ -1,16 +1,16 @@
 clearvars; clc; 
 
 
-%subject = 'AN14VE';
-subject = 'MA25VE';
+subject = 'AN14VE';
+% subject = 'MA25VE';
 
 
 pattern     = '.mi.';
 modality    = 'race';
 
 experiment  = 'cybathlon';
-%datapath    = ['/mnt/data/Research/' experiment '/' subject '/' subject '_racemat/'];
-datapath    = ['/home/sperdikis/Data/Raw/Cybathlon/' subject '/' subject '_racemat/'];
+datapath    = ['/mnt/data/Research/' experiment '/' subject '/' subject '_racemat/'];
+% datapath    = ['/home/sperdikis/Data/Raw/Cybathlon/' subject '/' subject '_racemat/'];
 figuredir  = './figures/';
 savedir  =  '/analysis/';
 

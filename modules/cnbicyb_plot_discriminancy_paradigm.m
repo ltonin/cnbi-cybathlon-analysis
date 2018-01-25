@@ -127,5 +127,5 @@ ylabel('Discriminancy');
 grid on;
 
 legend(['First ' num2str(SelNumRuns) ' runs'], ['Last ' num2str(SelNumRuns) ' runs']);
-
+cnbifig_export(fig1, [figuredir '/cybathlon.journal.discriminancy.paradigm.pdf'], '-pdf');
  
