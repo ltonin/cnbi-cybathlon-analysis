@@ -151,7 +151,7 @@ for sId = 1:NumSubjects
         elseif strcmp(csubject, 'MA25VE')
             maplimits = [0 0.5];
         end
-        topoplot(tdata, chanlocs, 'headrad', 'rim', 'maplimits', maplimits);
+        topoplot(tdata, chanlocs, 'headrad', 'rim', 'maplimits', maplimits, 'electrodes', 'off');
         axis image;
 
         title(ModalitiesLb{mId});
@@ -486,7 +486,7 @@ for sId = 1:NumSubjects
         elseif strcmp(csubject, 'MA25VE')
             maplimits = [0 0.5];
         end
-        topoplot(tdata, chanlocs, 'headrad', 'rim', 'maplimits', maplimits);
+        topoplot(tdata, chanlocs, 'headrad', 'rim', 'maplimits', maplimits, 'electrodes', 'off');
         
         [~, cmonthname] = month(num2str(unique(Dml(Dml == cmonths(dmId)))), 'mm');
         title(cmonthname);       
@@ -504,7 +504,7 @@ for sId = 1:NumSubjects
     elseif strcmp(csubject, 'MA25VE')
         maplimits = [0 0.5];
     end
-    topoplot(tdata, chanlocs, 'headrad', 'rim', 'maplimits', maplimits);
+    topoplot(tdata, chanlocs, 'headrad', 'rim', 'maplimits', maplimits, 'electrodes', 'off');
     title('Competition');
    
     u = subplot(NumRows, NumCols, 1 + NumCols*(sId -1));
