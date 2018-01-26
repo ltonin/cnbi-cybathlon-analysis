@@ -154,20 +154,26 @@ for sId = 1:NumSubjects
     disp(SubList(sId));
     [r p] = corr(cpaAllC,crtC);
     disp(['RT vs Ovderall Accuracy: r=' num2str(r) ', p=' num2str(p)]);
-    [r p] = corr(crtC(~isnan(cfsAllC)),cfsAllC(~isnan(cfsAllC)));
     
-    
+    [r p] = corr(cpaSpinC(~isnan(cfsLateralC)),cfsLateralC(~isnan(cfsLateralC)));
     disp(['Spin Accuracy vs Lateral Fisher Score: r=' num2str(r) ', p=' num2str(p)]);
+    
     [r p] = corr(cpaJumpC(~isnan(cfsMedialC)),cfsMedialC(~isnan(cfsMedialC)));
     disp(['Jump Accuracy vs Medial Fisher Score: r=' num2str(r) ', p=' num2str(p)]);
+    
     [r p] = corr(cpaAllC(~isnan(cfsAllC)),cfsAllC(~isnan(cfsAllC)));
     disp(['Overall Accuracy vs Overall Fisher Score: r=' num2str(r) ', p=' num2str(p)]);
+    
+    [r p] = corr(cpaAllC(~isnan(cfsLateralC)),cfsLateralC(~isnan(cfsLateralC)));
+    disp(['Overall Accuracy vs Lateral Fisher Score: r=' num2str(r) ', p=' num2str(p)]);
     
     
     [r p] = corr(ctopSpinC(~isnan(cfsLateralC)),cfsLateralC(~isnan(cfsLateralC)));
     disp(['Spin TOP vs Lateral Fisher Score: r=' num2str(r) ', p=' num2str(p)]);
+    
     [r p] = corr(ctopJumpC(~isnan(cfsMedialC)),cfsMedialC(~isnan(cfsMedialC)));
     disp(['Jump TOP vs Medial Fisher Score: r=' num2str(r) ', p=' num2str(p)]);
+    
     [r p] = corr(ctopAllC(~isnan(cfsAllC)),cfsAllC(~isnan(cfsAllC)));
     disp(['Overall TOP vs Overall Fisher Score: r=' num2str(r) ', p=' num2str(p)]);
     
