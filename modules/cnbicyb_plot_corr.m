@@ -30,6 +30,8 @@ for sId = 1:NumSubjects
     
     % Command accuracies (Pad accuracy actually)
     cpa = cdatapadacc.pad.accuracy.run.values;
+    % ltonin - replacing NaN with 0
+    cpa(isnan(cpa)) = 0;
     cpaDk = cdatapadacc.pad.label.run.Dk;
     cpaDl = mat2cell(cdatapadacc.pad.label.session.Dl,ones(1,size(cdatapadacc.pad.label.session.Dl,1)),8);
     
@@ -88,7 +90,9 @@ for sId = 1:NumSubjects
             crtF{ss} = crt(find(crtDk==find(strcmp(AllSessions{s},crtDl))));
            
             % Do not count slide
-            cpaAllF{ss} = nanmean(cpa(1:2,find(cpaDk==find(strcmp(AllSessions{s},cpaDl)))));
+%             cpaAllF{ss} = nanmean(cpa(1:2,find(cpaDk==find(strcmp(AllSessions{s},cpaDl)))));
+            % ltonin - Count slide
+            cpaAllF{ss} = nanmean(cpa(1:3,find(cpaDk==find(strcmp(AllSessions{s},cpaDl)))));
             cpaSpinF{ss} = squeeze(cpa(1,find(cpaDk==find(strcmp(AllSessions{s},cpaDl)))));
             cpaJumpF{ss} = squeeze(cpa(2,find(cpaDk==find(strcmp(AllSessions{s},cpaDl)))));
             
