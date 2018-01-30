@@ -132,12 +132,7 @@ for sId = 1:NumSubjects
    
         cdata = nanmean(fisherscore(:, :, cindex), 3);
         
-
-        if(cnruns < 5)
-            maplimits = [0 1.5];
-        else
-            maplimits = [0 0.8];
-        end
+        maplimits = [0 0.8];
         
         imagesc(freqs(1:15), 1:16, cdata(1:15, :)', maplimits);
         axis image;
@@ -149,24 +144,24 @@ for sId = 1:NumSubjects
         disp([csubject ' - ' cmonthname ' (N=' num2str(cnruns) ')' ]);
    end
     
-    % Competition day
-    subplot(NumRows, NumCols, NumCols + NumCols*(sId -1));
-    cindex = Sk == sId & Cyk == true;
-    cnruns = sum(cindex);
-
-    cdata = nanmean(fisherscore(:, :, cindex), 3);
-
-
-    if(cnruns < 5)
-        maplimits = [0 1.5];
-    else
-        maplimits = [0 0.8];
-    end
-    
-    imagesc(freqs(1:15), 1:16, cdata(1:15, :)', maplimits);
-    axis image;
-    title('Competition');
-   
+%     % Competition day
+%     subplot(NumRows, NumCols, NumCols + NumCols*(sId -1));
+%     cindex = Sk == sId & Cyk == true;
+%     cnruns = sum(cindex);
+% 
+%     cdata = nanmean(fisherscore(:, :, cindex), 3);
+% 
+% 
+%     if(cnruns < 5)
+%         maplimits = [0 1.5];
+%     else
+%         maplimits = [0 0.8];
+%     end
+%     
+%     imagesc(freqs(1:15), 1:16, cdata(1:15, :)', maplimits);
+%     axis image;
+%     title('Competition');
+%    
     u = subplot(NumRows, NumCols, 1 + NumCols*(sId -1));
     h = axes('Position', get(gca, 'Position'), 'Visible', 'off');
     set(u, 'Visible', 'off');

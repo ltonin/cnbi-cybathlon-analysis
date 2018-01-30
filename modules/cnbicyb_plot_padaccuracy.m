@@ -44,7 +44,7 @@ for sId = 1:NumSubjects
     
     [ccorr, cpval] = corr(cruns, caccuracyrun, 'rows', 'pairwise');
     cnbiutil_bdisp(['Correlation (accuracy vs. run index) for ' csubject ':']);
-    disp(['r= ' num2str(ccorr) ', pval= ' num2str(cpval, '%3.3e')]);
+    disp(['r= ' num2str(ccorr) ', pval= ' num2str(cpval, '%3.3e') ' - N=' num2str(max(cruns))]);
     
     
     

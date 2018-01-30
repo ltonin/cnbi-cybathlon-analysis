@@ -24,6 +24,8 @@ PadColors = {Colors(6, :), Colors(4, :), Colors(3, :), 'k', 'k', 'k'};
 TP = [];
 TPk    = [];
 Sk      = [];
+Dk = [];
+DaysLabels = cell(NumSubjects, 1);
 for sId = 1:NumSubjects
     csubject = SubList{sId};
     cfilepath = [datapath '/' csubject '.timeonpad.race.mat'];
@@ -35,6 +37,8 @@ for sId = 1:NumSubjects
     TP  = cat(1, TP, cdata.timeonpad.values');
     TPk = cat(1, TPk, cdata.timeonpad.label.pad');
     Sk  = cat(1, Sk, sId*ones(length(cdata.timeonpad.values), 1));
+    Dk  = cat(1, Dk, cdata.timeonpad.Dk);
+    DaysLabels{sId} = cDays;
     
     disp(['Subject: ' csubject]);
     for t=1:4
@@ -90,3 +94,6 @@ title('Time on pads');
 
 cnbifig_export(fig1, [figuredir '/cybathlon.journal.padtime.png'], '-png');
 cnbifig_export(fig1, [figuredir '/cybathlon.journal.padtime.pdf'], '-pdf');
+
+
+

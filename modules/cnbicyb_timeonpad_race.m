@@ -1,7 +1,7 @@
 clearvars; clc; 
 
-subject = 'AN14VE';
-% subject = 'MA25VE';
+% subject = 'AN14VE';
+subject = 'MA25VE';
 
 pattern     = '.mi.';
 modality    = 'race';
@@ -125,6 +125,15 @@ set(gca,'XTick',unique(Dk));
 set(gca,'XTickLabel',Dl);
 xticklabel_rotate([],45,[])
 cnbifig_export(fig3, [figuredir '/' subject '.racetimesessionmedian.' modality '.png'], '-png');
+
+%% Figure 4
+fig4 = figure;
+cnbifig_set_position(fig4, 'Top');
+hold on;
+plot(1:NumDays, MTOPPad(:, 1:3), '.');
+plot(1:NumDays, nanmean(MTOPPad(:, 1:3), 2), 'k');
+hold off
+lsline
 
 %% Saving metadata
 cDk = Dk(events.POS)

@@ -519,3 +519,36 @@ end
 suptitle(['Discriminancy - Emerging patterns - topoplot - Beta Band - ' SelectedClassLb{1} '/' SelectedClassLb{2}])
 cnbifig_export(fig4, [figuredir '/cybathlon.journal.discriminancy.emerging.topoplot.png'], '-png');
 cnbifig_export(fig4, [figuredir '/cybathlon.journal.discriminancy.emerging.topoplot.pdf'], '-pdf');
+
+%% Competition
+fig5 = figure;
+cnbifig_set_position(fig5, 'All');
+maplimits = [0 0.5];
+for sId = 1:NumSubjects
+    csubject = SubList{sId};
+    competRunId = max(Dk(Sk == sId));
+    cindex = Sk == sId & Dk == competRunId;
+
+    cdata = squeeze(nanmean(fisherscore(SelBetaFreqIds, :, cindex), 1));
+    
+   
+    u = subplot(2, 2, 1 + 2*(sId -1));
+    tdata = convChans(cdata(:, 1));
+    topoplot(tdata, chanlocs, 'headrad', 'rim', 'maplimits', maplimits, 'electrodes', 'off');
+    title('Qualifier');
+    
+    h = axes('Position', get(gca, 'Position'), 'Visible', 'off');
+    set(u, 'Visible', 'off');
+    set(h.YLabel, 'Visible', 'on');
+    ylabel(csubject);
+    
+    subplot(2, 2, 2 + 2*(sId -1));
+    tdata = convChans(cdata(:, 2));
+    topoplot(tdata, chanlocs, 'headrad', 'rim', 'maplimits', maplimits, 'electrodes', 'off');
+    title('Final');
+end
+suptitle('Discriminancy - Competition');
+
+
+cnbifig_export(fig5, [figuredir '/cybathlon.journal.discriminancy.competition.topoplot.png'], '-png');
+cnbifig_export(fig5, [figuredir '/cybathlon.journal.discriminancy.competition.topoplot.pdf'], '-pdf');
