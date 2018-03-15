@@ -5,9 +5,9 @@ subject = 'MA25VE';
 
 pattern     = '.mi.';
 experiment  = 'cybathlon';
-datapath    = [pwd '/analysis/'];
+datapath    = [pwd '/analysis2/'];
 figuredir   = './figures/';
-savedir     = [pwd '/analysis/'];
+savedir     = [pwd '/analysis2/'];
 
 TaskTypeId = [769 770 771 773 774 775 783];
 TaskTypeLb = {'LeftHand', 'RightHand', 'BothFeet', 'BothHands', 'Boh1', 'Boh2', 'Rest'};
@@ -45,6 +45,20 @@ NumMods    = length(Modalities);
 Pk          = labels.Pk;
 Paradigms   = unique(Pk);
 NumParadigms = length(Paradigms);
+
+% Month labels
+MonthStr  = labels.Dl(:, 5:6);
+MonthsLb  = str2double(MonthStr);
+Months    = unique(MonthsLb);
+NumMonths = length(unique(Months));
+
+Mnk = Dk;
+for dId = 1:NumDays
+    cday = Days(dId);
+    cmonth = str2double(labels.Dl(dId, 5:6));
+    
+    Mnk(Dk == cday) = cmonth;
+end
 
 %% Get general events
 [TrialLb, TrialEvents] = cnbiproc_get_event([771 773 783 781 786], NumSamples, events.POS, events.TYP, events.DUR);
@@ -131,6 +145,28 @@ for rId = 1:NumRuns
     rPk(rId) = unique(Pk(Rk == Runs(rId)));
 end
 
+%% Compute discriminancy per month
+freqs = settings.spectrogram.freqgrid;
+cnbiutil_bdisp('[proc] - Compute discriminancy per month');
+FisherScoresMonth = nan(NumFreqs*NumChans, NumMonths, NumCombinations);
+excludedCompetition = true(size(Mnk));
+excludedCompetition(Mk == 3) = false;
+ntrials = zeros(NumMonths, NumCombinations);
+nruns   = zeros(NumMonths, NumCombinations);
+for mId = 1:NumMonths
+    for cId = 1:NumCombinations
+        ctasks = combinations(cId, :);
+        cindex = Mnk == Months(mId) & GenericCondition & (TrialLb == ctasks(1) | TrialLb == ctasks(2));
+%         cindex = Mnk == Months(mId) & GenericCondition & excludedCompetition & (TrialLb == ctasks(1) | TrialLb == ctasks(2));
+ 
+        if length(unique(TrialLb(cindex))) == 2
+            FisherScoresMonth(:, mId, cId) = cnbiproc_fisher(F(cindex, :, :), TrialLb(cindex));
+        end 
+        ntrials(mId, cId) = sum(cindex);
+        nruns(mId, cId) = length(unique(Rk(cindex)));
+    end
+end
+
 %% Saving data
 
 % Grouping results
@@ -141,6 +177,8 @@ discriminancy.run.label.Mk     = rMk;
 discriminancy.run.label.Pk     = rPk;
 discriminancy.run.label.Pl     = labels.Pl;
 discriminancy.run.combinations = combinations;
+discriminancy.month.fisherscore = FisherScoresMonth;
+discriminancy.month.label.Mnk  = unique(Mnk);
 discriminancy.freqs            = settings.spectrogram.freqgrid;
 
 savefile = [savedir '/' subject '.discriminancy.maps.mat'];
@@ -151,6 +189,9 @@ save(savefile, 'discriminancy');
 
 
 %% Plotting
+
+
+
 
 fig1 = figure;
 %fig_set_position(fig1, 'All');
@@ -237,3 +278,66 @@ end
 
 suptitle([subject ' - Beta Band']);
 cnbifig_export(fig2, [figuredir '/' subject '.discriminancy.topoplots.beta.overall.png'], '-png');
+
+
+%% Figure dp per month (dp computed per month)
+fig3 = figure;
+fig_set_position(fig3, 'Top');
+SelectedClassId = [771 773];
+SelectedCombination = find(ismember(combinations, SelectedClassId, 'rows'));
+MonthsLabels = {'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'};
+for m = 1:NumMonths
+    subplot(1, 4, m); 
+    maplimits = [0 0.6];
+    imagesc(freqs, 1:16, reshape(FisherScoresMonth(:, m, SelectedCombination), [NumFreqs NumChans])', [0 0.6]); 
+    title([MonthsLabels{Months(m)} ' - nruns=' num2str(nruns(m, SelectedCombination))]); 
+end
+
+suptitle([subject ' - dp per month']);
+
+%% Figure dp per run per month
+SelectedClassId = [771 773];
+SelectedCombination = find(ismember(combinations, SelectedClassId, 'rows'));
+
+SelectedMonth = [8 9 10];
+
+for mId = 1:length(SelectedMonth)
+    figure;
+    fig_set_position(gcf, 'All');
+   
+    runmonth = unique(Rk(Mnk == SelectedMonth(mId)));
+    nrunmonth = length(runmonth);
+    maplimits = [0 1.5];
+    for rId = 1:nrunmonth
+        subplot(6, ceil(nrunmonth/6), rId);
+      
+        imagesc(freqs, 1:16, reshape(FisherScores(:, Runs == runmonth(rId), SelectedCombination), [NumFreqs NumChans])', maplimits); 
+        title(['Run= ' num2str(runmonth(rId))]);
+    end
+    
+    suptitle([subject ' - Month ' MonthsLabels{SelectedMonth(mId)}]);
+end
+
+
+%% Figure dp per month (average)
+fig4 = figure;
+fig_set_position(fig4, 'Top');
+
+ExcludedRunIds = [43 45 51 53 59 61 62 63 66 73];
+
+
+for mId = 1:NumMonths
+    subplot(1, NumMonths, mId);
+    cmonthId = Months(mId);
+    runmonth = unique(Rk(Mnk == cmonthId));
+
+    runindex = setdiff(runmonth, ExcludedRunIds);
+    cdata = nanmean(FisherScores(:, runindex, SelectedCombination), 2);
+    
+    maplimits = [0 0.5];
+    imagesc(freqs, 1:16, reshape(cdata, [NumFreqs NumChans])', maplimits); 
+    title([MonthsLabels{Months(m)} ' - nruns=' num2str(length(runindex))]);
+    
+end
+
+
