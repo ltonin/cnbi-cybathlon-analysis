@@ -1,0 +1,94 @@
+1.     Chaudhary U, Birbaumer N, Ramos-Murguialday A. Brain–computer interfaces for communication and rehabilitation. Nat Rev Neurol. 2016;12: 513–525. doi:10.1038/nrneurol.2016.113
+2.     Brunner C, Birbaumer N, Blankertz B, Guger C, Kübler A, Mattia D, et al. BNCI Horizon 2020: Towards a roadmap for the BCI community. Brain-Comput Interfaces. 2015;2: 1–10. doi:10.1080/2326263X.2015.1008956
+3.     Birbaumer N, Ghanayim N, Hinterberger T, Iversen I, Kotchoubey B, Kübler A, et al. A spelling device for the paralysed. Nature. 1999;398: 297–298. doi:10.1038/18581
+4.     Guger C, Edlinger G, Harkam W, Niedermayer I, Pfurtscheller G. How many people are able to operate an EEG-based brain-computer interface (BCI)? IEEE Trans Neural Syst Rehabil Eng. 2003;11: 145–147. doi:10.1109/TNSRE.2003.814481
+5.     Guger C, Daban S, Sellers E, Holzner C, Krausz G, Carabalona R, et al. How many people are able to control a P300-based brain–computer interface (BCI)? Neurosci Lett. 2009;462: 94–98. doi:10.1016/j.neulet.2009.06.045
+6.     Blankertz B, Sannelli C, Halder S, Hammer EM, Kübler A, Müller K-R, et al. Neurophysiological predictor of SMR-based BCI performance. NeuroImage. 2010;51: 1303–1309. doi:10.1016/j.neuroimage.2010.03.022
+7.     Guger C, Allison BZ, Großwindhager B, Prückl R, Hintermüller C, Kapeller C, et al. How many people could use an SSVEP BCI? Front Neurosci. 2012;6. doi:10.3389/fnins.2012.00169
+8.     Allison B, Luth T, Valbuena D, Teymourian A, Volosyak I, Graser A. BCI demographics: How many (and what kinds of) people can use an SSVEP BCI? IEEE Trans Neural Syst Rehabil Eng. 2010;18: 107–116. doi:10.1109/TNSRE.2009.2039495
+9.     Leeb R, Perdikis S, Tonin L, Biasiucci A, Tavella M, Creatura M, et al. Transferring brain–computer interfaces beyond the laboratory: Successful application control for motor-disabled users. Artif Intell Med. 2013;59: 121–132. doi:10.1016/j.artmed.2013.08.004
+10.     Sellers EW, Vaughan TM, Wolpaw JR. A brain-computer interface for long-term independent home use. Amyotroph Lateral Scler. 2010;11: 449–455. doi:10.3109/17482961003777470
+11.     Holz EM, Botrel L, Kaufmann T, Kübler A. Long-term independent brain-computer interface home use improves quality of life of a patient in the locked-in state: A case study. Arch Phys Med Rehabil. 2015;96: S16–S26. doi:10.1016/j.apmr.2014.03.035
+12.     Sellers EW, Ryan DB, Hauser CK. Noninvasive brain-computer interface enables communication after brainstem stroke. Sci Transl Med. 2014;6: 257re7-257re7. doi:10.1126/scitranslmed.3007801
+13.     Piccione F, Giorgi F, Tonin P, Priftis K, Giove S, Silvoni S, et al. P300-based brain computer interface: Reliability and performance in healthy and paralysed participants. Clin Neurophysiol. 2006;117: 531–537. doi:10.1016/j.clinph.2005.07.024
+14.     Sellers EW, Donchin E. A P300-based brain–computer interface: Initial tests by ALS patients. Clin Neurophysiol. 2006;117: 538–548. doi:10.1016/j.clinph.2005.06.027
+15.     Kübler A, Furdea A, Halder S, Hammer EM, Nijboer F, Kotchoubey B. A brain-computer interface controlled auditory event-related Potential (P300) spelling system for locked-in patients. Ann N Y Acad Sci. 2009;1157: 90–100. doi:10.1111/j.1749-6632.2008.04122.x
+16.     Combaz A, Chatelle C, Robben A, Vanhoof G, Goeleven A, Thijs V, et al. A comparison of two spelling brain-computer interfaces based on visual P3 and SSVEP in locked-in syndrome. PLoS ONE. 2013;8: e73691. doi:10.1371/journal.pone.0073691
+17.     Lesenfants D, Habbal D, Lugo Z, Lebeau M, Horki P, Amico E, et al. An independent SSVEP-based brain–computer interface in locked-in syndrome. J Neural Eng. 2014;11: 035002. doi:10.1088/1741-2560/11/3/035002
+18.     Pfurtscheller G, Müller GR, Pfurtscheller J, Gerner HJ, Rupp R. ‘Thought’ – control of functional electrical stimulation to restore hand grasp in a patient with tetraplegia. Neurosci Lett. 2003;351: 33–36. doi:10.1016/S0304-3940(03)00947-9
+19.     Kubler A, Nijboer F, Mellinger J, Vaughan TM, Pawelzik H, Schalk G, et al. Patients with ALS can use sensorimotor rhythms to operate a brain-computer interface. Neurology. 2005;64: 1775–1777. doi:10.1212/01.WNL.0000158616.43002.6D
+20.     Onose G, Grozea C, Anghelescu A, Daia C, Sinescu CJ, Ciurea AV, et al. On the feasibility of using motor imagery EEG-based brain–computer interface in chronic tetraplegics for assistive robotic arm control: A clinical test and long-term post-trial follow-up. Spinal Cord. 2012;50: 599–608. doi:10.1038/sc.2012.14
+21.     Birch GE, Bozorgzadeh Z, Mason SG. Initial on-line evaluations of the LF-ASD brain-computer interface with able-bodied and spinal-cord subjects using imagined voluntary motor potentials. IEEE Trans Neural Syst Rehabil Eng. 2002;10: 219–224. doi:10.1109/TNSRE.2002.806839
+22.     Wolpaw JR, McFarland DJ. Control of a two-dimensional movement signal by a noninvasive brain-computer interface in humans. Proc Natl Acad Sci. 2004;101: 17849–17854. doi:10.1073/pnas.0403504101
+23.     Millán J d R, Renkens F, Mouriño J, Gerstner W. Brain-actuated interaction. Artif Intell. 2004;159: 241–259. doi:10.1016/j.artint.2004.05.008
+24.     Müller-Putz GR, Scherer R, Pfurtscheller G, Rupp R. EEG-based neuroprosthesis control: A step towards clinical practice. Neurosci Lett. 2005;382: 169–174. doi:10.1016/j.neulet.2005.03.021
+25.     Bai O, Lin P, Huang D, Fei DY, Floeter MK. Towards a user-friendly brain–computer interface: Initial tests in ALS and PLS patients. Clin Neurophysiol. 2010;121: 1293–1303. doi:10.1016/j.clinph.2010.02.157
+26.     Leeb R, Friedman D, Müller-Putz GR, Scherer R, Slater M, Pfurtscheller G. Self-paced (asynchronous) BCI control of a wheelchair in virtual environments: a case study with a tetraplegic. Comput Intell Neurosci. 2007;2007: 1–8. doi:10.1155/2007/79642
+27.     Holz EM, Höhne J, Staiger-Sälzer P, Tangermann M, Kübler A. Brain–computer interface controlled gaming: Evaluation of usability by severely motor restricted end-users. Artif Intell Med. 2013;59: 111–120. doi:10.1016/j.artmed.2013.08.001
+28.     Perdikis S, Leeb R, Williamson J, Ramsay A, Tavella M, Desideri L, et al. Clinical evaluation of BrainTree, a motor imagery hybrid BCI speller. J Neural Eng. 2014;11: 036003. doi:10.1088/1741-2560/11/3/036003
+29.     Höhne J, Holz E, Staiger-Sälzer P, Müller K-R, Kübler A, Tangermann M. Motor imagery for severely motor-impaired patients: Evidence for brain-computer interfacing as superior control solution. PLoS ONE. 2014;9: e104854. doi:10.1371/journal.pone.0104854
+30.     Faller J, Scherer R, Costa U, Opisso E, Medina J, Müller-Putz GR. A co-adaptive brain-computer interface for end users with severe motor impairment. PLoS ONE. 2014;9: e101168. doi:10.1371/journal.pone.0101168
+31.     Leeb R, Tonin L, Rohm M, Desideri L, Carlson T, Millán J d R. Towards independence: A BCI telepresence robot for people with severe motor disabilities. Proc IEEE. 2015;103: 969–982. doi:10.1109/JPROC.2015.2419736
+32.     Rupp R, Rohm M, Schneiders M, Kreilinger A, Muller-Putz GR. Functional rehabilitation of the paralyzed upper extremity after spinal cord injury by noninvasive hybrid neuroprostheses. Proc IEEE. 2015;103: 954–968. doi:10.1109/JPROC.2015.2395253
+33.     Kennedy PR, Bakay RAE, Moore MM, Adams K, Goldwaithe J. Direct control of a computer from the human central nervous system. IEEE Trans Rehabil Eng. 2000;8: 198–202. doi:10.1109/86.847815
+34.     Hochberg LR, Serruya MD, Friehs GM, Mukand JA, Saleh M, Caplan AH, et al. Neuronal ensemble control of prosthetic devices by a human with tetraplegia. Nature. 2006;442: 164–171. doi:10.1038/nature04970
+35.     Collinger JL, Wodlinger B, Downey JE, Wang W, Tyler-Kabara EC, Weber DJ, et al. High-performance neuroprosthetic control by an individual with tetraplegia. The Lancet. 2013;381: 557–564. doi:10.1016/S0140-6736(12)61816-9
+36.     Hochberg LR, Bacher D, Jarosiewicz B, Masse NY, Simeral JD, Vogel J, et al. Reach and grasp by people with tetraplegia using a neurally controlled robotic arm. Nature. 2012;485: 372–375. doi:10.1038/nature11076
+37.     McMullen DP, Hotson G, Katyal KD, Wester BA, Fifer MS, McGee TG, et al. Demonstration of a semi-autonomous hybrid brain–machine interface using human intracranial EEG, eye tracking, and computer vision to control a robotic upper limb prosthetic. IEEE Trans Neural Syst Rehabil Eng. 2014;22: 784–796. doi:10.1109/TNSRE.2013.2294685
+38.     Fifer MS, Hotson G, Wester BA, McMullen DP, Wang Y, Johannes MS, et al. Simultaneous neural control of simple reaching and grasping with the modular prosthetic limb using intracranial EEG. IEEE Trans Neural Syst Rehabil Eng. 2014;22: 695–705. doi:10.1109/TNSRE.2013.2286955
+39.     Gilja V, Pandarinath C, Blabe CH, Nuyujukian P, Simeral JD, Sarma AA, et al. Clinical translation of a high-performance neural prosthesis. Nat Med. 2015;21: 1142–1145. doi:10.1038/nm.3953
+40.     Jarosiewicz B, Sarma AA, Bacher D, Masse NY, Simeral JD, Sorice B, et al. Virtual typing by people with tetraplegia using a self-calibrating intracortical brain-computer interface. Sci Transl Med. 2015;7: 313ra179-313ra179. doi:10.1126/scitranslmed.aac7328
+41.     Aflalo T, Kellis S, Klaes C, Lee B, Shi Y, Pejsa K, et al. Decoding motor imagery from the posterior parietal cortex of a tetraplegic human. Science. 2015;348: 906–910. doi:10.1126/science.aaa5417
+42.     Bouton CE, Shaikhouni A, Annetta NV, Bockbrader MA, Friedenberg DA, Nielson DM, et al. Restoring cortical control of functional movement in a human with quadriplegia. Nature. 2016;533: 247–250. doi:10.1038/nature17435
+43.     Pandarinath C, Nuyujukian P, Blabe CH, Sorice BL, Saab J, Willett FR, et al. High performance communication by people with paralysis using an intracortical brain-computer interface. eLife. 2017;6. doi:10.7554/eLife.18554
+44.     Leuthardt EC, Schalk G, Wolpaw JR, Ojemann JG, Moran DW. A brain–computer interface using electrocorticographic signals in humans. J Neural Eng. 2004;1: 63–71. doi:10.1088/1741-2560/1/2/001
+45.     Wang W, Collinger JL, Degenhart AD, Tyler-Kabara EC, Schwartz AB, Moran DW, et al. An electrocorticographic brain interface in an individual with tetraplegia. PLoS ONE. 2013;8: e55344. doi:10.1371/journal.pone.0055344
+46.     Vansteensel MJ, Pels EGM, Bleichner MG, Branco MP, Denison T, Freudenburg ZV, et al. Fully implanted brain–computer interface in a locked-in patient with ALS. N Engl J Med. 2016;375: 2060–2066. doi:10.1056/NEJMoa1608085
+47.     Chaudhary U, Xia B, Silvoni S, Cohen LG, Birbaumer N. Brain–computer interface–based communication in the completely locked-in state. PLOS Biol. 2017;15: e1002593. doi:10.1371/journal.pbio.1002593
+48.     Blankertz B, Lemm S, Treder M, Haufe S, Müller K-R. Single-trial analysis and classification of ERP components — A tutorial. NeuroImage. 2011;56: 814–825. doi:10.1016/j.neuroimage.2010.06.048
+49.     Vidaurre C, Sannelli C, Müller K-R, Blankertz B. Machine-learning-based coadaptive calibration for brain-computer interfaces. Neural Comput. 2011;23: 791–816. doi:10.1162/NECO_a_00089
+50.     Faller J, Vidaurre C, Solis-Escalante T, Neuper C, Scherer R. Autocalibration and recurrent adaptation: Towards a plug and play online ERD-BCI. IEEE Trans Neural Syst Rehabil Eng. 2012;20: 313–319. doi:10.1109/TNSRE.2012.2189584
+51.     Perdikis S, Leeb R, Millán J d R. Context-aware adaptive spelling in motor imagery BCI. J Neural Eng. 2016;13: 036018. doi:10.1088/1741-2560/13/3/036018
+52.     Lotte F, Larrue F, Mühl C. Flaws in current human training protocols for spontaneous brain-computer interfaces: Lessons learned from instructional design. Front Hum Neurosci. 2013;7. 
+53.     Chavarriaga R, Fried-Oken M, Kleih S, Lotte F, Scherer R. Heading for new shores! Overcoming pitfalls in BCI design. Brain-Comput Interfaces. 2016; 1–14. doi:10.1080/2326263X.2016.1263916
+54.     Ganguly K, Carmena JM. Emergence of a stable cortical map for neuroprosthetic control. PLoS Biol. 2009;7: e1000153. doi:10.1371/journal.pbio.1000153
+55.     Tavella M, Leeb R, Rupp R, Millán J d R. Towards natural non-invasive hand neuroprostheses for daily living. IEEE Engineering in Medicine and Biology Society (EMBC). Buenos Aires, Argentina: IEEE; 2010. pp. 126–129. doi:10.1109/IEMBS.2010.5627178
+56.     Gilja V, Nuyujukian P, Chestek CA, Cunningham JP, Yu BM, Fan JM, et al. A high-performance neural prosthesis enabled by control algorithm design. Nat Neurosci. 2012;15: 1752–1757. doi:10.1038/nn.3265
+57.     Orsborn AL, Moorman HG, Overduin SA, Shanechi MM, Dimitrov DF, Carmena JM. Closed-loop decoder adaptation shapes neural plasticity for skillful neuroprosthetic control. Neuron. 2014;82: 1380–1393. doi:10.1016/j.neuron.2014.04.048
+58.     Birbaumer N. Breaking the silence: Brain-computer interfaces (BCI) for communication and motor control. Psychophysiology. 2006;43: 517–532. doi:10.1111/j.1469-8986.2006.00456.x
+59.     Birbaumer N, Ruiz S, Sitaram R. Learned regulation of brain metabolism. Trends Cogn Sci. 2013;17: 295–302. doi:10.1016/j.tics.2013.04.009
+60.     Kübler A, Birbaumer N. Brain–computer interfaces and communication in paralysis: Extinction of goal directed thinking in completely paralysed patients? Clin Neurophysiol. 2008;119: 2658–2666. doi:10.1016/j.clinph.2008.06.019
+61.     Pfurtscheller G, Linortner P, Winkler R, Korisek G, Müller-Putz G. Discrimination of motor imagery-induced EEG patterns in patients with complete spinal cord injury. Comput Intell Neurosci. 2009;2009: 1–6. doi:10.1155/2009/104180
+62.     Gourab K, Schmit BD. Changes in movement-related β-band EEG signals in human spinal cord injury. Clin Neurophysiol. 2010;121: 2017–2023. doi:10.1016/j.clinph.2010.05.012
+63.     Meng J, Zhang S, Bekyo A, Olsoe J, Baxter B, He B. Noninvasive electroencephalogram based control of a robotic arm for reach and grasp tasks. Sci Rep. 2016;6. 
+64.     Wander JD, Blakely T, Miller KJ, Weaver KE, Johnson LA, Olson JD, et al. Distributed cortical adaptation during learning of a brain-computer interface task. Proc Natl Acad Sci. 2013;110: 10818–10823. doi:10.1073/pnas.1221127110
+65.     Decety J. The neurophysiological basis of motor imagery. Behav Brain Res. 1996;77: 45–52. doi:10.1016/0166-4328(95)00225-1
+66. doi: 10.1080/10447318.2013.780869 Review Hwang 2013
+67. Jackson A., Fetz E. E. (2011). Interfacing with the computational brain. IEEE Trans. Neural Syst. Rehabil. Eng. 19, 534–541 10.1109/TNSRE.2011.2158586 
+68. Wolpaw’s famous review of 2002
+69. Wander 2013, distributed cortical adaptation ECoG, pnas 
+70. Orsborn, Carmena Neuron 14.
+71. Brain computer interface learning for systems based on electrocorticography and intracortical microelectrode arrays, Hiremath
+72. Learning to control a brain-machine interface for reaching and grasping by primates. Carmena 2003 classic
+73. Orsborn Carmena 2013 Creating new functional circuits for action via brain-machine interfaces
+74. A multi-agent control framework for co-adaptation in brain-computer interfaces, Merel
+75. Brain computer interface learning for systems based on electrocorticography and intracortical microelectrode arrays
+76. Electroencephalographic (EEG) control of three-dimensional movement Dennis J McFarland1, William A Sarnacki and Jonathan R Wolpaw doi:10.1088/1741-2560/7/3/036007
+77. Dangi, Carmena 2013 Design and analysis of closed-loop decoder adaptation algorithms for brain-machine interfaces.
+78. The Do's and Don'ts of Neurofeedback Training: A Review of the Controlled Studies Using Healthy Adults
+79. Carmen Vidaurre, Claudia Sannelli, Klaus-Robert Müller and Benjamin Blankertz. Co-adaptive calibration to improve BCI efficiency.
+80. Vidaurre C, Schlögl A, Cabeza R, Scherer R, Pfurtscheller G. A fully online adaptive BCI
+81. Neuper C, Müller GR, Kübler A, Birbaumer N, Pfurtscheller G (2003) Clinical application of an EEG-based brain-computer interface: a case study in a patient with severe motor impairment. Clinical Neurophysiology 114: 399–409. 
+82. Neuper, Christa and Pfurtscheller, Gert, Neurofeedback Training for BCI Control, Brain-Computer Interfaces: Revolutionizing Human-Computer Interaction, Springer Berlin Heidelberg, Berlin, Heidelberg, 65--78 2010.
+83. Robert T. Thibault, Michael Lifshitz, Amir Raz; Neurofeedback or neuroplacebo?, Brain, Volume 140, Issue 4, 1 April 2017, Pages 862–864, https://doi.org/10.1093/brain/awx033
+84. Thomas Fovet, Jean-Arthur Micoulaud-Franchi, François-Benoît Vialatte, Fabien Lotte, Christophe Daudet, et al.. On assessing neurofeedback effects: should double-blind replace neurophysiological mechanisms?. Brain - A Journal of Neurology , Oxford University Press (OUP), 2017, 140 (10), pp.e63
+85. Mladenovic 2017, A generic framework for adaptive EEG-based BCI training and operation
+86. Kober 2015, Why standard brain-computer interface (BCI) training protocols should be changed: an experimental study
+87. Vidaurre C, Blankertz B. Towards a Cure for BCI Illiteracy. Brain Topography. 2010;23(2):194-198. doi:10.1007/s10548-009-0121-6.
+88. C Guger, G Edlinger, W Harkam, I Niedermayer, and G Pfurtscheller. How many people are able to operate an EEG-based brain-computer interface (BCI)? IEEE Trans. Neural Syst. Rehabil. Eng., 11(2):145–7, 2003.
+89. Patrick T. Sadtler, Kristin M. Quick, Matthew D. Golub, Steven M. Chase, Stephen I. Ryu, Elizabeth C. Tyler-Kabara, Byron M. Yu & Aaron P. Batista, Neural constraints on learning,Nature 512, 423–426 (28 August 2014).
+90. C Neuper, G.R Müller, A Kübler, N Birbaumer, G Pfurtscheller, Clinical application of an EEG-based brain–computer interface: a case study in a patient with severe motor impairment, Clinical Neurophysiology, Volume 114, Issue 3, 2003, Pages 399-409, ISSN 1388-2457, https://doi.org/10.1016/S1388-2457(02)00387-5.
+91. G Pfurtscheller, C Guger, G Müller, G Krausz, C Neuper, Brain oscillations control hand orthosis in a tetraplegic, Neuroscience Letters, Volume 292, Issue 3, 2000, Pages 211-214, ISSN 0304-3940, https://doi.org/10.1016/S0304-3940(00)01471-3.
+93. S Dangi, A L Orsborn, H G Moorman, and J M Carmena. Design and analysis of closed-loop decoder adaptation algorithms for brain-machine interfaces. Neural Computation, pages 1–39, April 2013.
+94. Dennis J McFarland et al 2008 J. Neural Eng. 5 101 Emulation of computer mouse control with a noninvasive brain–computer interface
+

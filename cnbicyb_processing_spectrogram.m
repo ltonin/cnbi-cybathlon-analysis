@@ -1,7 +1,7 @@
 clearvars; clc;
 
-% subject = 'MA25VE';
-subject = 'AN14VE';
+subject = 'MA25VE';
+% subject = 'AN14VE';
 
 % identifiers = {'.*line.mi.', '.gdf'};
 identifiers = {'.race.mi.',  '.mat'};
@@ -9,16 +9,16 @@ identifiers = {'.race.mi.',  '.mat'};
 pattern     = identifiers{1};
 extension   = identifiers{2};
 experiment  = 'cybathlon';
-datapath    = ['/mnt/data/Research/' experiment '/' subject '/'];
-% datapath    = ['/home/sperdikis/Data/Raw/Cybathlon/' subject '/'];
-savedir     = '/analysis/';
+%datapath    = ['/mnt/data/Research/' experiment '/' subject '/'];
+ datapath    = ['/home/sperdikis/Data/Raw/Cybathlon/' subject '/'];
+savedir     = '/analysisforce/';
 
 %% Processing parameters
 mlength    = 1;
 wlength    = 0.5;
 pshift     = 0.25;                  
 wshift     = 0.0625;                
-selfreqs   = 4:2:48;
+selfreqs   = 4:2:96;
 selchans   = 1:16;                  % <-- Needed for the 2-amplifiers setup
 load('extra/laplacian16.mat');              % <-- To be checked if it is the correct one
 
@@ -69,6 +69,22 @@ for fId = 1:NumFiles
     end
     
     s = s(:, selchans);         
+    
+    % Artifact removal with FORCe toolbox
+    load('chanlocs16.mat')
+    winlengthsec = 0.5;
+    winlengthsamples = winlengthsec*h.SampleRate;
+    
+    s_clean = size(s);
+        
+    for windowPosition = 1:winlengthsamples:size(s,1)-winlengthsamples+1
+
+        % Use FORCe...
+        tic;
+        s(windowPosition:windowPosition+winlengthsamples-1,:) = ...
+        FORCe( s(windowPosition:windowPosition+winlengthsamples-1,:)', h.SampleRate, chanlocs16, 0 )';
+        disp(['Time taken to clean 1s EEG = ' num2str(toc) 's.']);
+    end
     
     % Computed DC removal
     s_dc = s-repmat(mean(s),size(s,1),1);
