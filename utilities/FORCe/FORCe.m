@@ -161,7 +161,8 @@ function [cleanEEG] = FORCe( EEGdata, Fs, chanLocs, useAcc )
                     remICsPF = [remICsPF iNo];
                 end
                 % Same for p2p
-                if any( p2p > 60 ),
+                %if any( p2p > 60 ),
+                if any( p2p > 40 ),
                     remICsP2P = [remICsP2P iNo];
                 end
                
@@ -212,10 +213,12 @@ function [cleanEEG] = FORCe( EEGdata, Fs, chanLocs, useAcc )
             end
             
              % Threshold Std ratio.
-             stdRatioRem = find( stdRatio > (mean(stdRatio)+(1*std(stdRatio))) );
+             %stdRatioRem = find( stdRatio > (mean(stdRatio)+(1*std(stdRatio))) );
+             stdRatioRem = find( stdRatio > (mean(stdRatio)+(0.8*std(stdRatio))) );
              
              % Threshold Gamma rem.
-             gammaRem = find( gammaPSD > 1.7 );
+             %gammaRem = find( gammaPSD > 1.7 );
+             gammaRem = find( gammaPSD > 1.5 );
              
              % Check spikeness of data.
              if tN == 1,
@@ -238,19 +241,22 @@ function [cleanEEG] = FORCe( EEGdata, Fs, chanLocs, useAcc )
                          noSpikes(iNo) = 0;
                      end
                  end
-                 remNoSpikes = find( noSpikes >= 0.25 );
+                 %remNoSpikes = find( noSpikes >= 0.25 );
+                 remNoSpikes = find( noSpikes >= 0.20 );
              end
              
              % Threshold the kurtosis values
              remICsKurt = [];
              for i = 1:length( ent ),
-                if ent(i) > mean((ent)) + (0.5*std((ent))) || ent(i) < mean(ent) - (0.5*std(ent)),
+                %if ent(i) > mean((ent)) + (0.5*std((ent))) || ent(i) < mean(ent) - (0.5*std(ent)),
+                if ent(i) > mean((ent)) + (0.4*std((ent))) || ent(i) < mean(ent) - (0.4*std(ent)),
                     remICsKurt = [remICsKurt i];
                 end
              end
              
              % Threshold the distance to the 1/F distribution.
-             rems1F = find( specDist > 3.5 );
+             %rems1F = find( specDist > 3.5 );
+             rems1F = find( specDist > 3.0 );
              
              % Theshold the ratio of PSDs between < 20Hz and > 20Hz.
              for i = 1:size( ICs{tN},1 ),
@@ -259,15 +265,18 @@ function [cleanEEG] = FORCe( EEGdata, Fs, chanLocs, useAcc )
                 muHigh = mean(ps(2,find( ps(1,:) > 20 )));
                 psRatio(i) = muHigh / muLow;
             end
-            remICspsRatio = find( psRatio > 1.0 );
+            %remICspsRatio = find( psRatio > 1.0 );
+            remICspsRatio = find( psRatio > 0.8 );
             
             % Threshold the std of the IC projects.
-            remSTD = find( stdProj > (mean(stdProj)+(2.0*std(stdProj))) );
+            %remSTD = find( stdProj > (mean(stdProj)+(2.0*std(stdProj))) );
+            remSTD = find( stdProj > (mean(stdProj)+(1.5*std(stdProj))) );
             
             % Threshold the spikiness (std) of the ICs.
             remSpike = [];
             for i = 1:size( ICs{tN},1 ),
-                if max( abs( ICs{tN}(i,:) ) ) > (mean( abs(ICs{tN}(i,:)) ) + (3*std( (ICs{tN}(i,:)) )))
+                %if max( abs( ICs{tN}(i,:) ) ) > (mean( abs(ICs{tN}(i,:)) ) + (3*std( (ICs{tN}(i,:)) )))
+                if max( abs( ICs{tN}(i,:) ) ) > (mean( abs(ICs{tN}(i,:)) ) + (2.5*std( (ICs{tN}(i,:)) )))
                     remSpike = [remSpike i];
                 end
             end
@@ -285,6 +294,7 @@ function [cleanEEG] = FORCe( EEGdata, Fs, chanLocs, useAcc )
             for iNoType = 1:NCh,
                 lenINo(iNoType) = length( find( remICs == iNoType ) );
             end
+            lenINo
             remICs = find( lenINo > 3 );
             
             % Check number of removed ICs is not the same as the total number

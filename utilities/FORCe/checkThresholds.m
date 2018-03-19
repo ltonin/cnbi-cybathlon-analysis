@@ -29,7 +29,8 @@ function passFail = checkThresholds( signal )
     passFail = 1;
     
     % Check amplitude.
-    if max( signal ) > 100 || min( signal ) < -100,
+    %if max( signal ) > 100 || min( signal ) < -100,
+    if max( signal ) > 75 || min( signal ) < -75,
         passFail = 0;
     end
 end
