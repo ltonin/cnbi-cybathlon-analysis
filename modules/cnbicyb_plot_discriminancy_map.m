@@ -1,6 +1,7 @@
 clearvars; clc; close all;
 
-SubList = {'AN14VE', 'MA25VE'};
+%SubList = {'AN14VE', 'MA25VE'};
+SubList = {'MA25VE'};
 NumSubjects = length(SubList);
 
 datapath  = [pwd '/analysis2/'];
@@ -79,7 +80,8 @@ for sId = 1:NumSubjects
     SelectedCombination    = find(ismember(combinations, SelectedClassId, 'rows'));
     AltSelectedCombination = find(ismember(combinations, AltSelectedClassId, 'rows'));
     
-    BetaFreqs = 22:2:32;
+    %BetaFreqs = 22:2:32;
+    BetaFreqs = 22:2:48;
     [~, SelBetaFreqIds] = intersect(FreqGrid, BetaFreqs);
     
     % Get fisherscore for the main combination (both hand vs. both feet)
@@ -142,12 +144,23 @@ for sId = 1:NumSubjects
         
         imagesc(SelFreqs(SelFreqIds), 1:16, cdata(SelFreqIds, :)', maplimits);
 %         axis image;
+%=======
+%        if(sId ==1)
+%            maplimits = [0 0.6]; % AN14VE scale
+%        else
+%            maplimits = [0 0.6]; % MA25VE scale
+%        end
+%        
+%        %imagesc(freqs(1:15), 1:16, cdata(1:15, :)', maplimits);
+%        imagesc(freqs(1:31), 1:16, cdata(1:31, :)', maplimits);
+%        %axis image;
+%>>>>>>> dce553d8f09b5af479608ebd2fd180caa901a174
         [~, cmonthname] = month(num2str(unique(Dml(Dml == cmonths(dmId)))), 'mm');
-        title([cmonthname ' (' num2str(cnruns) ')']);       
+        %title([cmonthname ' (' num2str(cnruns) ')']);       
         
         
         
-        disp([csubject ' - ' cmonthname ' (N=' num2str(cnruns) ')' ]);
+        %disp([csubject ' - ' cmonthname ' (N=' num2str(cnruns) ')' ]);
    end
     
 %     % Competition day

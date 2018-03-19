@@ -5,9 +5,9 @@ subject = 'AN14VE';
 
 pattern     = '.mi.';
 experiment  = 'cybathlon';
-datapath    = [pwd '/analysis2/'];
-figuredir   = './figures/';
-savedir     = [pwd '/analysis2/'];
+datapath    = [pwd '/analysisforce1_strict/'];
+figuredir   = './analysisforce1_strict/';
+savedir     = [pwd '/analysisforce1_strict/'];
 
 TaskTypeId = [769 770 771 773 774 775 783];
 TaskTypeLb = {'LeftHand', 'RightHand', 'BothFeet', 'BothHands', 'Boh1', 'Boh2', 'Rest'};
@@ -196,7 +196,8 @@ save(savefile, 'discriminancy');
 fig1 = figure;
 %fig_set_position(fig1, 'All');
 
-SelFreqs = 4:2:32;
+SelFreqs = 4:2:96;
+
 [FreqGrid, SelFreqIds] = intersect(settings.spectrogram.freqgrid, SelFreqs);
 
 Modlb = {'Offline', 'Online', 'Race', 'Competition'};
@@ -234,7 +235,7 @@ cnbifig_export(fig1, [figuredir '/' subject '.discriminancy.maps.overall.png'], 
 fig2 = figure;
 %fig_set_position(fig2, 'All');
 load('chanlocs64.mat');
-BetaFreqs = 22:2:32;
+BetaFreqs = 22:2:96;
 [~, SelBetaFreqIds] = intersect(settings.spectrogram.freqgrid, BetaFreqs);
 
 tModlb = {'Offline', 'Online', 'Race'};
