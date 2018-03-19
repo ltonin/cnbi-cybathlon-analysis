@@ -1,9 +1,9 @@
 clearvars; clc;
 
-subject = 'MA25VE';
-% subject = 'AN14VE';
+% subject = 'MA25VE';
+subject = 'AN14VE';
 
-% identifiers = {'.*line.mi.', '.gdf'};
+%identifiers = {'.*line.mi.', '.gdf'};
 identifiers = {'.race.mi.',  '.mat'};
 
 pattern     = identifiers{1};
@@ -11,7 +11,7 @@ extension   = identifiers{2};
 experiment  = 'cybathlon';
 %datapath    = ['/mnt/data/Research/' experiment '/' subject '/'];
  datapath    = ['/home/sperdikis/Data/Raw/Cybathlon/' subject '/'];
-savedir     = '/analysisforce/';
+savedir     = '/analysisforce1_strict/';
 
 %% Processing parameters
 mlength    = 1;
@@ -72,7 +72,7 @@ for fId = 1:NumFiles
     
     % Artifact removal with FORCe toolbox
     load('chanlocs16.mat')
-    winlengthsec = 0.5;
+    winlengthsec = 1.0;
     winlengthsamples = winlengthsec*h.SampleRate;
     
     s_clean = size(s);

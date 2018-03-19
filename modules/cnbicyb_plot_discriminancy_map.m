@@ -1,10 +1,11 @@
 clearvars; clc; close all;
 
-SubList = {'AN14VE', 'MA25VE'};
+%SubList = {'AN14VE', 'MA25VE'};
+SubList = {'MA25VE'};
 NumSubjects = length(SubList);
 
-datapath  = [pwd '/analysis/'];
-figuredir = './figures/';
+datapath  = [pwd '/analysisforce1_strict/'];
+figuredir = './analysisforce1_strict/';
 
 SelectedClassId = [771 773];
 SelectedClassLb = {'Both feet', 'Both hands'};
@@ -13,7 +14,8 @@ AltSelectedClassId = [770 771];
 AltSelectedClassLb = {'RightHand', 'BothFeet'};
 
 CompetitionDay = '20161008';
-freqs = 4:2:48;
+%freqs = 4:2:48;
+freqs = 4:2:96;
 fisherscore = [];
 altfisherscore = [];
 Mk = [];
@@ -79,7 +81,8 @@ for sId = 1:NumSubjects
     SelectedCombination    = find(ismember(combinations, SelectedClassId, 'rows'));
     AltSelectedCombination = find(ismember(combinations, AltSelectedClassId, 'rows'));
     
-    BetaFreqs = 22:2:32;
+    %BetaFreqs = 22:2:32;
+    BetaFreqs = 22:2:48;
     [~, SelBetaFreqIds] = intersect(FreqGrid, BetaFreqs);
     
     % Get fisherscore for the main combination (both hand vs. both feet)
@@ -132,16 +135,21 @@ for sId = 1:NumSubjects
    
         cdata = nanmean(fisherscore(:, :, cindex), 3);
         
-        maplimits = [0 0.8];
+        if(sId ==1)
+            maplimits = [0 0.6]; % AN14VE scale
+        else
+            maplimits = [0 0.6]; % MA25VE scale
+        end
         
-        imagesc(freqs(1:15), 1:16, cdata(1:15, :)', maplimits);
-        axis image;
+        %imagesc(freqs(1:15), 1:16, cdata(1:15, :)', maplimits);
+        imagesc(freqs(1:31), 1:16, cdata(1:31, :)', maplimits);
+        %axis image;
         [~, cmonthname] = month(num2str(unique(Dml(Dml == cmonths(dmId)))), 'mm');
-        title([cmonthname ' (' num2str(cnruns) ')']);       
+        %title([cmonthname ' (' num2str(cnruns) ')']);       
         
         
         
-        disp([csubject ' - ' cmonthname ' (N=' num2str(cnruns) ')' ]);
+        %disp([csubject ' - ' cmonthname ' (N=' num2str(cnruns) ')' ]);
    end
     
 %     % Competition day
@@ -171,6 +179,6 @@ for sId = 1:NumSubjects
     
 end
 
-suptitle(['Discriminancy - Emerging patterns - Maps - ' SelectedClassLb{1} '/' SelectedClassLb{2}])
+%suptitle(['Discriminancy - Emerging patterns - Maps - ' SelectedClassLb{1} '/' SelectedClassLb{2}])
 cnbifig_export(fig4, [figuredir '/cybathlon.journal.discriminancy.emerging.map.png'], '-png');
 cnbifig_export(fig4, [figuredir '/cybathlon.journal.discriminancy.emerging.map.pdf'], '-pdf');
