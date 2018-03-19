@@ -3,7 +3,7 @@ clearvars; clc; close all;
 SubList = {'AN14VE', 'MA25VE'};
 NumSubjects = length(SubList);
 
-datapath  = [pwd '/analysis/'];
+datapath  = [pwd '/analysis2/'];
 figuredir = './figures/';
 
 SelectedClassId = [771 773];
@@ -13,7 +13,7 @@ AltSelectedClassId = [770 771];
 AltSelectedClassLb = {'RightHand', 'BothFeet'};
 
 CompetitionDay = '20161008';
-freqs = 4:2:48;
+freqs = 4:2:30;
 fisherscore = [];
 altfisherscore = [];
 Mk = [];
@@ -113,6 +113,8 @@ ModalitiesLb = {'Offline', 'Online', 'Race'};
 fig4 = figure;
 cnbifig_set_position(fig4, 'All');
 
+SelFreqs = 4:2:62;
+[~, SelFreqIds] = intersect(FreqGrid, SelFreqs);
 
 NumRows = NumSubjects;
 NumCols = max(Dml) - min(Dml) + 1 + 1;
@@ -132,10 +134,14 @@ for sId = 1:NumSubjects
    
         cdata = nanmean(fisherscore(:, :, cindex), 3);
         
-        maplimits = [0 0.8];
+        maplimits = [0 0.5];
+        if(cnruns < 5)
+            maplimits = [0 1];
+        end
         
-        imagesc(freqs(1:15), 1:16, cdata(1:15, :)', maplimits);
-        axis image;
+        
+        imagesc(SelFreqs(SelFreqIds), 1:16, cdata(SelFreqIds, :)', maplimits);
+%         axis image;
         [~, cmonthname] = month(num2str(unique(Dml(Dml == cmonths(dmId)))), 'mm');
         title([cmonthname ' (' num2str(cnruns) ')']);       
         
@@ -161,7 +167,7 @@ for sId = 1:NumSubjects
 %     imagesc(freqs(1:15), 1:16, cdata(1:15, :)', maplimits);
 %     axis image;
 %     title('Competition');
-%    
+
     u = subplot(NumRows, NumCols, 1 + NumCols*(sId -1));
     h = axes('Position', get(gca, 'Position'), 'Visible', 'off');
     set(u, 'Visible', 'off');
@@ -171,6 +177,6 @@ for sId = 1:NumSubjects
     
 end
 
-suptitle(['Discriminancy - Emerging patterns - Maps - ' SelectedClassLb{1} '/' SelectedClassLb{2}])
+% suptitle(['Discriminancy - Emerging patterns - Maps - ' SelectedClassLb{1} '/' SelectedClassLb{2}])
 cnbifig_export(fig4, [figuredir '/cybathlon.journal.discriminancy.emerging.map.png'], '-png');
 cnbifig_export(fig4, [figuredir '/cybathlon.journal.discriminancy.emerging.map.pdf'], '-pdf');

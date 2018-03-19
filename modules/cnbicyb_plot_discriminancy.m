@@ -3,7 +3,7 @@ clearvars; clc; close all;
 SubList = {'AN14VE', 'MA25VE'};
 NumSubjects = length(SubList);
 
-datapath  = [pwd '/analysis/'];
+datapath  = [pwd '/analysis2/'];
 figuredir = './figures/';
 
 SelectedClassId = [771 773];
@@ -147,9 +147,9 @@ for sId = 1:NumSubjects
         tdata = convChans(cdata);
 
         if strcmp(csubject, 'AN14VE')
-            maplimits = [0 0.4];
+            maplimits = [0 0.3];
         elseif strcmp(csubject, 'MA25VE')
-            maplimits = [0 0.5];
+            maplimits = [0 0.3];
         end
         topoplot(tdata, chanlocs, 'headrad', 'rim', 'maplimits', maplimits, 'electrodes', 'off');
         axis image;
@@ -482,9 +482,9 @@ for sId = 1:NumSubjects
         tdata = convChans(cdata);
 
         if strcmp(csubject, 'AN14VE')
-            maplimits = [0 0.5];
+            maplimits = [0 0.4];
         elseif strcmp(csubject, 'MA25VE')
-            maplimits = [0 0.5];
+            maplimits = [0 0.4];
         end
         topoplot(tdata, chanlocs, 'headrad', 'rim', 'maplimits', maplimits, 'electrodes', 'off');
         
@@ -500,9 +500,9 @@ for sId = 1:NumSubjects
     tdata = convChans(cdata);
 
     if strcmp(csubject, 'AN14VE')
-        maplimits = [0 0.5];
+        maplimits = [0 0.4];
     elseif strcmp(csubject, 'MA25VE')
-        maplimits = [0 0.5];
+        maplimits = [0 0.4];
     end
     topoplot(tdata, chanlocs, 'headrad', 'rim', 'maplimits', maplimits, 'electrodes', 'off');
     title('Competition');
