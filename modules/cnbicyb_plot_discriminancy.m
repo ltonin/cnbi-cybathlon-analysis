@@ -3,7 +3,7 @@ clearvars; clc; close all;
 SubList = {'AN14VE', 'MA25VE'};
 NumSubjects = length(SubList);
 
-datapath  = [pwd '/analysis2/'];
+datapath  = [pwd '/analysis/'];
 figuredir = './figures/';
 
 SelectedClassId = [771 773];

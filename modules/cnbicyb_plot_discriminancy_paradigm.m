@@ -2,7 +2,7 @@ clearvars; clc; %close all;
 
 subject = 'AN14VE';
 
-datapath  = [pwd '/analysis2/'];
+datapath  = [pwd '/analysis/'];
 figuredir = './figures/';
 
 SelectedClassId = [771 773];
