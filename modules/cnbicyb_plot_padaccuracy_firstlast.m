@@ -14,6 +14,9 @@ close all;
 % Speed, Jump, Slide, Rest
 PadColors = {Colors(6, :), Colors(4, :), Colors(3, :), 'k', 'k', 'k'};
 
+[~, plotdatapath] = cnbiutil_mkdir(pwd, '/plotdata');
+data = struct([]);
+
 NumRows = 1;
 NumCols = NumSubjects;
 
@@ -90,8 +93,17 @@ for sId = 1:NumSubjects
     
     legend([PadNames, 'Average'], 'location', 'SouthEast');
     
+    % Storing plot data
+    data(sId).pad_accuracy         = caccuracyrun;
+    data(sId).labels.day_id        = cDk;
+    
 end
-
 suptitle('Command accuracy');
+
+%% Saving plot data
+cnbiutil_bdisp(['Saving plot data Fig3B in ' plotdatapath]);
+save([plotdatapath '/Fig3B.mat'], 'data');
+
+%% Saving plots
 cnbifig_export(fig1, [figuredir '/cybathlon.journal.accuracy.firstlast.pad.png'], '-png');
 cnbifig_export(fig1, [figuredir '/cybathlon.journal.accuracy.firstlast.pad.pdf'], '-pdf');

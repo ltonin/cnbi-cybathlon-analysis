@@ -11,6 +11,9 @@ PadNames = {'Spin', 'Jump', 'Slide'};
 NumRows = 1;
 NumCols = NumSubjects;
 
+[~, plotdatapath] = cnbiutil_mkdir(pwd, '/plotdata');
+data = struct([]);
+
 fig1 = figure;
 cnbifig_set_position(fig1, 'Top');
 
@@ -77,8 +80,19 @@ for sId = 1:NumSubjects
     annotation('textbox', cpos, 'String', ['r=' num2str(ccorr, '%3.2f') ', p=' num2str(cpval, '%3.3f')], 'LineStyle', 'none', 'FontWeight', 'bold')
     legend([PadNames, 'Average'], 'location', 'SouthEast');
     
+    
+    % Storing plot data
+    data(sId).pad_accuracy         = caccuracyday;
+    data(sId).labels.paradigm_name = PadNames;
+    data(sId).labels.day_date      = cdata.pad.label.session.Dl;
+    
 end
-
 suptitle('Command accuracy');
+
+%% Saving plot data
+cnbiutil_bdisp(['Saving plot data Fig3A in ' plotdatapath]);
+save([plotdatapath '/Fig3A.mat'], 'data');
+
+%% Saving plots
 cnbifig_export(fig1, [figuredir '/cybathlon.journal.accuracy.pad.png'], '-png');
 cnbifig_export(fig1, [figuredir '/cybathlon.journal.accuracy.pad.pdf'], '-pdf');

@@ -11,7 +11,7 @@ MaxOnPad = 19;
 NoCmdOnPad = 11;
 MinOnRest = 5.5;
 
-
+[~, plotdatapath] = cnbiutil_mkdir(pwd, '/plotdata');
 
 CommTyp = {'Spin', 'Jump', 'Slide', 'Rest/Idle'};
 
@@ -49,6 +49,7 @@ for sId = 1:NumSubjects
     
     disp('a')
 end
+
 
 
 LSk = zeros(length(Sk), length(SubList{1}));
@@ -91,6 +92,19 @@ xlabel('PadType/Pilot');
 title('Time on pads');
 
 %suptitle('Time on pads');
+
+% Storing plot data
+data.timeonpad          = TP(SelectedIndex);
+data.labels.pad_id      = TPk(SelectedIndex);
+data.labels.subject_id  = Sk(SelectedIndex);
+
+
+%% Saving plot data
+cnbiutil_bdisp(['Saving plot data Fig2 in ' plotdatapath]);
+save([plotdatapath '/Fig2.mat'], 'data');
+
+%% Saving figures
+
 
 cnbifig_export(fig1, [figuredir '/cybathlon.journal.padtime.png'], '-png');
 cnbifig_export(fig1, [figuredir '/cybathlon.journal.padtime.pdf'], '-pdf');

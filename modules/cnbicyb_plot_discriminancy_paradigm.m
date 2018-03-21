@@ -21,6 +21,8 @@ NumParadigm = length(ParadigmId);
 
 BetaFreqs = 22:2:32;
 
+[~, plotdatapath] = cnbiutil_mkdir(pwd, '/plotdata');
+
 %% Loading pre-computed discriminancy
 filepath = [datapath '/' subject '.discriminancy.maps.mat'];
 data = load(filepath);     
@@ -101,7 +103,15 @@ for pId = 1:NumParadigm
     o_stdfs(2, pId) = std(o_cfs(rstopid));
     
     o_pval(pId) = ranksum(o_cfs(rstartid), o_cfs(rstopid));
+    
+    
+    % Storing plot data
+    sdata.fisherscore(:, 1, pId)  = o_cfs(rstartid);
+    sdata.fisherscore(:, 2, pId)  = o_cfs(rstopid);
+    sdata.labels.paradigm_name = {'Control paradigm 1', 'Control paradigm 3', 'Control paradigm 4'};
 end
+
+
 
 %% Plotting
 fig1 = figure;
@@ -127,5 +137,12 @@ ylabel('Discriminancy');
 grid on;
 
 legend(['First ' num2str(SelNumRuns) ' runs'], ['Last ' num2str(SelNumRuns) ' runs']);
+
+%% Saving plot data
+cnbiutil_bdisp(['Saving plot data Fig6D in ' plotdatapath]);
+data = sdata;
+save([plotdatapath '/Fig6D.mat'], 'data');
+
+%% Saving plots
 cnbifig_export(fig1, [figuredir '/cybathlon.journal.discriminancy.paradigm.pdf'], '-pdf');
  

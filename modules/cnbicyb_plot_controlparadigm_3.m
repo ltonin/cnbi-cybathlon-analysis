@@ -19,6 +19,8 @@ ParadigmColors = {Colors(3, :) Colors(5, :), Colors(6, :)};
 fig1 = figure;
 cnbifig_set_position(fig1, 'All');
 
+[~, plotdatapath] = cnbiutil_mkdir(pwd, '/plotdata');
+
 for sId = 1:NumSubjects
     
     csubject = SubList{sId};
@@ -126,9 +128,11 @@ for sId = 1:NumSubjects
     ylabel('Time [s]');
     title('Time On Pad');    
 
-    
-    
-    
+    % Storing plot data
+    data.time_on_pad          = bpdata;
+    data.labels.group_id      = bplbl;
+    data.labels.paradigm_name = {'Control paradigm 1', 'Control paradigm 3', 'Control paradigm 4'};
+    data.labels.pad_name      = PadNames;
     
     
     % BCI command accuracy per paradigm
@@ -165,6 +169,12 @@ for sId = 1:NumSubjects
     ylabel('Accuracy [%]');
     title('Command Accuracy');
 
+    % Storing plot data
+    data2.accuracy_on_pad      = cdatapadacc.pad.accuracy.run.values(1:3,:);
+    data2.labels.paradigm_id   = cdatapadacc.pad.label.run.Pk;
+    data2.labels.paradigm_sel  = [3 5 6];
+    data2.labels.paradigm_name = {'Control paradigm 1', 'Control paradigm 3', 'Control paradigm 4'};
+    data2.labels.pad_name      = PadNames;
     
     % Race time per paradigm
     subplot(2,2,4);hold on;
@@ -197,6 +207,13 @@ for sId = 1:NumSubjects
     %set(hxlabel, 'Position', get(hxlabel, 'Position') - [0 0.02 0])
     ylabel('Time [s]');
     title('Race Time');    
+    
+    % Storing plot data
+    data3.accuracy_on_pad      = cdatatimerace.time.run.values;
+    data3.labels.paradigm_id   = cdatatimerace.time.run.label.Pk;
+    data3.labels.paradigm_sel  = [3 5 6];
+    data3.labels.paradigm_name = {'Control paradigm 1', 'Control paradigm 3', 'Control paradigm 4'};
+    data3.labels.pad_name      = PadNames;
     
     % Statistical tests
     disp('Time on pad - Spin:');
@@ -237,5 +254,14 @@ for sId = 1:NumSubjects
 end
 
 suptitle('P1 control paradigm effects');
+
+%% Saving plot data
+cnbiutil_bdisp(['Saving plot data Fig6A in ' plotdatapath]);
+save([plotdatapath '/Fig6A.mat'], 'data');
+cnbiutil_bdisp(['Saving plot data Fig6B in ' plotdatapath]);
+save([plotdatapath '/Fig6B.mat'], 'data2');
+cnbiutil_bdisp(['Saving plot data Fig6C in ' plotdatapath]);
+save([plotdatapath '/Fig6C.mat'], 'data3');
+
 cnbifig_export(fig1, [figuredir '/cybathlon.journal.controlparadigm3.png'], '-png');
 cnbifig_export(fig1, [figuredir '/cybathlon.journal.controlparadigm3.pdf'], '-pdf');

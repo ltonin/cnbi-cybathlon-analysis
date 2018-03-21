@@ -19,6 +19,9 @@ NumPatterns = length(PatternLocationsId);
 PatternCorr = zeros(NumPatterns, NumSubjects);
 PatternPVal = zeros(NumPatterns, NumSubjects);
 
+[~, plotdatapath] = cnbiutil_mkdir(pwd, '/plotdata');
+data = struct([]);
+
 CompetitionDay = '20161008';
 
 fisherscore = [];
@@ -161,11 +164,28 @@ for sId = 1:NumSubjects
             ylabel(csubject);
         end
     end
+    
+      
+    % Storing plot data
+    data(sId).fisherscore          = fisherscore;
+    data(sId).beta_frequency_id    = SelBetaFreqIds;
+    data(sId).chanlocs             = chanlocs;
+    data(sId).labels.subject_id    = Sk;
+    data(sId).labels.modality_id   = Mk;
+    data(sId).labels.modality_name = ModalitiesLb;
 end
 suptitle(['Discriminancy - Modality - Beta Band - ' SelectedClassLb{1} '/' SelectedClassLb{2}]);
+
+%% Saving plot data
+cnbiutil_bdisp(['Saving plot data FigS2 in ' plotdatapath]);
+save([plotdatapath '/FigS2.mat'], 'data');
+data = struct([]);
+tmpdata = struct([]);
+%% Saving plots
+
 cnbifig_export(fig1, [figuredir '/cybathlon.journal.discriminancy.modality.topoplot.png'], '-png');
 cnbifig_export(fig1, [figuredir '/cybathlon.journal.discriminancy.modality.topoplot.pdf'], '-pdf');
-
+%% Figure 2
 fig2 = figure;
 cnbifig_set_position(fig2, 'Top');
 
@@ -229,6 +249,9 @@ for sId = 1:NumSubjects
         NVec{sId} = [NVec{sId} [size(odata(find(ismember(oDk,[1:4]))),1) ; size(odata(find(ismember(oDk,[max(oDays)-3:max(oDays)]))),1)]];
         pVal{sId} = [pVal{sId} ranksum(odata(find(ismember(oDk,[1:4]))), odata(find(ismember(oDk,[max(oDays)-3:max(oDays)]))))];
 
+        % Storing for after
+        tmpdata(sId).fisherscore(:, pId) = odata;
+        tmpdata(sId).labels.day_id = oDk;
     end
     
     hold off;
@@ -256,10 +279,34 @@ for sId = 1:NumSubjects
         annotation('textbox', apos, 'String', ['r=' num2str(PatternCorr(pId, sId), '%3.2f') ', p=' num2str(PatternPVal(pId, sId), '%3.3f')], 'LineStyle', 'none', 'Color', Colors(pId, :), 'FontWeight', 'bold')
     end
     
+    % Storing plot data
+    data(sId).fisherscore          = fisherscore;
+    data(sId).beta_frequency_id    = SelBetaFreqIds;
+    data(sId).chanlocs             = chanlocs;
+    data(sId).labels.subject_id    = Sk;
+    data(sId).labels.modality_id   = Mk;
+    data(sId).labels.modality_name = ModalitiesLb;
+    data(sId).labels.pattern_id    = PatternLocationsId;
+    data(sId).labels.pattern_name  = PatternLabels;
+    data(sId).labels.day_id        = cDk;
+    data(sId).labels.day_date      = Dl{sId};
     
+    % Storing for after
+    tmpdata(sId).labels.pattern_name  = PatternLabels;
+   
 end
-
 suptitle(['Discriminancy - Emerging patterns - correlation - Beta Band - ' SelectedClassLb{1} '/' SelectedClassLb{2}]);
+
+%% Saving plot data
+cnbiutil_bdisp(['Saving plot data Fig4B in ' plotdatapath]);
+save([plotdatapath '/Fig4B.mat'], 'data');
+data = tmpdata;
+cnbiutil_bdisp(['Saving plot data Fig4C in ' plotdatapath]);
+save([plotdatapath '/Fig4C.mat'], 'data');
+data = struct([]);
+tmpdata = struct([]);
+
+%% Saving plots
 cnbifig_export(fig2, [figuredir '/cybathlon.journal.discriminancy.emerging.correlation.png'], '-png');
 cnbifig_export(fig2, [figuredir '/cybathlon.journal.discriminancy.emerging.correlation.pdf'], '-pdf');
 
@@ -340,6 +387,9 @@ else
     xlabel('Paradigm/Locations');
     grid on;
     set(gca, 'XTickLabel', [1 2 3 1 2 3]);
+    
+    
+    
     
 %     cDk = Dk(cindex);
 %     cticks = XThicks(isnan(cdata(:, 1)) == 0);
@@ -445,6 +495,7 @@ for sId = 1:NumSubjects
     title(csubject);
     
     legend(PatternLabels, 'location', 'SouthEast');    
+   
     
 end
 
@@ -513,10 +564,22 @@ for sId = 1:NumSubjects
     set(h.YLabel, 'Visible', 'on');
     ylabel(csubject);
    
-    
+          
+    % Storing plot data
+    data(sId).fisherscore          = fisherscore;
+    data(sId).beta_frequency_id    = SelBetaFreqIds;
+    data(sId).chanlocs             = chanlocs;
+    data(sId).labels.subject_id    = Sk;
+    data(sId).labels.month_id      = Dml;
 end
-
 suptitle(['Discriminancy - Emerging patterns - topoplot - Beta Band - ' SelectedClassLb{1} '/' SelectedClassLb{2}])
+
+%% Saving plot data
+cnbiutil_bdisp(['Saving plot data Fig4A in ' plotdatapath]);
+save([plotdatapath '/Fig4A.mat'], 'data');
+data = struct([]);
+
+%% Saving plots
 cnbifig_export(fig4, [figuredir '/cybathlon.journal.discriminancy.emerging.topoplot.png'], '-png');
 cnbifig_export(fig4, [figuredir '/cybathlon.journal.discriminancy.emerging.topoplot.pdf'], '-pdf');
 
@@ -546,9 +609,21 @@ for sId = 1:NumSubjects
     tdata = convChans(cdata(:, 2));
     topoplot(tdata, chanlocs, 'headrad', 'rim', 'maplimits', maplimits, 'electrodes', 'off');
     title('Final');
+    
+        % Storing plot data
+    data(sId).fisherscore          = fisherscore;
+    data(sId).beta_frequency_id    = SelBetaFreqIds;
+    data(sId).chanlocs             = chanlocs;
+    data(sId).labels.subject_id    = Sk;
+    data(sId).labels.day_id        = Dk;
 end
 suptitle('Discriminancy - Competition');
 
+%% Saving plot data
+cnbiutil_bdisp(['Saving plot data Fig5 in ' plotdatapath]);
+save([plotdatapath '/Fig5.mat'], 'data');
+data = struct([]);
 
+%% Saving plots
 cnbifig_export(fig5, [figuredir '/cybathlon.journal.discriminancy.competition.topoplot.png'], '-png');
 cnbifig_export(fig5, [figuredir '/cybathlon.journal.discriminancy.competition.topoplot.pdf'], '-pdf');

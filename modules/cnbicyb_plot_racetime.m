@@ -17,6 +17,9 @@ NumCols = NumSubjects;
 ax = gca;
 Colors = ax.ColorOrder;
 
+[~, plotdatapath] = cnbiutil_mkdir(pwd, '/plotdata');
+data = struct([]);
+
 for sId = 1:NumSubjects
     csubject = SubList{sId};
     cfilepath = [datapath '/' csubject '.time.race.mat'];
@@ -105,9 +108,23 @@ for sId = 1:NumSubjects
     cnbiplot_hline(MinRaceTime, '--k', ['Min race time (' num2str(MinRaceTime) ' s)']);
     cnbiplot_hline(MaxRaceTime, '--k', ['Max race time (' num2str(MaxRaceTime) ' s)']);
     ylim([MinRaceTime-10 MaxRaceTime + 10]);
+    
+    
+    % Storing plot data
+    data(sId).racetime             = crt;
+    data(sId).labels.paradigm_id   = cPk;
+    data(sId).labels.paradigm_name = cdata.time.run.label.Pl;
+    data(sId).labels.day_id        = cDk;
+    data(sId).labels.day_date      = cDl;
+    
 end
-
 suptitle('Race Time')
+
+%% Saving plot data
+cnbiutil_bdisp(['Saving plot data Fig1C in ' plotdatapath]);
+save([plotdatapath '/Fig1C.mat'], 'data');
+
+%% Plotting
 
 cnbifig_export(fig1, [figuredir '/cybathlon.journal.racetime.png'], '-png');
 cnbifig_export(fig1, [figuredir '/cybathlon.journal.racetime.pdf'], '-pdf');

@@ -5,6 +5,7 @@ NumSubjects = length(SubList);
 
 datapath  = [pwd '/analysis/'];
 figuredir = './figures/';
+datasubmission = [pwd '/data/'];
 
 fig1 = figure;
 cnbifig_set_position(fig1, 'All');
@@ -13,6 +14,9 @@ NumCols = NumSubjects;
 
 ax = gca;
 Colors = ax.ColorOrder;
+
+[~, plotdatapath] = cnbiutil_mkdir(pwd, '/plotdata');
+data = struct([]);
 
 for sId = 1:NumSubjects
     csubject = SubList{sId};
@@ -42,7 +46,7 @@ for sId = 1:NumSubjects
     
     hBar = bar(MeanVec,'LineWidth',2);
     hEBar = errorbar([1:2],MeanVec,zeros(1,2),StdVec,'.','LineWidth',2);
-    H = sigstar({[1,2]},pVal)
+    H = sigstar({[1,2]},pVal);
     hold off;
     xlim([0 3]);
     ylim([50 200]);
@@ -52,8 +56,16 @@ for sId = 1:NumSubjects
     ylabel('Time [sec]');
     title(csubject);
     
+    % Storing plot data
+    data(sId).racetime      = crt;
+    data(sId).labels.day_id = cDk;
 end
 
+%% Saving plot data
+cnbiutil_bdisp(['Saving plot data in ' plotdatapath]);
+save([plotdatapath '/Fig1B.mat'], 'data');
+
+%% Plotting
 suptitle('Race Time')
 cnbifig_export(fig1, [figuredir '/cybathlon.journal.racetimefirstlast.png'], '-png');
 cnbifig_export(fig1, [figuredir '/cybathlon.journal.racetimefirstlast.pdf'], '-pdf');

@@ -1,7 +1,7 @@
 clearvars; clc; close all;
 
-%SubList = {'AN14VE', 'MA25VE'};
-SubList = {'MA25VE'};
+SubList = {'AN14VE', 'MA25VE'};
+% SubList = {'MA25VE'};
 NumSubjects = length(SubList);
 
 datapath  = [pwd '/analysis2/'];
@@ -12,6 +12,9 @@ SelectedClassLb = {'Both feet', 'Both hands'};
 
 AltSelectedClassId = [770 771];
 AltSelectedClassLb = {'RightHand', 'BothFeet'};
+
+[~, plotdatapath] = cnbiutil_mkdir(pwd, '/plotdata');
+data = struct([]);
 
 CompetitionDay = '20161008';
 freqs = 4:2:30;
@@ -115,7 +118,7 @@ ModalitiesLb = {'Offline', 'Online', 'Race'};
 fig4 = figure;
 cnbifig_set_position(fig4, 'All');
 
-SelFreqs = 4:2:62;
+SelFreqs = 4:2:48;
 [~, SelFreqIds] = intersect(FreqGrid, SelFreqs);
 
 NumRows = NumSubjects;
@@ -131,36 +134,26 @@ for sId = 1:NumSubjects
    for dmId = 1:length(cmonths)
         crowloc = find(PlotLoc == cmonths(dmId));
         subplot(NumRows, NumCols, crowloc + NumCols*(sId -1));
-        cindex = Sk == sId & Dml == cmonths(dmId);% & Cyk == false;
+        cindex = Sk == sId & Dml == cmonths(dmId) ;%& Cyk == false;
         cnruns = sum(cindex);
    
         cdata = nanmean(fisherscore(:, :, cindex), 3);
         
-        maplimits = [0 0.5];
+        maplimits = [0 0.6];
         if(cnruns < 5)
             maplimits = [0 1];
         end
         
         
         imagesc(SelFreqs(SelFreqIds), 1:16, cdata(SelFreqIds, :)', maplimits);
-%         axis image;
-%=======
-%        if(sId ==1)
-%            maplimits = [0 0.6]; % AN14VE scale
-%        else
-%            maplimits = [0 0.6]; % MA25VE scale
-%        end
-%        
-%        %imagesc(freqs(1:15), 1:16, cdata(1:15, :)', maplimits);
-%        imagesc(freqs(1:31), 1:16, cdata(1:31, :)', maplimits);
-%        %axis image;
-%>>>>>>> dce553d8f09b5af479608ebd2fd180caa901a174
+        axis image;
+
         [~, cmonthname] = month(num2str(unique(Dml(Dml == cmonths(dmId)))), 'mm');
-        %title([cmonthname ' (' num2str(cnruns) ')']);       
+        title([cmonthname ' (' num2str(cnruns) ')']);       
         
         
         
-        %disp([csubject ' - ' cmonthname ' (N=' num2str(cnruns) ')' ]);
+        disp([csubject ' - ' cmonthname ' (N=' num2str(cnruns) ')' ]);
    end
     
 %     % Competition day
@@ -188,8 +181,21 @@ for sId = 1:NumSubjects
     ylabel(csubject);
    
     
+    % Storing plot data
+    data(sId).fisherscore          =  fisherscore;
+    data(sId).frequency_id_selected = SelFreqIds;
+    data(sId).frequency_grid       = SelFreqs;
+    data(sId).labels.subject_id    = Sk;
+    data(sId).labels.month_id      = Dml;
+    
 end
 
 % suptitle(['Discriminancy - Emerging patterns - Maps - ' SelectedClassLb{1} '/' SelectedClassLb{2}])
+
+%% Saving plot data
+cnbiutil_bdisp(['Saving plot data FigS1 in ' plotdatapath]);
+save([plotdatapath '/FigS1.mat'], 'data');
+
+%% Saving plots
 cnbifig_export(fig4, [figuredir '/cybathlon.journal.discriminancy.emerging.map.png'], '-png');
 cnbifig_export(fig4, [figuredir '/cybathlon.journal.discriminancy.emerging.map.pdf'], '-pdf');
