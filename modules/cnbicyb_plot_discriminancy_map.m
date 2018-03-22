@@ -4,8 +4,10 @@ clearvars; clc; close all;
 SubList = {'MA25VE'};
 NumSubjects = length(SubList);
 
-datapath  = [pwd '/analysisforce1_strict/'];
-figuredir = './analysisforce1_strict/';
+%datapath  = [pwd '/analysisforce1_strict/'];
+datapath  = [pwd '/analysis/'];
+%figuredir = './analysisforce1_strict/';
+figuredir = './analysis/';
 
 SelectedClassId = [771 773];
 SelectedClassLb = {'Both feet', 'Both hands'};
@@ -205,8 +207,9 @@ cnbifig_export(fig4, [figuredir '/cybathlon.journal.discriminancy.emerging.map.p
 % Simis quick run
 %r=27;
 % r=41;
-r=70;
-%r=r-1;
+%r=70;
+r=80;
+r=r-1;
 close all;
 %imagesc(squeeze(fisherscore(1:23,:,r))',[0 0.9]);
 imagesc(squeeze(fisherscore(1:23,:,r))');

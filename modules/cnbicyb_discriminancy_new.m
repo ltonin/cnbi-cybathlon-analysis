@@ -1,13 +1,13 @@
 clearvars; clc; 
 
-% subject = 'MA25VE';
-subject = 'AN14VE';
+subject = 'MA25VE';
+%subject = 'AN14VE';
 
 pattern     = '.mi.';
 experiment  = 'cybathlon';
-datapath    = [pwd '/analysis2/'];
-figuredir   = './analysis2/';
-savedir     = [pwd '/analysis2/'];
+datapath    = [pwd '/analysisforce1_strict/'];
+figuredir   = './analysisforce1_strict/';
+savedir     = [pwd '/analysisforce1_strict/'];
 
 TaskTypeId = [769 770 771 773 774 775 783];
 TaskTypeLb = {'LeftHand', 'RightHand', 'BothFeet', 'BothHands', 'Boh1', 'Boh2', 'Rest'};
