@@ -1,11 +1,11 @@
 clearvars; clc; close all;
 
-SubList = {'AN14VE', 'MA25VE'};
-% SubList = {'MA25VE'};
+% SubList = {'AN14VE', 'MA25VE'};
+SubList = {'MA25VE'};
 NumSubjects = length(SubList);
 
-datapath  = [pwd '/analysis2/'];
-figuredir = './figures/';
+datapath  = [pwd '/analysisforce1_strict/'];
+figuredir = './analysisforce1_strict/';
 
 SelectedClassId = [771 773];
 SelectedClassLb = {'Both feet', 'Both hands'};
@@ -199,3 +199,40 @@ save([plotdatapath '/FigS1.mat'], 'data');
 %% Saving plots
 cnbifig_export(fig4, [figuredir '/cybathlon.journal.discriminancy.emerging.map.png'], '-png');
 cnbifig_export(fig4, [figuredir '/cybathlon.journal.discriminancy.emerging.map.pdf'], '-pdf');
+
+
+
+% Simis quick run
+%r=27;
+% r=41;
+r=70;
+%r=r-1;
+close all;
+%imagesc(squeeze(fisherscore(1:23,:,r))',[0 0.9]);
+imagesc(squeeze(fisherscore(1:23,:,r))');
+set(gca,'XTick',[1:23]);
+set(gca,'XTickLabel',[4:2:48]);
+set(gca,'YTick',[1:16]);
+set(gca,'YTickLabel',{'Fz','FC3','FC1','FCz','FC2','FC4','C3','C1','Cz','C2','C4','CP3','CP1','CPz','CP2','CP4'});
+title(['P2, ' Dl{1}(Dk(r),:)],'FontSize',30);
+set(gca,'FontSize',30);
+xlabel('Frequency [Hz]','FontSize',30);
+ylabel('Channel','FontSize',30);
+
+
+% Simis quick session
+% s=1;
+% s=41;
+% s=14;
+s=s-1;
+close all;
+%imagesc(squeeze(fisherscore(1:23,:,r))',[0 0.9]);
+imagesc(squeeze(mean(fisherscore(1:23,:,Dk==s),3))');
+set(gca,'XTick',[1:23]);
+set(gca,'XTickLabel',[4:2:48]);
+set(gca,'YTick',[1:16]);
+set(gca,'YTickLabel',{'Fz','FC3','FC1','FCz','FC2','FC4','C3','C1','Cz','C2','C4','CP3','CP1','CPz','CP2','CP4'});
+title(['P2, ' Dl{1}(s,:)],'FontSize',30);
+set(gca,'FontSize',30);
+xlabel('Frequency [Hz]','FontSize',30);
+ylabel('Channel','FontSize',30);
