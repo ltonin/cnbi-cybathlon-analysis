@@ -3,7 +3,7 @@ clearvars; clc; close all;
 SubList = {'AN14VE', 'MA25VE'};
 NumSubjects = length(SubList);
 
-datapath  = [pwd '/analysis/'];
+datapath  = [pwd '/analysisforce1_strict/'];
 figuredir = './figures/';
 
 SelectedClassId = [771 773];
@@ -380,7 +380,7 @@ else
     
     subplot(1, 3, 3)
     bar(cat(2, MeanF(:, :, 1), MeanF(:, :, 2))');
-    plot_vline(3.5, 'k');
+    %plot_vline(3.5, 'k');
     ylim([0 0.4]);
     title('Average discriminancy');
     legend('First runs', 'Last runs');

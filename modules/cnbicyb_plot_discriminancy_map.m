@@ -1,13 +1,13 @@
 clearvars; clc; close all;
 
-% SubList = {'AN14VE', 'MA25VE'};
+%SubList = {'AN14VE', 'MA25VE'};
 SubList = {'MA25VE'};
 NumSubjects = length(SubList);
 
-%datapath  = [pwd '/analysisforce1_strict/'];
-datapath  = [pwd '/analysis/'];
-%figuredir = './analysisforce1_strict/';
-figuredir = './analysis/';
+datapath  = [pwd '/analysisforce1_strict/'];
+%datapath  = [pwd '/analysis/'];
+figuredir = './analysisforce1_strict/';
+figuredir = './analysisforce1_strict/';
 
 SelectedClassId = [771 773];
 SelectedClassLb = {'Both feet', 'Both hands'};
@@ -195,8 +195,10 @@ end
 % suptitle(['Discriminancy - Emerging patterns - Maps - ' SelectedClassLb{1} '/' SelectedClassLb{2}])
 
 %% Saving plot data
-cnbiutil_bdisp(['Saving plot data FigS1 in ' plotdatapath]);
-save([plotdatapath '/FigS1.mat'], 'data');
+%cnbiutil_bdisp(['Saving plot data FigS1 in ' plotdatapath]);
+%save([plotdatapath '/FigS1.mat'], 'data');
+cnbiutil_bdisp(['Saving plot data FigS4 in ' plotdatapath]);
+save([plotdatapath '/FigS4.mat'], 'data');
 
 %% Saving plots
 cnbifig_export(fig4, [figuredir '/cybathlon.journal.discriminancy.emerging.map.png'], '-png');
